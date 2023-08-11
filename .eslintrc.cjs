@@ -23,6 +23,14 @@ module.exports = {
   },
   rules: {
     'comma-dangle': ['error', 'always']
+    "vue/max-attributes-per-line": [
+      "error",
+      {
+        "singleline": {
+          "max": 3
+        }
+      }
+    ],
   },
   fix: true // 啟用自動修復
 }
