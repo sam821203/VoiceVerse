@@ -58,7 +58,8 @@
             <!-- Email -->
             <div class="mb-3">
               <label class="inline-block mb-2">Email</label>
-              <input
+              <vee-field
+                name="email"
                 type="email"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Enter Email"
@@ -71,9 +72,8 @@
                 type="password"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Password"
-                v-model="password"
               />
-              <span class="error" v-show="errors.password">{{ 'Test error' }}</span>
+              <span class="error">{{ 'Test error' }}</span>
             </div>
             <button
               type="submit"
@@ -83,66 +83,94 @@
             </button>
           </form>
           <!-- Registration Form -->
-          <form v-show="tab === 'register'">
+          <vee-form
+            v-show="tab === 'register'"
+            :validation-schema="schema"
+            :initial-values="userData"
+            @submit="register"
+          >
             <!-- Name -->
             <div class="mb-3">
               <label class="inline-block mb-2">Name</label>
-              <input
+              <vee-field
+                name="name"
                 type="text"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Enter Name"
               />
+              <ErrorMessage class="text-red-600" name="name" />
             </div>
             <!-- Email -->
             <div class="mb-3">
               <label class="inline-block mb-2">Email</label>
-              <input
+              <vee-field
+                name="email"
                 type="email"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Enter Email"
               />
+              <ErrorMessage class="text-red-600" name="email" />
             </div>
             <!-- Age -->
             <div class="mb-3">
               <label class="inline-block mb-2">Age</label>
-              <input
+              <vee-field
+                name="age"
                 type="number"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
               />
+              <ErrorMessage class="text-red-600" name="age" />
             </div>
             <!-- Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Password</label>
-              <input
-                type="password"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                placeholder="Password"
-              />
+              <vee-field name="password" :bails="false" v-slot="{ field, errors }">
+                <input
+                  type="password"
+                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                  placeholder="Password"
+                  v-bind="field"
+                />
+                <div class="text-red-600" v-for="error in errors" :key="error">{{ error }}</div>
+              </vee-field>
+              <ErrorMessage class="text-red-600" name="password" />
             </div>
             <!-- Confirm Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Confirm Password</label>
-              <input
+              <vee-field
+                name="confirm_password"
                 type="password"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Confirm Password"
               />
+              <ErrorMessage class="text-red-600" name="confirm_password" />
             </div>
             <!-- Country -->
             <div class="mb-3">
               <label class="inline-block mb-2">Country</label>
-              <select
+              <vee-field
+                as="select"
+                name="country"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
               >
                 <option value="USA">USA</option>
                 <option value="Mexico">Mexico</option>
                 <option value="Germany">Germany</option>
-              </select>
+                <option value="Antarctica">Antarctica</option>
+              </vee-field>
+              <ErrorMessage class="text-red-600" name="country" />
             </div>
             <!-- TOS -->
             <div class="mb-3 pl-6">
-              <input type="checkbox" class="w-4 h-4 float-left -ml-6 mt-1 rounded" />
+              <vee-field
+                name="tos"
+                type="checkbox"
+                value="1"
+                class="w-4 h-4 float-left -ml-6 mt-1 rounded"
+              />
               <label class="inline-block">Accept terms of service</label>
+              <ErrorMessage class="text-red-600" name="tos" />
             </div>
             <button
               type="submit"
@@ -150,7 +178,7 @@
             >
               Submit
             </button>
-          </form>
+          </vee-form>
         </div>
       </div>
     </div>
@@ -158,34 +186,34 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { storeToRefs } from 'pinia'
-import { object } from 'yup'
-import { useForm, useField } from 'vee-validate'
+// import { useForm, useField } from 'vee-validate'
 
 import { useStore } from '@/stores/index.js'
-import { accountValidate, passwordValidate } from '@/includes/validation.js'
 
 const { useModal } = useStore()
 const modalStore = useModal()
+const schema = reactive({
+  name: 'required|min:2|max:100|alpha_spaces',
+  email: 'required|min:3|max:100|email',
+  age: 'required|min_value:18|max_value:120',
+  password: 'required|min:9|max:100|excluded:password',
+  confirm_password: 'passwords_mismatch:@password',
+  country: 'required|country_excluded:Antarctica',
+  tos: 'tos'
+})
+
+const userData = reactive({
+  country: 'USA'
+})
 
 const { hiddenClass, isOpen } = storeToRefs(modalStore)
 const tab = ref('login')
 
-const validationSchema = object({
-  account: accountValidate,
-  password: passwordValidate
-})
-
-const { value: password } = useField('password')
-
-// useForm is a composition API function that marks the current component as a form
-const { handleSubmit, errors } = useForm(validationSchema)
-// const loginHandler = () => {
-//   handleSubmit(async (values) => {
-//     const loginRes = await loginHandler({})
-//   })
-// }
+const register = (values) => {
+  console.log(values)
+}
 </script>
 
 <style lang="scss" scoped></style>
