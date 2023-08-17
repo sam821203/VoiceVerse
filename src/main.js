@@ -6,7 +6,8 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-import VeeValidatePlugin from'./includes/validation'
+import VeeValidatePlugin from'./utils/validation'
+import './utils/firebase'
 
 const app = createApp(App)
 
