@@ -105,6 +105,8 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { auth, usersCollection } from '@/utils/firebase'
+import { mapWritableState, storeToRefs } from 'pinia'
+import useStore from '@/stores/index.js'
 
 const reg_in_submission = ref(false)
 const reg_show_alert = ref(false)
@@ -122,6 +124,10 @@ const schema = reactive({
 const userData = reactive({
   country: 'USA'
 })
+
+const { useUser } = useStore()
+const userStore = useUser()
+const { userLoggedIn } = storeToRefs(userStore)
 
 const register = async (values) => {
   // reset 變數
@@ -155,6 +161,8 @@ const register = async (values) => {
     reg_alert_msg.value = 'This account already exist.'
     return
   }
+
+  userLoggedIn.value = true
 
   // 成功時，修改變數
   reg_alert_variant.value = 'bg-green-500'
