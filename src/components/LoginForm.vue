@@ -43,6 +43,8 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useStore } from '@/stores/index.js'
+const { useUser } = useStore()
 
 const login_in_submission = ref(false)
 const login_show_alert = ref(false)
@@ -53,13 +55,23 @@ const loginSchema = reactive({
   password: 'required|min:6|max:100'
 })
 
-const login = (values) => {
+const login = async (values) => {
+  // reset 變數
   login_in_submission.value = true
   login_show_alert.value = true
-
-  // reset 變數
   login_alert_variant.value = 'bg-blue-500'
   login_alert_msg.value = 'Please wait! We are logging you in.'
+
+  const { authenticate } = useUser()
+
+  try {
+    await authenticate(values)
+  } catch (error) {
+    login_in_submission.value = false
+    login_alert_variant.value = 'bg-red-500'
+    login_alert_msg.value = 'Invalid login details.'
+    return
+  }
 
   // 成功時，修改變數
   login_alert_variant.value = 'bg-green-500'

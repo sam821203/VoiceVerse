@@ -104,9 +104,11 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { auth, usersCollection } from '@/utils/firebase'
-import { mapWritableState, storeToRefs } from 'pinia'
-import useStore from '@/stores/index.js'
+import { useStore } from '@/stores/index.js'
+const { useUser } = useStore()
+
+// action 可以直接從原 store 解構，從 storeToRefs(store) 解構反而會失去響應性
+const { createUser } = useUser()
 
 const reg_in_submission = ref(false)
 const reg_show_alert = ref(false)
@@ -125,10 +127,8 @@ const userData = reactive({
   country: 'USA'
 })
 
-const { useUser } = useStore()
-const userStore = useUser()
-const { userLoggedIn } = storeToRefs(userStore)
-
+// options API 的 mapActions 會返回一個對象
+// Composition API 可以直接解構出來並使用 action
 const register = async (values) => {
   // reset 變數
   reg_in_submission.value = true
@@ -136,38 +136,18 @@ const register = async (values) => {
   reg_alert_variant.value = 'bg-blue-500'
   reg_alert_msg.value = 'Please wait! Your account is being created.'
 
-  let userCred
-
   try {
-    // auth 方法會回傳一個 Promise 物件
-    userCred = await auth.createUserWithEmailAndPassword(values.email, values.password)
+    await createUser(values)
   } catch (error) {
     reg_in_submission.value = false
     reg_alert_variant.value = 'bg-red-500'
     reg_alert_msg.value = 'This account already exist.'
     return
   }
-
-  try {
-    await usersCollection.add({
-      name: values.name,
-      email: values.email,
-      age: values.age,
-      country: values.country
-    })
-  } catch (error) {
-    reg_in_submission.value = false
-    reg_alert_variant.value = 'bg-red-500'
-    reg_alert_msg.value = 'This account already exist.'
-    return
-  }
-
-  userLoggedIn.value = true
 
   // 成功時，修改變數
   reg_alert_variant.value = 'bg-green-500'
   reg_alert_msg.value = 'Success! Your account is being created.'
-  console.log(userCred)
 }
 </script>
 
