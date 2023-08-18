@@ -145,9 +145,12 @@ const register = async (values) => {
     return
   }
 
-  // 成功時，修改變數
+  // 註冊成功，成功狀態
   reg_alert_variant.value = 'bg-green-500'
   reg_alert_msg.value = 'Success! Your account is being created.'
+
+  // 註冊成功，重新整理頁面
+  window.location.reload()
 }
 </script>
 

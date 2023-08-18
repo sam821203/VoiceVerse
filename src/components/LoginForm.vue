@@ -76,6 +76,9 @@ const login = async (values) => {
   // 成功時，修改變數
   login_alert_variant.value = 'bg-green-500'
   login_alert_msg.value = 'Success! You are now logged in.'
+
+  // 登入成功，重新整理頁面
+  window.location.reload()
 }
 </script>
 
