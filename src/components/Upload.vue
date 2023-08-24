@@ -41,7 +41,7 @@
 
 <script name="Upload" setup>
 import { ref, reactive } from 'vue'
-import { storage } from '@/utils/firebase'
+import { storage, auth, songsCollection } from '@/utils/firebase'
 
 const is_dragover = ref(false)
 const uploads = reactive([])
@@ -84,7 +84,19 @@ const upload = ($event) => {
         uploads[uploadIndex].text_class = 'text-red-400'
         console.log(error.message)
       },
-      () => {
+      async () => {
+        const song = {
+          uid: auth.currentUser.uid,
+          display_name: auth.currentUser.displayName || 'Test',
+          original_name: task.snapshot.ref.name,
+          modified_name: task.snapshot.ref.name,
+          genre: '',
+          comment_count: 0
+        }
+
+        song.url = await task.snapshot.ref.getDownloadURL()
+        await songsCollection.add(song)
+
         uploads[uploadIndex].variant = 'bg-green-400'
         uploads[uploadIndex].icon = 'fas fa-check'
         uploads[uploadIndex].text_class = 'text-green-400'
