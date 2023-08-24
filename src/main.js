@@ -1,13 +1,13 @@
 import './assets/base.css'
 import './assets/main.css'
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-
 import App from './App.vue'
 import router from './router'
 import VeeValidatePlugin from'./utils/validation'
 import { auth } from './utils/firebase'
+
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 
 // 在初始化 App 前，先初始化 Firebase Auth
 // 每當 user's authentication 的狀態改變時，Firebase 就會觸發事件，比如登入和登出狀態
@@ -18,8 +18,8 @@ auth.onAuthStateChanged(() => {
   if (!app) {
     app = createApp(App)
 
-    app.use(createPinia())
     app.use(router)
+    app.use(createPinia())
     app.use(VeeValidatePlugin)
 
     app.mount('#app')
