@@ -19,6 +19,7 @@
       >
         <h5>Drop your files here</h5>
       </div>
+      <input type="file" multiple @change="upload($event)" />
       <hr class="my-6" />
       <!-- Progess Bars -->
       <div class="mb-4" v-for="upload in uploads" :key="upload.name">
@@ -39,16 +40,25 @@
   </div>
 </template>
 
-<script name="Upload" setup>
-import { ref, reactive } from 'vue'
+<script name="upload" setup>
+import { ref, reactive, onBeforeUnmount, toRefs } from 'vue'
 import { storage, auth, songsCollection } from '@/utils/firebase'
 
+const props = defineProps({
+  addSong: {
+    type: Function,
+    required: true
+  }
+})
+const { addSong } = toRefs(props)
 const is_dragover = ref(false)
 const uploads = reactive([])
 
 const upload = ($event) => {
   is_dragover.value = false
-  const files = [...$event.dataTransfer.files]
+
+  // dataTransfer 只有 drag & drop event 有
+  const files = $event.dataTransfer ? [...$event.dataTransfer.files] : [...$event.target.files]
 
   files.forEach((file) => {
     if (file.type !== 'audio/mpeg') return
@@ -95,7 +105,11 @@ const upload = ($event) => {
         }
 
         song.url = await task.snapshot.ref.getDownloadURL()
-        await songsCollection.add(song)
+        const songRef = await songsCollection.add(song)
+        const songSnapshot = await songRef.get()
+
+        // 一上傳檔案時，立即更新在頁面上的檔案
+        addSong.value(songSnapshot)
 
         uploads[uploadIndex].variant = 'bg-green-400'
         uploads[uploadIndex].icon = 'fas fa-check'
@@ -104,4 +118,16 @@ const upload = ($event) => {
     )
   })
 }
+
+onBeforeUnmount(() => {
+  uploads.forEach((upload) => upload.task.cancel())
+})
+
+// const cancelUploads = () => {
+//   uploads.forEach((upload) => upload.task.cancel())
+// }
+
+// defineExpose({
+//   cancelUploads
+// })
 </script>

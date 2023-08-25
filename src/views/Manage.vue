@@ -3,7 +3,7 @@
   <section class="container mx-auto mt-6">
     <div class="md:grid md:grid-cols-3 md:gap-4">
       <div class="col-span-1">
-        <app-upload />
+        <app-upload :addSong="addSong" />
       </div>
       <div class="col-span-2">
         <div class="bg-white rounded border border-gray-200 relative flex flex-col">
@@ -13,87 +13,14 @@
           </div>
           <div class="p-6">
             <!-- Composition Items -->
-            <div class="border border-gray-200 p-3 mb-4 rounded">
-              <div>
-                <h4 class="inline-block text-2xl font-bold">Song Name</h4>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right">
-                  <i class="fa fa-pencil-alt"></i>
-                </button>
-              </div>
-              <div>
-                <form>
-                  <div class="mb-3">
-                    <label class="inline-block mb-2">Song Title</label>
-                    <input
-                      type="text"
-                      class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                      placeholder="Enter Song Title"
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label class="inline-block mb-2">Genre</label>
-                    <input
-                      type="text"
-                      class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                      placeholder="Enter Genre"
-                    />
-                  </div>
-                  <button type="submit" class="py-1.5 px-3 rounded text-white bg-green-600">
-                    Submit
-                  </button>
-                  <button type="button" class="py-1.5 px-3 rounded text-white bg-gray-600">
-                    Go Back
-                  </button>
-                </form>
-              </div>
-            </div>
-            <div class="border border-gray-200 p-3 mb-4 rounded">
-              <div>
-                <h4 class="inline-block text-2xl font-bold">Song Name</h4>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right">
-                  <i class="fa fa-pencil-alt"></i>
-                </button>
-              </div>
-            </div>
-            <div class="border border-gray-200 p-3 mb-4 rounded">
-              <div>
-                <h4 class="inline-block text-2xl font-bold">Song Name</h4>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right">
-                  <i class="fa fa-pencil-alt"></i>
-                </button>
-              </div>
-            </div>
-            <div class="border border-gray-200 p-3 mb-4 rounded">
-              <div>
-                <h4 class="inline-block text-2xl font-bold">Song Name</h4>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right">
-                  <i class="fa fa-pencil-alt"></i>
-                </button>
-              </div>
-            </div>
-            <div class="border border-gray-200 p-3 mb-4 rounded">
-              <div>
-                <h4 class="inline-block text-2xl font-bold">Song Name</h4>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right">
-                  <i class="fa fa-pencil-alt"></i>
-                </button>
-              </div>
-            </div>
+            <composition-item
+              v-for="(song, i) in songs"
+              :key="song.docID"
+              :song="song"
+              :updateSong="updateSong"
+              :index="i"
+              :removeSong="removeSong"
+            />
           </div>
         </div>
       </div>
@@ -103,21 +30,48 @@
 
 <script name="manage" setup>
 // import { onBeforeRouteLeave } from 'vue-router'
-// import { storeToRefs } from 'pinia'
-// import { useStore } from '@/stores/index.js'
+import { reactive, onMounted } from 'vue'
 import AppUpload from '@/components/Upload.vue'
+import CompositionItem from '@/components/CompositionItem.vue'
+import { songsCollection, auth } from '@/utils/firebase'
 
-// const { useUser } = useStore()
-// const { userLoggedIn } = storeToRefs(useUser())
+const songs = reactive([])
+
+const fetchSongs = async () => {
+  const snapshot = await songsCollection.where('uid', '==', auth.currentUser.uid).get()
+
+  snapshot.forEach(addSong)
+}
+
+const updateSong = (i, values) => {
+  songs[i].modified_name = values.modified_name
+  songs[i].genre = values.genre
+}
+
+const removeSong = (i) => {
+  songs.splice(i, 1)
+}
+
+const addSong = (document) => {
+  const song = reactive({
+    ...document.data(),
+    docID: document.id
+  })
+
+  songs.push(song)
+}
+
+onMounted(() => {
+  fetchSongs()
+})
+
+// 需要在 setup 模板中先聲明變數，才會被 Vue 響應式系統追蹤
+// const upload = ref(null)
 
 // onBeforeRouteLeave((to, from, next) => {
-//   if (userLoggedIn.value) {
-//     console.log('login')
-//     next()
-//   } else {
-//     console.log('not login')
-//     next({ name: 'home' })
-//   }
+//   // 調用子組件函式
+//   upload.value.cancelUploads()
+//   next()
 // })
 </script>
 
