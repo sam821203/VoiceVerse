@@ -20,6 +20,7 @@
               :updateSong="updateSong"
               :index="i"
               :removeSong="removeSong"
+              :updateUnsavedFlag="updateUnsavedFlag"
             />
           </div>
         </div>
@@ -29,13 +30,14 @@
 </template>
 
 <script name="manage" setup>
-// import { onBeforeRouteLeave } from 'vue-router'
-import { reactive, onMounted } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
+import { ref, reactive, onMounted } from 'vue'
 import AppUpload from '@/components/Upload.vue'
 import CompositionItem from '@/components/CompositionItem.vue'
 import { songsCollection, auth } from '@/utils/firebase'
 
 const songs = reactive([])
+const unsavedFlag = ref(false)
 
 const fetchSongs = async () => {
   const snapshot = await songsCollection.where('uid', '==', auth.currentUser.uid).get()
@@ -61,8 +63,21 @@ const addSong = (document) => {
   songs.push(song)
 }
 
+const updateUnsavedFlag = (status) => {
+  unsavedFlag.value = status
+}
+
 onMounted(() => {
   fetchSongs()
+})
+
+onBeforeRouteLeave((to, from, next) => {
+  if (!unsavedFlag.value) {
+    next()
+  } else {
+    const leave = confirm('You have unsaved changes. Are you sure you want to leave?')
+    next(leave)
+  }
 })
 
 // 需要在 setup 模板中先聲明變數，才會被 Vue 響應式系統追蹤

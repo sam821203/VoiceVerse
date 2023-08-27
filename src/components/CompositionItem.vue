@@ -31,6 +31,7 @@
             type="text"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
             placeholder="Enter Song Title"
+            @input="updateUnsavedFlag(true)"
           />
           <ErrorMessage class="text-red-600" name="modified_name" />
         </div>
@@ -41,6 +42,7 @@
             type="text"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
             placeholder="Enter Genre"
+            @input="updateUnsavedFlag(true)"
           />
           <ErrorMessage class="text-red-600" name="genre" />
         </div>
@@ -86,13 +88,16 @@ const props = defineProps({
   removeSong: {
     type: Function,
     required: true
+  },
+  updateUnsavedFlag: {
+    type: Function
   }
 })
 const schema = reactive({
   modified_name: 'required|min:1|max:100',
   genre: 'alpha_spaces'
 })
-const { song, updateSong, index, removeSong } = toRefs(props)
+const { song, updateSong, index, removeSong, updateUnsavedFlag } = toRefs(props)
 const showForm = ref(false)
 const in_submission = ref(false)
 const show_alert = ref(false)
@@ -114,6 +119,8 @@ const edit = async (values) => {
     alert_message.value = 'Something went wrong! Try again later.'
     return
   }
+
+  updateUnsavedFlag.value(false)
 
   // 更新修改後的資料
   updateSong.value(index.value, values)
