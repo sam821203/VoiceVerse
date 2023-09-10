@@ -26,7 +26,7 @@
     <div class="bg-white rounded border border-gray-200 relative flex flex-col">
       <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
         <!-- Comment Count -->
-        <span class="card-title">Comments (15)</span>
+        <span class="card-title">Comments ({{ song.comment_count }})</span>
         <i class="fa fa-comments float-right text-green-400 text-2xl"></i>
       </div>
       <div class="p-6">
@@ -83,7 +83,7 @@
 </template>
 
 <script name="Song" setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { songsCollection, commentsCollection, auth } from '@/utils/firebase'
 import { useStore } from '@/stores/index.js'
@@ -147,6 +147,12 @@ const addComment = async (commentVal, { resetForm }) => {
 
   await commentsCollection.add(comment)
 
+  // 更新留言數量
+  song.value.comment_count += 1
+  await songsCollection.doc(route.params.id).update({
+    comment_count: song.value.comment_count
+  })
+
   getComments()
 
   comment_in_submission.value = false
@@ -154,12 +160,6 @@ const addComment = async (commentVal, { resetForm }) => {
   comment_alert_message.value = 'Comment added!'
   resetForm()
 }
-
-var numbers = [4, 2, 5, 1, 3]
-
-numbers.sort(function (a, b) {
-  return a - b
-})
 
 const getSongsCollection = async () => {
   const docSnapshot = await songsCollection.doc(route.params.id).get()
@@ -174,6 +174,30 @@ const getSongsCollection = async () => {
 }
 
 getSongsCollection()
+
+// onBeforeRouteLeave((to, from, next) => {
+//   next((vm) => {
+//     const { sortOrder } = vm.$route.query
+//     vm.sortOrder = sortOrder === '1' || sortOrder === '2' ? sortOrder : '1'
+//   })
+// })
+
+// 用於更新頁面上的狀態
+onMounted(() => {
+  // 每當觸發了 filter 後，route.query 裡才會有值
+  const { sortOrder: sort } = route.query
+  sortOrder.value = sort === '1' || sort === '2' ? sort : '1'
+})
+
+watch(sortOrder, (newVal) => {
+  if (newVal === route.query.sortOrder) return
+
+  router.push({
+    query: {
+      sortOrder: newVal
+    }
+  })
+})
 </script>
 
 <style lang="scss" scoped></style>
