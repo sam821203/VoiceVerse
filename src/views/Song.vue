@@ -10,8 +10,9 @@
       <button
         type="button"
         class="z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
+        @click.prevent="newSong(song)"
       >
-        <i class="fas fa-play"></i>
+        <i class="fas" :class="{ 'fa-play': !playing, 'fa-pause': playing }"></i>
       </button>
       <div class="z-50 text-left ml-8">
         <!-- Song Info -->
@@ -89,8 +90,10 @@ import { songsCollection, commentsCollection, auth } from '@/utils/firebase'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 
-const { useUser } = useStore()
+const { useUser, usePlayer } = useStore()
 const { userLoggedIn } = storeToRefs(useUser())
+const { playing } = storeToRefs(usePlayer())
+const { newSong, toggleAudio } = usePlayer()
 const route = useRoute()
 const router = useRouter()
 
@@ -140,7 +143,7 @@ const addComment = async (commentVal, { resetForm }) => {
     content: commentVal.comment,
     datePosted: new Date().toString(),
     sid: route.params.id,
-    // name: auth.currentUser.displayName,
+    name: auth.currentUser.displayName,
     name: 'displayName',
     uid: auth.currentUser.uid
   })
@@ -174,13 +177,6 @@ const getSongsCollection = async () => {
 }
 
 getSongsCollection()
-
-// onBeforeRouteLeave((to, from, next) => {
-//   next((vm) => {
-//     const { sortOrder } = vm.$route.query
-//     vm.sortOrder = sortOrder === '1' || sortOrder === '2' ? sortOrder : '1'
-//   })
-// })
 
 // 用於更新頁面上的狀態
 onMounted(() => {
