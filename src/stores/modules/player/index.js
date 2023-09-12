@@ -18,9 +18,7 @@ export const usePlayer = defineStore('player', {
         this.sound.unload()
       }
 
-      // 如果目前有曲目，
-      // if (this.current_song !== undefined)
-
+      // FIXME:上面 play 按鈕也能按
       this.current_song = song
 
       this.sound = new Howl({

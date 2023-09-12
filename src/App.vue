@@ -2,7 +2,11 @@
   <!-- Header -->
   <app-header />
 
-  <router-view></router-view>
+  <router-view v-slot="{ Component }">
+    <transition name="fade" mode="out-in">
+      <component :is="Component"></component>
+    </transition>
+  </router-view>
 
   <!-- 底下音樂播放進度條 -->
   <app-player />
@@ -29,3 +33,16 @@ if (auth.currentUser) {
   userLoggedIn.value = true
 }
 </script>
+
+<style>
+.fade-enter-from {
+  opacity: 0;
+}
+.fade-enter-active {
+  transition: all 0.3s linear;
+}
+.fade-leave-to {
+  opacity: 0;
+  transition: all 0.3s linear;
+}
+</style>

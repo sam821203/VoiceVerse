@@ -3,8 +3,10 @@ import './assets/main.css'
 
 import App from './App.vue'
 import router from './router'
-import VeeValidatePlugin from'./utils/validation'
+import VeeValidatePlugin from './utils/validation'
 import { auth } from './utils/firebase'
+import i18n from '@/utils/i18n'
+import Icon from '@/directives/icon'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -21,6 +23,8 @@ auth.onAuthStateChanged(() => {
     app.use(router)
     app.use(createPinia())
     app.use(VeeValidatePlugin)
+    app.use(i18n)
+    app.directive('icon', Icon)
 
     app.mount('#app')
   }
