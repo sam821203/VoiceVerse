@@ -3,6 +3,7 @@ import vueSetupExtend from 'vite-plugin-vue-setup-extend'
 
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+// import { visualizer } from 'rollup-plugin-visualizer'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
@@ -29,7 +30,8 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,jpg,}']
       }
-    })
+    }),
+    // visualizer({ open: true })
   ],
   resolve: {
     alias: {
