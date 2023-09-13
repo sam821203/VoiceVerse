@@ -62,7 +62,7 @@ const router = useRouter()
 const route = useRoute()
 
 // 使用 storeToRefs 創建響應式的值
-// ToFIXED: 為何一個要 () 執行，一個不用?
+// FIXME: 為何一個要 () 執行，一個不用?
 const { userLoggedIn } = storeToRefs(useUser())
 const { isOpen } = storeToRefs(modalStore)
 

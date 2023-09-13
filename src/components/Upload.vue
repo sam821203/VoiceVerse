@@ -61,7 +61,23 @@ const upload = ($event) => {
   const files = $event.dataTransfer ? [...$event.dataTransfer.files] : [...$event.target.files]
 
   files.forEach((file) => {
+    // 確認檔案類型
     if (file.type !== 'audio/mpeg') return
+
+    // 確認是否登入
+    if (!navigator.onLine) {
+      uploads.push({
+        task: {},
+        current_progress: 100,
+        name: file.name,
+        variant: 'bg-red-400',
+        icon: 'fas fa-times',
+        text_class: 'text-red-400'
+      })
+
+      return
+    }
+
     /*
     會顯示出 storageBucket 裡的 "voice-verse.appspot.com"
     這能告訴 firebase 要在哪裡上傳檔案
@@ -122,12 +138,4 @@ const upload = ($event) => {
 onBeforeUnmount(() => {
   uploads.forEach((upload) => upload.task.cancel())
 })
-
-// const cancelUploads = () => {
-//   uploads.forEach((upload) => upload.task.cancel())
-// }
-
-// defineExpose({
-//   cancelUploads
-// })
 </script>

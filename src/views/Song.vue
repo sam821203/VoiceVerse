@@ -30,7 +30,7 @@
         <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
           <!-- Comment Count -->
           <span class="card-title">{{
-            $tc('song.comment_count', song.comment_count, { count: song.comment_count })
+            $t('song.comment_count', song.comment_count, { count: song.comment_count })
           }}</span>
           <i class="fa fa-comments float-right text-green-400 text-2xl"></i>
         </div>
@@ -97,8 +97,7 @@ import { storeToRefs } from 'pinia'
 
 const { useUser, usePlayer } = useStore()
 const { userLoggedIn } = storeToRefs(useUser())
-const { playing } = storeToRefs(usePlayer())
-const { newSong, toggleAudio } = usePlayer()
+const { newSong } = usePlayer()
 const route = useRoute()
 const router = useRouter()
 
@@ -138,6 +137,20 @@ const getComments = async () => {
   })
 }
 
+const getSongsCollection = async () => {
+  const docSnapshot = await songsCollection.doc(route.params.id).get()
+
+  if (!docSnapshot.exists) {
+    router.push({ name: 'home' })
+    return
+  }
+
+  song.value = docSnapshot.data()
+  getComments()
+}
+
+getSongsCollection()
+
 const addComment = async (commentVal, { resetForm }) => {
   comment_in_submission.value = true
   comment_show_alert.value = true
@@ -169,20 +182,6 @@ const addComment = async (commentVal, { resetForm }) => {
   resetForm()
 }
 
-const getSongsCollection = async () => {
-  const docSnapshot = await songsCollection.doc(route.params.id).get()
-
-  if (!docSnapshot.exists) {
-    router.push({ name: 'home' })
-    return
-  }
-
-  song.value = docSnapshot.data()
-  getComments()
-}
-
-getSongsCollection()
-
 // 用於更新頁面上的狀態
 onMounted(() => {
   // 每當觸發了 filter 後，route.query 裡才會有值
@@ -190,15 +189,49 @@ onMounted(() => {
   sortOrder.value = sort === '1' || sort === '2' ? sort : '1'
 })
 
-watch(sortOrder, (newVal) => {
-  if (newVal === route.query.sortOrder) return
+watch([() => route.params.id, sortOrder], ([newId, newOrder], [oldId, oldOrder]) => {
+  // beforeRouteEnter 的替代方案
+  getSongsCollection()
 
-  router.push({
-    query: {
-      sortOrder: newVal
-    }
-  })
+  if (newOrder !== oldOrder) {
+    if (newOrder === route.query.sortOrder) return
+
+    router.push({
+      query: {
+        sortOrder: newOrder
+      }
+    })
+  }
 })
+</script>
+
+<script>
+// FIXME: 需要更動的地方太多，暫且用其他方式
+// composition API 已經刪除了 beforeRouterEnter，需要用 options API 的方式來寫
+/*
+參考文章1: https://blog.csdn.net/qq_17335549/article/details/127942181
+參考文章2: https://github.com/vuejs/rfcs/discussions/302
+*/
+// import { songsCollection } from '@/utils/firebase'
+// export default {
+//   beforeRouteEnter: function (to) {
+//     const getSongsCollection = async () => {
+//       const docSnapshot = await songsCollection.doc(route.params.id).get()
+
+//       if (!docSnapshot.exists) {
+//         router.push({ name: 'home' })
+//         return
+//       }
+
+//       song.value = docSnapshot.data()
+//       // getComments()
+//     }
+
+//     getSongsCollection()
+
+//     to.meta.data = data
+//   }
+// }
 </script>
 
 <style lang="scss" scoped></style>
