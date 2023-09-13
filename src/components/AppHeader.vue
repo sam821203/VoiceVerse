@@ -30,15 +30,24 @@
             </li>
           </template>
         </ul>
+        <ul class="ml-auto">
+          <li>
+            <a href="#" class="px-2 text-white" @click.prevent="changeLocale">{{
+              currentLocale
+            }}</a>
+          </li>
+        </ul>
       </div>
     </nav>
   </header>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 /*
 - 此步驟創建了名為 useModal 的存儲實例，使用了之前引入的 useStore 函數
@@ -47,6 +56,7 @@ import { useRouter, useRoute } from 'vue-router'
 */
 const { useModal, useUser } = useStore()
 const { signOut } = useUser()
+const { locale } = useI18n()
 const modalStore = useModal()
 const router = useRouter()
 const route = useRoute()
@@ -56,7 +66,10 @@ const route = useRoute()
 const { userLoggedIn } = storeToRefs(useUser())
 const { isOpen } = storeToRefs(modalStore)
 
+const currentLocale = computed(() => (locale.value === 'zhTw' ? '繁體中文' : 'English'))
+
 const toggleAuthModal = () => (isOpen.value = !isOpen.value)
+const changeLocale = () => (locale.value = locale.value === 'zhTw' ? 'en' : 'zhTw')
 
 const signingOut = () => {
   signOut()

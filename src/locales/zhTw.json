@@ -1,0 +1,18 @@
+{
+  "home": {
+    "listen": "聽好音樂!"
+  },
+  "song": {
+    "comment_count": "尚無評論 | 1 則評論 | {count} 則評論"
+  },
+  "manage": {
+    "my_songs": "我的曲目"
+  },
+  "components": {
+    "upload": "上傳"
+  },
+  "register": {
+    "accept": "我接受 {0}",
+    "tos": "各項條款"
+  }
+}
