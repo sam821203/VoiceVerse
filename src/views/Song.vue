@@ -2,10 +2,7 @@
   <main>
     <!-- Music Header -->
     <section class="w-full mb-8 py-14 text-center text-white relative">
-      <div
-        class="absolute inset-0 w-full h-full box-border bg-contain music-bg"
-        style="background-image: url(/assets/img/song-header.png)"
-      ></div>
+      <div class="absolute inset-0 w-full h-full box-border bg-contain music-bg bg-slate-400"></div>
       <div class="container mx-auto flex items-center">
         <!-- Play/Pause Button -->
         <button
@@ -125,7 +122,6 @@ const sortedComments = computed(() =>
 
 const getComments = async () => {
   const snapshots = await commentsCollection.where('sid', '==', route.params.id).get()
-
   // initiate
   comments.value = []
 
@@ -134,6 +130,7 @@ const getComments = async () => {
       docID: doc.id,
       ...doc.data()
     })
+    // console.log(comments.value)
   })
 }
 
@@ -146,6 +143,9 @@ const getSongsCollection = async () => {
   }
 
   song.value = docSnapshot.data()
+
+  console.log(song.value.comment_count)
+
   getComments()
 }
 
@@ -170,6 +170,7 @@ const addComment = async (commentVal, { resetForm }) => {
 
   // 更新留言數量
   song.value.comment_count += 1
+
   await songsCollection.doc(route.params.id).update({
     comment_count: song.value.comment_count
   })

@@ -1,7 +1,7 @@
 <template>
   <!-- Header -->
-  <header id="header" class="bg-gray-700">
-    <nav class="container mx-auto flex justify-start items-center py-5 px-4">
+  <header id="header" class="bg-gray-700 mx-auto">
+    <nav class="container mx-auto flex justify-start items-center py-5 px-4 max-w-6xl">
       <!-- App Name -->
       <router-link
         class="text-white font-bold uppercase text-2xl mr-4"

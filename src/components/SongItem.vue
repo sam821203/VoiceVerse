@@ -23,11 +23,19 @@
         </span>
       </router-link>
     </div>
+    <button @click.prevent="downloadSong">download</button>
+    <!-- <a
+      href="https://firebasestorage.googleapis.com/v0/b/voice-verse.appspot.com/o/songs%2Fsample-3s.mp3?alt=media&token=3b7d02e5-9fa0-4436-9915-94bbc7ea4eea"
+      download
+    >
+      <span>download</span>
+    </a> -->
   </li>
 </template>
 
 <script name="SongItem" setup>
 import { toRefs } from 'vue'
+import { storage } from '@/utils/firebase'
 
 const props = defineProps({
   song: {
@@ -37,6 +45,26 @@ const props = defineProps({
 })
 
 const { song } = toRefs(props)
+// const urls = reactive([])
+
+const downloadSong = async () => {
+  const storageRef = storage.ref()
+  const songRef = storageRef.child('songs/sample-3s.mp3')
+  const url = await songRef.getDownloadURL()
+
+  const xhr = new XMLHttpRequest()
+  xhr.responseType = 'blob'
+  xhr.onload = function () {
+    const blob = xhr.response
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = 'sample-3s.mp3'
+    link.click()
+    URL.revokeObjectURL(link.href)
+  }
+  xhr.open('GET', url)
+  xhr.send()
+}
 </script>
 
 <style lang="scss" scoped></style>

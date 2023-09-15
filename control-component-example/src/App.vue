@@ -15,7 +15,7 @@
               />
             </div>
             <div class="form-group">
-              <email-input v-model="newsletterEmail" />
+              <email-input v-model:email="newsletterEmail" />
               <!-- <email-input
                 :modelValue="newsletterName"
                 @update:modelValue="newsletterName = $event"
