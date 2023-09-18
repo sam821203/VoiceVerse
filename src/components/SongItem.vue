@@ -45,26 +45,58 @@ const props = defineProps({
 })
 
 const { song } = toRefs(props)
-// const urls = reactive([])
 
+// FIXME: 會有同源政策問題
 const downloadSong = async () => {
-  const storageRef = storage.ref()
-  const songRef = storageRef.child('songs/sample-3s.mp3')
-  const url = await songRef.getDownloadURL()
+  const storageRef = storage.ref('songs/sample-3s.mp3')
+  // const songRef = storageRef.child('songs/sample-3s.mp3')
 
+  storageRef.getDownloadURL().then((res) => {
+    console.log(url)
+  })
+
+  // converts url into a 'blob' via XMLHttpRequest()
   const xhr = new XMLHttpRequest()
   xhr.responseType = 'blob'
+
   xhr.onload = function () {
     const blob = xhr.response
     const link = document.createElement('a')
+
     link.href = URL.createObjectURL(blob)
     link.download = 'sample-3s.mp3'
     link.click()
+
     URL.revokeObjectURL(link.href)
   }
+
   xhr.open('GET', url)
   xhr.send()
 }
+
+// const downloadSong = async () => {
+//   const storageRef = storage.ref()
+//   const songRef = storageRef.child('songs/sample-3s.mp3')
+//   const url = await songRef.getDownloadURL()
+
+//   // converts url into a 'blob' via XMLHttpRequest()
+//   const xhr = new XMLHttpRequest()
+//   xhr.responseType = 'blob'
+
+//   xhr.onload = function () {
+//     const blob = xhr.response
+//     const link = document.createElement('a')
+
+//     link.href = URL.createObjectURL(blob)
+//     link.download = 'sample-3s.mp3'
+//     link.click()
+
+//     URL.revokeObjectURL(link.href)
+//   }
+
+//   xhr.open('GET', url)
+//   xhr.send()
+// }
 </script>
 
 <style lang="scss" scoped></style>
