@@ -23,7 +23,11 @@
         </span>
       </router-link>
     </div>
+    <audio controls>
+      <source :src="songUrl" ref="songUrl" type="audio/mp3" />
+    </audio>
     <button @click.prevent="downloadSong">download</button>
+
     <!-- <a
       href="https://firebasestorage.googleapis.com/v0/b/voice-verse.appspot.com/o/songs%2Fsample-3s.mp3?alt=media&token=3b7d02e5-9fa0-4436-9915-94bbc7ea4eea"
       download
@@ -45,26 +49,54 @@ const props = defineProps({
 })
 
 const { song } = toRefs(props)
-// const urls = reactive([])
 
+// FIXME: 將拿到的連結轉成 mp3 檔
 const downloadSong = async () => {
+  // Create a reference with an initial file path and name
   const storageRef = storage.ref()
   const songRef = storageRef.child('songs/sample-3s.mp3')
-  const url = await songRef.getDownloadURL()
 
-  const xhr = new XMLHttpRequest()
-  xhr.responseType = 'blob'
-  xhr.onload = function () {
-    const blob = xhr.response
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = 'sample-3s.mp3'
-    link.click()
-    URL.revokeObjectURL(link.href)
+  // Create a reference from a Google Cloud Storage URI
+  // const gsReference = ref(storage, 'gs://voice-verse/songs/sample-3s.mp3')
+
+  try {
+    // const downloadURL = await songRef.getDownloadURL()
+    // const blob = await getBlob(songRef)
+
+    console.log(blob)
+
+    // export declare function getBlob(ref: StorageReference, maxDownloadSizeBytes?: number): Promise<Blob>;
+    // export declare function getDownloadURL(ref: StorageReference): Promise<string>;
+
+    // const link = document.createElement('a')
+    // link.style.display = 'none'
+    // link.href = url
+    // link.download = 'sample-3s.mp3'
+    // document.body.appendChild(link)
+    // link.click()
+
+    // 释放URL对象，以避免内存泄漏
+    // window.URL.revokeObjectURL(url)
+
+    // let file = new File([blob], 'sample-3s.mp3', { type: 'audio/mp3' })
+
+    // 创建一个URL对象，以便在<a>标签中使用
+    // const objectURL = URL.createObjectURL(blob)
+    // const link = document.createElement('a')
+    // link.href = objectURL
+    // link.download = 'sample-3s.mp3'
+    // link.click()
+
+    // // 释放URL对象，以避免内存泄漏
+    // URL.revokeObjectURL(objectURL)
+  } catch (error) {
+    console.error('下载音频文件失败：', error)
   }
-  xhr.open('GET', url)
-  xhr.send()
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+audio {
+  display: none;
+}
+</style>
