@@ -50,6 +50,7 @@ const props = defineProps({
 
 const { song } = toRefs(props)
 
+<<<<<<< HEAD
 // FIXME: 將拿到的連結轉成 mp3 檔
 const downloadSong = async () => {
   // Create a reference with an initial file path and name
@@ -92,7 +93,59 @@ const downloadSong = async () => {
   } catch (error) {
     console.error('下载音频文件失败：', error)
   }
+=======
+// FIXME: 會有同源政策問題
+const downloadSong = async () => {
+  const storageRef = storage.ref('songs/sample-3s.mp3')
+  // const songRef = storageRef.child('songs/sample-3s.mp3')
+
+  storageRef.getDownloadURL().then((res) => {
+    console.log(url)
+  })
+
+  // converts url into a 'blob' via XMLHttpRequest()
+  const xhr = new XMLHttpRequest()
+  xhr.responseType = 'blob'
+
+  xhr.onload = function () {
+    const blob = xhr.response
+    const link = document.createElement('a')
+
+    link.href = URL.createObjectURL(blob)
+    link.download = 'sample-3s.mp3'
+    link.click()
+
+    URL.revokeObjectURL(link.href)
+  }
+
+  xhr.open('GET', url)
+  xhr.send()
+>>>>>>> b68d2b9cc0aea5fa38ef4f692c20f63bd8dd342c
 }
+
+// const downloadSong = async () => {
+//   const storageRef = storage.ref()
+//   const songRef = storageRef.child('songs/sample-3s.mp3')
+//   const url = await songRef.getDownloadURL()
+
+//   // converts url into a 'blob' via XMLHttpRequest()
+//   const xhr = new XMLHttpRequest()
+//   xhr.responseType = 'blob'
+
+//   xhr.onload = function () {
+//     const blob = xhr.response
+//     const link = document.createElement('a')
+
+//     link.href = URL.createObjectURL(blob)
+//     link.download = 'sample-3s.mp3'
+//     link.click()
+
+//     URL.revokeObjectURL(link.href)
+//   }
+
+//   xhr.open('GET', url)
+//   xhr.send()
+// }
 </script>
 
 <style lang="scss" scoped>
