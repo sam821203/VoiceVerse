@@ -39,6 +39,8 @@
 
 <script name="SongItem" setup>
 import { toRefs } from 'vue'
+// import { storage } from '@/utils/firebase'
+import { ref, getBlob } from 'firebase/storage'
 import { storage } from '@/utils/firebase'
 
 const props = defineProps({
@@ -50,77 +52,39 @@ const props = defineProps({
 
 const { song } = toRefs(props)
 
-<<<<<<< HEAD
 // FIXME: 將拿到的連結轉成 mp3 檔
 const downloadSong = async () => {
   // Create a reference with an initial file path and name
-  const storageRef = storage.ref()
-  const songRef = storageRef.child('songs/sample-3s.mp3')
+  // const storageRef = storage.ref()
+  // const songRef = storageRef.child('songs/sample-3s.mp3')
+  const songRef = ref(storage, 'songs/sample-3s.mp3')
 
-  // Create a reference from a Google Cloud Storage URI
-  // const gsReference = ref(storage, 'gs://voice-verse/songs/sample-3s.mp3')
+  // getBlob(songRef)
+  //   .then((blob) => {
+  //     console.log('blob: ', blob)
+  //   })
+  //   .catch((error) => {
+  //     console.log('error downloading file: ', error)
+  //   })
 
   try {
     // const downloadURL = await songRef.getDownloadURL()
-    // const blob = await getBlob(songRef)
-
-    console.log(blob)
-
-    // export declare function getBlob(ref: StorageReference, maxDownloadSizeBytes?: number): Promise<Blob>;
-    // export declare function getDownloadURL(ref: StorageReference): Promise<string>;
-
-    // const link = document.createElement('a')
-    // link.style.display = 'none'
-    // link.href = url
-    // link.download = 'sample-3s.mp3'
-    // document.body.appendChild(link)
-    // link.click()
-
-    // 释放URL对象，以避免内存泄漏
-    // window.URL.revokeObjectURL(url)
-
-    // let file = new File([blob], 'sample-3s.mp3', { type: 'audio/mp3' })
+    const blob = await getBlob(songRef)
 
     // 创建一个URL对象，以便在<a>标签中使用
-    // const objectURL = URL.createObjectURL(blob)
-    // const link = document.createElement('a')
-    // link.href = objectURL
-    // link.download = 'sample-3s.mp3'
-    // link.click()
+    const objectURL = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.style.display = 'none'
+    link.href = objectURL
+    link.download = 'sample-3s.mp3'
+    document.body.appendChild(link)
+    link.click()
 
-    // // 释放URL对象，以避免内存泄漏
-    // URL.revokeObjectURL(objectURL)
+    // 释放URL对象，以避免内存泄漏
+    URL.revokeObjectURL(objectURL)
   } catch (error) {
     console.error('下载音频文件失败：', error)
   }
-=======
-// FIXME: 會有同源政策問題
-const downloadSong = async () => {
-  const storageRef = storage.ref('songs/sample-3s.mp3')
-  // const songRef = storageRef.child('songs/sample-3s.mp3')
-
-  storageRef.getDownloadURL().then((res) => {
-    console.log(url)
-  })
-
-  // converts url into a 'blob' via XMLHttpRequest()
-  const xhr = new XMLHttpRequest()
-  xhr.responseType = 'blob'
-
-  xhr.onload = function () {
-    const blob = xhr.response
-    const link = document.createElement('a')
-
-    link.href = URL.createObjectURL(blob)
-    link.download = 'sample-3s.mp3'
-    link.click()
-
-    URL.revokeObjectURL(link.href)
-  }
-
-  xhr.open('GET', url)
-  xhr.send()
->>>>>>> b68d2b9cc0aea5fa38ef4f692c20f63bd8dd342c
 }
 
 // const downloadSong = async () => {

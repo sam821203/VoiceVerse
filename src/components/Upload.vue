@@ -42,7 +42,8 @@
 
 <script name="upload" setup>
 import { ref, reactive, onBeforeUnmount, toRefs } from 'vue'
-import { storage, auth, songsCollection } from '@/utils/firebase'
+import { storage, songsCollection } from '@/utils/firebase'
+import { authModular } from '@/utils/firebase'
 
 const props = defineProps({
   addSong: {
@@ -53,6 +54,7 @@ const props = defineProps({
 const { addSong } = toRefs(props)
 const is_dragover = ref(false)
 const uploads = reactive([])
+const currentUser = authModular.currentUser
 
 const upload = ($event) => {
   is_dragover.value = false
@@ -112,8 +114,8 @@ const upload = ($event) => {
       },
       async () => {
         const song = {
-          uid: auth.currentUser.uid,
-          display_name: auth.currentUser.displayName || 'Test',
+          uid: currentUser.uid,
+          display_name: currentUser.displayName || 'Test',
           original_name: task.snapshot.ref.name,
           modified_name: task.snapshot.ref.name,
           genre: '',

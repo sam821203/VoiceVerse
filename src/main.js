@@ -13,7 +13,9 @@ import i18n from '@/utils/i18n'
 import Icon from '@/directives/icon'
 import GlobalComponents from './utils/_globals'
 import progressBar from './utils/progress-bar'
-import { auth } from './utils/firebase'
+// import { auth } from './utils/firebase'
+import { onAuthStateChanged } from 'firebase/auth'
+import { authModular } from '@/utils/firebase'
 
 registerSW({ immediate: true })
 progressBar(router)
@@ -22,8 +24,9 @@ progressBar(router)
 // 每當 user's authentication 的狀態改變時，Firebase 就會觸發事件，比如登入和登出狀態
 // 會在 Firebase 載入完成後，至少跑一次，所以可以將 Vue instance 也放進來
 let app
+// const user = authModular.currentUser
 
-auth.onAuthStateChanged(() => {
+onAuthStateChanged(authModular, () => {
   if (!app) {
     app = createApp(App)
 
@@ -37,3 +40,18 @@ auth.onAuthStateChanged(() => {
     app.mount('#app')
   }
 })
+
+// auth.onAuthStateChanged(() => {
+//   if (!app) {
+//     app = createApp(App)
+
+//     app.use(router)
+//     app.use(createPinia())
+//     app.use(VeeValidatePlugin)
+//     app.use(i18n)
+//     app.use(GlobalComponents)
+//     app.directive('icon', Icon)
+
+//     app.mount('#app')
+//   }
+// })
