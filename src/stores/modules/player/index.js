@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { Howl } from 'howler'
-import { info } from 'autoprefixer'
+// import { info } from 'autoprefixer'
 import helper from '@/utils/helper'
 
 export const usePlayer = defineStore('player', {
@@ -23,9 +23,10 @@ export const usePlayer = defineStore('player', {
 
       this.sound = new Howl({
         src: [song.url],
-        html5: true
+        html5: true,
+        loop: true,
+        volume: 1
       })
-
       // 播放歌曲
       this.sound.play()
 
@@ -42,6 +43,13 @@ export const usePlayer = defineStore('player', {
         this.sound.pause()
       } else {
         this.sound.play()
+      }
+    },
+    async setSoundVolume(event) {
+      if (!this.sound.playing) return
+
+      if (this.sound.playing()) {
+        this.sound.volume(event.target.value)
       }
     },
     progress() {

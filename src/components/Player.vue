@@ -5,19 +5,12 @@
       <span class="song-title font-bold">{{ current_song.modified_name }}</span> by
       <span class="song-artist">{{ current_song.displayName }}</span>
     </div>
-    <div class="flex flex-nowrap gap-4 items-center">
-      <!-- Play/Pause Button -->
-      <button type="button" @click.prevent="toggleAudio">
-        <i
-          class="fa text-gray-500 text-xl"
-          :class="{ 'fa-play': !playing, 'fa-pause': playing }"
-        ></i>
-      </button>
+    <div class="gap-4 items-center">
       <!-- Current Position -->
       <div class="player-currenttime">{{ seek }}</div>
       <!-- Scrub Container  -->
       <div
-        class="w-full h-2 rounded bg-gray-200 relative cursor-pointer"
+        class="w-full h-1 rounded bg-gray-200 relative cursor-pointer"
         @click.prevent="updateSeek"
       >
         <!-- Player Ball -->
@@ -25,16 +18,26 @@
           class="absolute -top-2.5 -ml-2.5 text-gray-800 text-lg"
           :style="{ left: playerProgress }"
         >
-          <i class="fas fa-circle"></i>
+          <i class="fa fa-circle fa-sm" style="color: #f4c30f"></i>
         </span>
         <!-- Player Progress Bar-->
         <span
-          class="block h-2 rounded bg-gradient-to-r from-green-500 to-green-400"
+          class="block h-1 rounded bg-gradient-to-r from-yellow-400 to-yellow-300"
           :style="{ width: playerProgress }"
         ></span>
       </div>
-      <!-- Duration -->
-      <div class="player-duration">{{ duration }}</div>
+      <!-- Play/Pause Button -->
+      <button
+        class="bg-white text-slate-900 transition-all duration-500 dark:bg-slate-100 transition-all duration-500 dark:text-slate-700 flex-none -my-2 mx-auto w-16 h-16 rounded-full ring-1 ring-slate-900/5 shadow-md flex items-center justify-center"
+        type="button"
+        @click.prevent="toggleAudio"
+      >
+        <i
+          class="fa text-gray-500 text-xl"
+          :class="{ 'fa-play': !playing, 'fa-pause': playing }"
+        ></i>
+      </button>
+      <input type="range" value="1" @input="setSoundVolume($event)" min="0" max="1" step="0.01" />
     </div>
     <div
       class="bg-slate-50 text-slate-500 transition-all duration-500 dark:bg-slate-600 transition-all duration-500 dark:text-slate-200 rounded-b-xl flex items-center"
@@ -154,8 +157,13 @@ import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 
 const { usePlayer } = useStore()
-const { toggleAudio, updateSeek } = usePlayer()
+const { toggleAudio, updateSeek, setSoundVolume } = usePlayer()
 const { playing, seek, duration, playerProgress, current_song } = storeToRefs(usePlayer())
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.fa-circle {
+  background-color: white;
+  border-radius: 50%;
+}
+</style>

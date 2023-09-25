@@ -33,6 +33,9 @@ const dbModular = getFirestore(firebaseApp)
 const storage = getStorage()
 
 // 使 firebase 能夠存放 database 的資料到使用者端的瀏覽器上
+db.enablePersistence().catch((error) => {
+  console.log(`Firebase persistence error: ${error.code}`)
+})
 // setPersistence(auth, browserSessionPersistence)
 //   .then(() => {
 //     // Existing and future Auth states are now persisted in the current session only. Closing the window would clear any existing state even if a user forgets to sign out.
