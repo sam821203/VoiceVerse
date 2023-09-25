@@ -72,13 +72,13 @@
         <input
           type="search"
           id="search-dropdown"
-          class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:border-l-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-yellow-500"
+          class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 focus:ring-cyan-500 focus:border-cyan-500 dark:bg-gray-700 dark:border-l-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-cyan-500"
           placeholder="Search Songs..."
           required
         />
         <button
           type="submit"
-          class="absolute top-0 right-0 flex justify-center items-center p-2.5 text-sm font-medium w-24 h-full text-white bg-yellow-300 rounded-r-lg border border-yellow-400 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-400 dark:bg-yellow-700 dark:hover:bg-yellow-800 dark:focus:ring-yellow-900"
+          class="absolute top-0 right-0 flex justify-center items-center p-2.5 text-sm font-medium w-24 h-full text-white bg-cyan-400 rounded-r-lg border border-cyan-400 hover:bg-cyan-500 focus:ring-4 focus:outline-none focus:ring-cyan-500 dark:bg-cyan-700 dark:hover:bg-cyan-800 dark:focus:ring-cyan-900"
         >
           <svg
             class="w-4 h-4"

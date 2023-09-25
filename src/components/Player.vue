@@ -1,169 +1,166 @@
 <template>
-  <div class="fixed bottom-0 left-0 bg-white px-4 py-2 w-full">
-    <!-- Track Info -->
-    <div class="text-center" v-if="current_song.modified_name">
-      <span class="song-title font-bold">{{ current_song.modified_name }}</span> by
-      <span class="song-artist">{{ current_song.displayName }}</span>
-    </div>
-    <div class="gap-4 items-center">
-      <!-- Current Position -->
-      <div class="player-currenttime">{{ seek }}</div>
-      <!-- Scrub Container  -->
-      <div
-        class="w-full h-1 rounded bg-gray-200 relative cursor-pointer"
-        @click.prevent="updateSeek"
-      >
-        <!-- Player Ball -->
-        <span
-          class="absolute -top-2.5 -ml-2.5 text-gray-800 text-lg"
-          :style="{ left: playerProgress }"
-        >
-          <i class="fa fa-circle fa-sm" style="color: #f4c30f"></i>
-        </span>
-        <!-- Player Progress Bar-->
-        <span
-          class="block h-1 rounded bg-gradient-to-r from-yellow-400 to-yellow-300"
-          :style="{ width: playerProgress }"
-        ></span>
+  <div class="fixed bottom-0 left-0 bg-white px-8 py-2 w-full h-20 shadow-2xl">
+    <div class="flex justify-between items-center h-full">
+      <!-- Basic Info -->
+      <div class="flex w-3/12">
+        <div class="mr-4 overflow-hidden" style="width: 50px; height: 50px">
+          <img
+            src="https://imgv3.fotor.com/images/videoImage/wonderland-girl-generated-by-Fotor-ai-art-generator_2023-05-15-104543_ibow.jpg"
+            alt=""
+            class="w-full h-full rounded-md object-cover"
+          />
+        </div>
+        <div v-if="current_song.modified_name">
+          <h6 class="song-title font-bold">{{ current_song.modified_name }}</h6>
+          <p class="song-artist">{{ current_song.displayName }}</p>
+        </div>
       </div>
-      <!-- Play/Pause Button -->
-      <button
-        class="bg-white text-slate-900 transition-all duration-500 dark:bg-slate-100 transition-all duration-500 dark:text-slate-700 flex-none -my-2 mx-auto w-16 h-16 rounded-full ring-1 ring-slate-900/5 shadow-md flex items-center justify-center"
-        type="button"
-        @click.prevent="toggleAudio"
-      >
-        <i
-          class="fa text-gray-500 text-xl"
-          :class="{ 'fa-play': !playing, 'fa-pause': playing }"
-        ></i>
-      </button>
-      <input type="range" value="1" @input="setSoundVolume($event)" min="0" max="1" step="0.01" />
-    </div>
-    <div
-      class="bg-slate-50 text-slate-500 transition-all duration-500 dark:bg-slate-600 transition-all duration-500 dark:text-slate-200 rounded-b-xl flex items-center"
-    >
-      <div class="flex-auto flex items-center justify-evenly">
-        <button type="button" aria-label="Add to favorites">
-          <svg width="24" height="24">
-            <path
-              d="M7 6.931C7 5.865 7.853 5 8.905 5h6.19C16.147 5 17 5.865 17 6.931V19l-5-4-5 4V6.931Z"
-              fill="currentColor"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-          </svg>
-        </button>
-        <button type="button" class="hidden sm:block lg:hidden xl:block" aria-label="Previous">
-          <svg width="24" height="24" fill="none">
-            <path
-              d="m10 12 8-6v12l-8-6Z"
-              fill="currentColor"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-            <path
-              d="M6 6v12"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-          </svg>
-        </button>
-        <button type="button" aria-label="Rewind 10 seconds">
-          <svg width="24" height="24" fill="none">
-            <path
-              d="M6.492 16.95c2.861 2.733 7.5 2.733 10.362 0 2.861-2.734 2.861-7.166 0-9.9-2.862-2.733-7.501-2.733-10.362 0A7.096 7.096 0 0 0 5.5 8.226"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-            <path
-              d="M5 5v3.111c0 .491.398.889.889.889H9"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-          </svg>
-        </button>
-      </div>
-      <button
-        type="button"
-        class="bg-white text-slate-900 transition-all duration-500 dark:bg-slate-100 transition-all duration-500 dark:text-slate-700 flex-none -my-2 mx-auto w-20 h-20 rounded-full ring-1 ring-slate-900/5 shadow-md flex items-center justify-center"
-        aria-label="Pause"
-      >
-        <svg width="30" height="32" fill="currentColor">
-          <rect x="6" y="4" width="4" height="24" rx="2"></rect>
-          <rect x="20" y="4" width="4" height="24" rx="2"></rect>
-        </svg>
-      </button>
-      <div class="flex-auto flex items-center justify-evenly">
-        <button type="button" aria-label="Skip 10 seconds" class="">
-          <svg width="24" height="24" fill="none">
-            <path
-              d="M17.509 16.95c-2.862 2.733-7.501 2.733-10.363 0-2.861-2.734-2.861-7.166 0-9.9 2.862-2.733 7.501-2.733 10.363 0 .38.365.711.759.991 1.176"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-            <path
-              d="M19 5v3.111c0 .491-.398.889-.889.889H15"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-          </svg>
-        </button>
-        <button type="button" class="hidden sm:block lg:hidden xl:block" aria-label="Next">
-          <svg width="24" height="24" fill="none">
-            <path
-              d="M14 12 6 6v12l8-6Z"
-              fill="currentColor"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-            <path
-              d="M18 6v12"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-          </svg>
-        </button>
+      <!-- Player -->
+      <div class="flex justify-around w-1/12">
+        <div class="flex items-center justify-center">
+          <button type="button" class="hidden sm:block lg:hidden xl:block" aria-label="Previous">
+            <i class="fas fa-fast-backward"></i>
+          </button>
+        </div>
+        <!-- Play/Pause Button -->
         <button
+          class="bg-cyan-400 text-slate-900 transition-all duration-500 dark:bg-slate-100 transition-all duration-500 dark:text-slate-700 -my-2 w-12 h-12 rounded-full ring-1 ring-slate-900/5 shadow-md"
           type="button"
-          class="rounded-lg text-xs leading-6 font-semibold px-2 ring-2 ring-inset ring-slate-500 text-slate-500 transition-all duration-500 dark:text-slate-100 transition-all duration-500 dark:ring-0 transition-all duration-500 dark:bg-slate-500"
+          @click.prevent="toggleAudio"
         >
-          1x
+          <i
+            class="fa text-white text-lg"
+            :class="{ 'fa-play': !playing, 'fa-pause': playing }"
+          ></i>
         </button>
+        <div class="flex items-center justify-center">
+          <button type="button" aria-label="Skip 10 seconds" class="">
+            <i class="fas fa-fast-forward"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center w-8/12 gap-2">
+        <!-- Current Position -->
+        <div class="text-center w-1/12">{{ seek }}</div>
+
+        <!-- Scrub Container  -->
+        <div
+          class="w-9/12 h-1 rounded bg-gray-200 relative cursor-pointer"
+          @click.prevent="updateSeek"
+        >
+          <!-- Player Ball -->
+          <span
+            class="absolute -top-3 -ml-2.5 text-gray-800 text-lg"
+            :style="{ left: playerProgress }"
+          >
+            <i class="fa fa-circle fa-sm ripple" style="color: rgb(6, 182, 212)"></i>
+          </span>
+          <!-- Player Progress Bar-->
+          <span
+            class="block h-1 rounded bg-gradient-to-r from-cyan-400 to-cyan-400"
+            :style="{ width: playerProgress }"
+          ></span>
+        </div>
+        <!-- Song Duration -->
+        <div class="text-center w-1/12">{{ duration }}</div>
+
+        <div class="flex justify-between items-center w-2/12">
+          <i
+            class="fas w-1/4 cursor-pointer"
+            :class="{
+              'fa-volume-up': volumeValue !== '0%',
+              'fa-volume-off': volumeValue === '0%'
+            }"
+            @click.prevent="volumeOff($event)"
+          ></i>
+          <input
+            class="w-3/4 input-range"
+            type="range"
+            value="1"
+            @input="setSoundVolume($event)"
+            min="0"
+            max="1"
+            step="0.01"
+            :style="{ background: volumeBackground }"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script name="Player" setup>
+import { computed, watch } from 'vue'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 
 const { usePlayer } = useStore()
-const { toggleAudio, updateSeek, setSoundVolume } = usePlayer()
-const { playing, seek, duration, playerProgress, current_song } = storeToRefs(usePlayer())
+const { toggleAudio, updateSeek, setSoundVolume, volumeOff } = usePlayer()
+const { playing, seek, duration, playerProgress, current_song, volumeValue, inputVolumeValue } =
+  storeToRefs(usePlayer())
+
+const volumeBackground = computed(
+  () =>
+    `linear-gradient(to right, rgb(6, 182, 212) ${volumeValue.value}, rgb(204, 204, 204) ${volumeValue.value})`
+)
+
+watch(inputVolumeValue, (newX) => {
+  console.log(`x is ${newX}`)
+})
 </script>
 
 <style lang="scss" scoped>
 .fa-circle {
   background-color: white;
   border-radius: 50%;
+}
+.input-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  cursor: pointer;
+  outline: none;
+  border-radius: 15px;
+  height: 4px;
+  background: #ccc;
+}
+
+.input-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 15px;
+  width: 15px;
+  background-color: $bg-white;
+  border-radius: 50%;
+  border: 2px solid $bg-cyan-400;
+  transition: 0.2s ease-in-out;
+}
+
+.input-range::-moz-range-thumb {
+  height: 15px;
+  width: 15px;
+  background-color: $bg-cyan-400;
+  border-radius: 50%;
+  border: none;
+  transition: 0.2s ease-in-out;
+}
+.input-range::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 10px rgba(6, 182, 212, 0.1);
+}
+.input-range:active::-webkit-slider-thumb {
+  box-shadow: 0 0 0 13px rgba(6, 182, 212, 0.2);
+}
+.input-range:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 13px rgba(6, 182, 212, 0.2);
+}
+.input-range::-moz-range-thumb:hover {
+  box-shadow: 0 0 0 10px rgba(6, 182, 212, 0.1);
+}
+.input-range:active::-moz-range-thumb {
+  box-shadow: 0 0 0 13px rgba(6, 182, 212, 0.2);
+}
+.input-range:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 13px rgba(6, 182, 212, 0.2);
 }
 </style>

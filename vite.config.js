@@ -30,12 +30,19 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,jpg,}']
       }
-    }),
+    })
     // visualizer({ open: true })
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@/assets/utils/_variable.scss";`
+      }
     }
   }
 })

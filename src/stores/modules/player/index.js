@@ -7,9 +7,11 @@ export const usePlayer = defineStore('player', {
   state: () => ({
     current_song: {},
     sound: {},
-    seek: '00:00',
-    duration: '00:00',
-    playerProgress: '0%'
+    seek: '-:--',
+    duration: '-:--',
+    playerProgress: '0%',
+    inputVolumeValue: '1',
+    volumeValue: '100%'
   }),
   actions: {
     async newSong(song) {
@@ -47,10 +49,15 @@ export const usePlayer = defineStore('player', {
     },
     async setSoundVolume(event) {
       if (!this.sound.playing) return
-
       if (this.sound.playing()) {
         this.sound.volume(event.target.value)
+        this.volumeValue = `${(event.target.value / 1) * 100}%`
       }
+    },
+    volumeOff(event) {
+      this.sound.volume(0)
+      this.volumeValue = '0%'
+      event.target.nextSibling.value = '0'
     },
     progress() {
       this.seek = helper.formatTime(this.sound.seek())

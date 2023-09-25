@@ -36,7 +36,7 @@ if (currentUser) {
 }
 </script>
 
-<style>
+<style lang="scss">
 .fade-enter-from {
   opacity: 0;
 }
