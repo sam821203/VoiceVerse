@@ -34,7 +34,7 @@ import { onBeforeRouteLeave } from 'vue-router'
 import { ref, reactive, onMounted } from 'vue'
 import AppUpload from '@/components/Upload.vue'
 import CompositionItem from '@/components/CompositionItem.vue'
-import { songsCollection, auth } from '@/utils/firebase'
+import { auth, songsCollection } from '@/utils/firebase'
 
 const songs = reactive([])
 const unsavedFlag = ref(false)

@@ -75,6 +75,7 @@
 <script name="Home" setup>
 import { ref, reactive, onBeforeUnmount } from 'vue'
 import { songsCollection } from '@/utils/firebase'
+// import { query, orderBy, limit, startAt, getDocs, doc } from 'firebase/firestore'
 import AppSongItem from '@/components/SongItem.vue'
 import vIconSecondary from '@/directives/icon-secondary'
 
@@ -102,12 +103,33 @@ const getSongs = async () => {
 
   if (songs.length) {
     const lastDocument = await songsCollection.doc(songs[songs.length - 1].docID).get()
+    // const lastDocument = await doc(songsCollection, songs[songs.length - 1].docID)
+
+    // 建立查詢
+    // const querySongs = query(
+    //   songsCollection,
+    //   orderBy('modified_name'),
+    //   startAt(lastDocument),
+    //   limit(perPageSongsMax.value)
+    // )
+
+    // 執行查詢
+    // snapshots = await getDocs(querySongs)
+
     snapshots = await songsCollection
       .orderBy('modified_name')
       .startAfter(lastDocument)
       .limit(perPageSongsMax.value)
       .get()
   } else {
+    // const querySongs = query(
+    //   songsCollection,
+    //   orderBy('modified_name'),
+    //   limit(perPageSongsMax.value)
+    // )
+
+    // snapshots = await getDocs(querySongs)
+
     snapshots = await songsCollection.orderBy('modified_name').limit(perPageSongsMax.value).get()
   }
 

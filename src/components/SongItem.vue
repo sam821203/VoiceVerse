@@ -39,7 +39,6 @@
 
 <script name="SongItem" setup>
 import { toRefs } from 'vue'
-// import { storage } from '@/utils/firebase'
 import { ref, getBlob } from 'firebase/storage'
 import { storage } from '@/utils/firebase'
 
@@ -52,64 +51,27 @@ const props = defineProps({
 
 const { song } = toRefs(props)
 
-// FIXME: 將拿到的連結轉成 mp3 檔
 const downloadSong = async () => {
-  // Create a reference with an initial file path and name
-  // const storageRef = storage.ref()
-  // const songRef = storageRef.child('songs/sample-3s.mp3')
-  const songRef = ref(storage, 'songs/sample-3s.mp3')
-
-  // getBlob(songRef)
-  //   .then((blob) => {
-  //     console.log('blob: ', blob)
-  //   })
-  //   .catch((error) => {
-  //     console.log('error downloading file: ', error)
-  //   })
-
   try {
-    // const downloadURL = await songRef.getDownloadURL()
+    // Create a reference with an initial file path and name
+    const targetSong = song.value.modified_name
+    const songRef = ref(storage, `songs/${targetSong}`)
     const blob = await getBlob(songRef)
-
-    // 创建一个URL对象，以便在<a>标签中使用
     const objectURL = URL.createObjectURL(blob)
+
+    // 創建一個 URL 對象，以便在 <a> 標籤中使用
     const link = document.createElement('a')
     link.style.display = 'none'
     link.href = objectURL
-    link.download = 'sample-3s.mp3'
-    document.body.appendChild(link)
+    link.download = targetSong
     link.click()
 
-    // 释放URL对象，以避免内存泄漏
+    // 釋放 URL 對象，以避免內存泄露
     URL.revokeObjectURL(objectURL)
   } catch (error) {
-    console.error('下载音频文件失败：', error)
+    console.error('下載音頻失敗：', error)
   }
 }
-
-// const downloadSong = async () => {
-//   const storageRef = storage.ref()
-//   const songRef = storageRef.child('songs/sample-3s.mp3')
-//   const url = await songRef.getDownloadURL()
-
-//   // converts url into a 'blob' via XMLHttpRequest()
-//   const xhr = new XMLHttpRequest()
-//   xhr.responseType = 'blob'
-
-//   xhr.onload = function () {
-//     const blob = xhr.response
-//     const link = document.createElement('a')
-
-//     link.href = URL.createObjectURL(blob)
-//     link.download = 'sample-3s.mp3'
-//     link.click()
-
-//     URL.revokeObjectURL(link.href)
-//   }
-
-//   xhr.open('GET', url)
-//   xhr.send()
-// }
 </script>
 
 <style lang="scss" scoped>

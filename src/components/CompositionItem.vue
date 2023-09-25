@@ -131,8 +131,7 @@ const edit = async (values) => {
 }
 
 const deleteSong = async () => {
-  const storageRef = storage.ref()
-  const songRef = storageRef.child(`songs/${song.value.original_name}`)
+  const songRef = ref(storage, `songs/${song.value.original_name}`)
 
   await songRef.delete()
   await songsCollection.doc(song.value.docID).delete()

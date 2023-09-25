@@ -43,7 +43,7 @@
 <script name="upload" setup>
 import { ref, reactive, onBeforeUnmount, toRefs } from 'vue'
 import { storage, songsCollection } from '@/utils/firebase'
-import { authModular } from '@/utils/firebase'
+import { auth } from '@/utils/firebase'
 
 const props = defineProps({
   addSong: {
@@ -54,7 +54,7 @@ const props = defineProps({
 const { addSong } = toRefs(props)
 const is_dragover = ref(false)
 const uploads = reactive([])
-const currentUser = authModular.currentUser
+const currentUser = auth.currentUser
 
 const upload = ($event) => {
   is_dragover.value = false
@@ -85,8 +85,7 @@ const upload = ($event) => {
     這能告訴 firebase 要在哪裡上傳檔案
     如果是 .ref('songs')，就會是 "voice-verse.appspot.com/songs" 資料夾
     */
-    const storageRef = storage.ref()
-    const songsRef = storageRef.child(`songs/${file.name}`)
+    const songsRef = ref(storage, `songs/${file.name}`)
     const task = songsRef.put(file)
 
     // -1 來矯正 length 出來的數值

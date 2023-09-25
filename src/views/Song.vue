@@ -88,7 +88,8 @@
 <script name="Song" setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { songsCollection, commentsCollection, auth } from '@/utils/firebase'
+import { auth, songsCollection, commentsCollection, dbModular } from '@/utils/firebase'
+// import { query, where, doc, getDocs } from 'firebase/firestore'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 
@@ -122,6 +123,8 @@ const sortedComments = computed(() =>
 
 const getComments = async () => {
   const snapshots = await commentsCollection.where('sid', '==', route.params.id).get()
+  // const snapshots = await query(commentsCollection, where('sid', '==', route.params.id))
+
   // initiate
   comments.value = []
 
@@ -130,12 +133,13 @@ const getComments = async () => {
       docID: doc.id,
       ...doc.data()
     })
-    // console.log(comments.value)
   })
 }
 
 const getSongsCollection = async () => {
   const docSnapshot = await songsCollection.doc(route.params.id).get()
+  // const songsDocRef = doc(dbModular, 'songs', route.params.id)
+  // const docSnapshot = await getDocs(songsDocRef)
 
   if (!docSnapshot.exists) {
     router.push({ name: 'home' })
@@ -143,9 +147,6 @@ const getSongsCollection = async () => {
   }
 
   song.value = docSnapshot.data()
-
-  console.log(song.value.comment_count)
-
   getComments()
 }
 
@@ -170,6 +171,9 @@ const addComment = async (commentVal, { resetForm }) => {
 
   // 更新留言數量
   song.value.comment_count += 1
+
+  const songsDocRef = doc(dbModular, 'songs', route.params.id)
+  const docSnapshot = await getDocs(songsDocRef)
 
   await songsCollection.doc(route.params.id).update({
     comment_count: song.value.comment_count

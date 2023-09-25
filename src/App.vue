@@ -21,7 +21,7 @@ import AppPlayer from '@/components/Player.vue'
 
 import { useStore } from '@/stores/index.js'
 // import { auth } from '@/utils/firebase'
-import { authModular } from '@/utils/firebase'
+import { auth } from '@/utils/firebase'
 import { storeToRefs } from 'pinia'
 
 // store 的實體要到 useStore() 被呼叫的時候才會建立，實體化之後，就可以存取定義在 state、getters 和 actions 中的屬性
@@ -29,7 +29,7 @@ import { storeToRefs } from 'pinia'
 // 如果想使用解構，需要將 store 實例傳入 storeToRefs(storeInstance) 再來解構
 const { useUser } = useStore()
 const { userLoggedIn } = storeToRefs(useUser())
-const currentUser = authModular.currentUser
+const currentUser = auth.currentUser
 
 if (currentUser) {
   userLoggedIn.value = true
