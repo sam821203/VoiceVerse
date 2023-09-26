@@ -81,7 +81,7 @@
         <ErrorMessage class="text-red-600" name="country" />
       </div>
       <!-- TOS -->
-      <div class="mb-3 pl-6">
+      <div class="mb-8 pl-6">
         <vee-field
           name="tos"
           type="checkbox"
@@ -95,7 +95,7 @@
       </div>
       <button
         type="submit"
-        class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
+        class="block w-full bg-cyan-500 text-white py-3 px-3 rounded transition hover:bg-cyan-600"
         :disabled="reg_in_submission"
       >
         Submit
@@ -144,6 +144,7 @@ const register = async (values) => {
     reg_in_submission.value = false
     reg_alert_variant.value = 'bg-red-500'
     reg_alert_msg.value = 'This account already exist.'
+    console.error(error)
     return
   }
 

@@ -43,6 +43,7 @@
 <script name="upload" setup>
 import { ref, reactive, onBeforeUnmount, toRefs } from 'vue'
 import { storage, songsCollection } from '@/utils/firebase'
+import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { auth } from '@/utils/firebase'
 
 const props = defineProps({
@@ -58,7 +59,6 @@ const currentUser = auth.currentUser
 
 const upload = ($event) => {
   is_dragover.value = false
-
   // dataTransfer 只有 drag & drop event 有
   const files = $event.dataTransfer ? [...$event.dataTransfer.files] : [...$event.target.files]
 
@@ -69,7 +69,7 @@ const upload = ($event) => {
     // 確認是否登入
     if (!navigator.onLine) {
       uploads.push({
-        task: {},
+        uploadTask: {},
         current_progress: 100,
         name: file.name,
         variant: 'bg-red-400',
@@ -85,13 +85,13 @@ const upload = ($event) => {
     這能告訴 firebase 要在哪裡上傳檔案
     如果是 .ref('songs')，就會是 "voice-verse.appspot.com/songs" 資料夾
     */
-    const songsRef = ref(storage, `songs/${file.name}`)
-    const task = songsRef.put(file)
+    const songsRef = storageRef(storage, `songs/${file.name}`)
+    const uploadTask = uploadBytesResumable(songsRef, file)
 
     // -1 來矯正 length 出來的數值
     const uploadIndex =
       uploads.push({
-        task,
+        uploadTask,
         current_progress: 0,
         name: file.name,
         variant: 'bg-blue-400',
@@ -99,7 +99,7 @@ const upload = ($event) => {
         text_class: ''
       }) - 1
 
-    task.on(
+    uploadTask.on(
       'stage_change',
       (snapshot) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
@@ -114,14 +114,14 @@ const upload = ($event) => {
       async () => {
         const song = {
           uid: currentUser.uid,
-          display_name: currentUser.displayName || 'Test',
-          original_name: task.snapshot.ref.name,
-          modified_name: task.snapshot.ref.name,
+          display_name: currentUser.displayName || 'Anonymous',
+          original_name: uploadTask.snapshot.ref.name,
+          modified_name: uploadTask.snapshot.ref.name,
           genre: '',
           comment_count: 0
         }
 
-        song.url = await task.snapshot.ref.getDownloadURL()
+        song.url = await getDownloadURL(uploadTask.snapshot.ref)
         const songRef = await songsCollection.add(song)
         const songSnapshot = await songRef.get()
 

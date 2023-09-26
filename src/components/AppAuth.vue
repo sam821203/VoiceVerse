@@ -15,7 +15,7 @@
         class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
       >
         <!-- Add margin if you want to see some of the overlay behind the modal-->
-        <div class="py-4 text-left px-6">
+        <div class="pt-8 pb-10 text-left px-6">
           <!--Title-->
           <div class="flex justify-between items-center pb-4">
             <p class="text-2xl font-bold">Your Account</p>
@@ -33,8 +33,8 @@
                 href="#"
                 @click.prevent="tab = 'login'"
                 :class="{
-                  'hover:text-white text-white bg-blue-600': tab === 'login',
-                  'hover:text-blue-600': tab === 'register'
+                  'hover:text-white text-white bg-cyan-700': tab === 'login',
+                  'hover:text-cyan-800': tab === 'register'
                 }"
                 >Login</a
               >
@@ -45,8 +45,8 @@
                 href="#"
                 @click.prevent="tab = 'register'"
                 :class="{
-                  'hover:text-white text-white bg-blue-600': tab === 'register',
-                  'hover:text-blue-600': tab === 'login'
+                  'hover:text-white text-white bg-cyan-700': tab === 'register',
+                  'hover:text-cyan-800': tab === 'login'
                 }"
                 >Register</a
               >

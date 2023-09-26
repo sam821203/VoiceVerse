@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile
+} from 'firebase/auth'
 import { auth, usersCollection } from '@/utils/firebase'
 
 export const useUser = defineStore('user', {
@@ -8,7 +13,6 @@ export const useUser = defineStore('user', {
   }),
   actions: {
     async createUser(values) {
-      // auth 方法會回傳一個 Promise 物件
       const userCred = await createUserWithEmailAndPassword(auth, values.email, values.password)
 
       await usersCollection.doc(userCred.user.uid).set({
@@ -18,7 +22,7 @@ export const useUser = defineStore('user', {
         country: values.country
       })
 
-      await userCred.user.updateProfile({
+      await updateProfile(userCred.user, {
         displayName: values.name
       })
 

@@ -20,7 +20,7 @@
         <ErrorMessage class="text-red-600" name="email" />
       </div>
       <!-- Password -->
-      <div class="mb-3">
+      <div class="mb-8">
         <label class="inline-block mb-2">Password</label>
         <vee-field
           name="password"
@@ -32,7 +32,7 @@
       </div>
       <button
         type="submit"
-        class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
+        class="block w-full bg-cyan-500 text-white py-3 px-3 rounded transition hover:bg-cyan-600"
         :disabled="login_in_submission"
       >
         Submit
