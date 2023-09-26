@@ -11,7 +11,7 @@
         </div>
         <div v-if="current_song.modified_name">
           <h6 class="song-title font-bold">{{ current_song.modified_name }}</h6>
-          <p class="song-artist">{{ current_song.displayName }}</p>
+          <p class="song-artist">{{ current_song.display_name }}</p>
         </div>
       </div>
       <div class="flex flex-wrap justify-between items-center w-2/4 gap-2">

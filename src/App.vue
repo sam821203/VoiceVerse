@@ -1,6 +1,5 @@
 <template>
-  <!-- Header -->
-  <app-header />
+  <AppHeader />
 
   <router-view v-slot="{ Component }">
     <transition name="fade" mode="out-in">
@@ -9,18 +8,20 @@
   </router-view>
 
   <!-- 底下音樂播放進度條 -->
-  <app-player />
+  <AppPlayer />
 
-  <app-auth />
+  <!-- 彈跳視窗 -->
+  <AuthModal />
+  <UploadModal />
 </template>
 
 <script setup>
 import AppHeader from '@/components/AppHeader.vue'
-import AppAuth from '@/components/AppAuth.vue'
+import AuthModal from '@/components/modal/AuthModal.vue'
+import UploadModal from '@/components/modal/UploadModal.vue'
 import AppPlayer from '@/components/Player.vue'
 
 import { useStore } from '@/stores/index.js'
-// import { auth } from '@/utils/firebase'
 import { auth } from '@/utils/firebase'
 import { storeToRefs } from 'pinia'
 

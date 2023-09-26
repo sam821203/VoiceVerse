@@ -27,13 +27,6 @@
       <source :src="songUrl" ref="songUrl" type="audio/mp3" />
     </audio>
     <button @click.prevent="downloadSong">download</button>
-
-    <!-- <a
-      href="https://firebasestorage.googleapis.com/v0/b/voice-verse.appspot.com/o/songs%2Fsample-3s.mp3?alt=media&token=3b7d02e5-9fa0-4436-9915-94bbc7ea4eea"
-      download
-    >
-      <span>download</span>
-    </a> -->
   </li>
 </template>
 

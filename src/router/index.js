@@ -5,7 +5,7 @@ import { useStore } from '@/stores/index.js'
 
 const Home = () => import('@/views/Home.vue')
 const About = () => import('@/views/About.vue')
-const Manage = () => import('@/views/Manage.vue')
+const Profile = () => import('@/views/Profile.vue')
 const Song = () => import('@/views/Song.vue')
 
 const routes = [
@@ -20,16 +20,16 @@ const routes = [
     component: About
   },
   {
-    name: 'manage',
-    // alias: '/manage',
-    path: '/manage-music',
-    component: Manage,
+    name: 'profile',
+    // alias: '/profile',
+    path: '/profile',
+    component: Profile,
     meta: { requiresAuth: true }
   },
   {
     // redirect from old path to new path
     path: '/manage',
-    redirect: { name: 'manage' }
+    redirect: { name: 'profile' }
   },
   {
     name: 'song',
@@ -50,7 +50,7 @@ const router = createRouter({
   */
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  linkExactActiveClass: 'text-yellow-500'
+  linkExactActiveClass: 'text-cyan-500'
 })
 
 router.beforeEach((to, from, next) => {

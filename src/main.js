@@ -11,9 +11,8 @@ import router from './router'
 import VeeValidatePlugin from './utils/validation'
 import i18n from '@/utils/i18n'
 import Icon from '@/directives/icon'
-import GlobalComponents from './utils/_globals'
+import GlobalBase from './utils/_globalBase'
 import progressBar from './utils/progress-bar'
-// import { auth } from './utils/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/utils/firebase'
 
@@ -33,7 +32,7 @@ onAuthStateChanged(auth, () => {
     app.use(createPinia())
     app.use(VeeValidatePlugin)
     app.use(i18n)
-    app.use(GlobalComponents)
+    app.use(GlobalBase)
     app.directive('icon', Icon)
 
     app.mount('#app')

@@ -1,7 +1,7 @@
 <template>
   <!-- Header -->
   <header id="header" class="bg-zinc-100 border-b border-zinc-300 mx-auto">
-    <nav class="container mx-auto flex justify-start items-center py-5 px-4 max-w-6xl">
+    <nav class="container mx-auto max-w-6xl flex justify-start items-center py-5 px-4">
       <!-- App Name -->
       <router-link
         class="text-black font-bold uppercase text-2xl mr-4"
@@ -10,12 +10,12 @@
         >Music</router-link
       >
       <div class="flex flex-grow items-center">
-        <!-- Primary Navigation -->
         <ul class="flex flex-row mt-1">
           <li>
-            <router-link class="px-2 text-black" :to="{ name: 'about' }">About</router-link>
+            <router-link class="px-2 text-black" :to="{ name: 'about' }">{{
+              $t('header.about')
+            }}</router-link>
           </li>
-          <!-- Navigation Links -->
           <li v-if="!userLoggedIn">
             <a class="px-2 text-black" href="#" @click.prevent="toggleAuthModal"
               >Login / Register</a
@@ -23,16 +23,25 @@
           </li>
           <template v-else>
             <li>
-              <router-link class="px-2 text-black" :to="{ name: 'manage' }">Manage</router-link>
+              <router-link class="px-2 text-black" :to="{ name: 'profile' }">{{
+                $t('header.profile')
+              }}</router-link>
             </li>
             <li>
-              <a class="px-2 text-black" href="#" @click.prevent="signingOut">Logout</a>
+              <a href="#" class="pl-4 text-black" @click.prevent="toggleUploadModal">{{
+                $t('header.upload')
+              }}</a>
+            </li>
+            <li>
+              <a class="px-2 text-black" href="#" @click.prevent="signingOut">{{
+                $t('header.logout')
+              }}</a>
             </li>
           </template>
         </ul>
-        <ul class="ml-auto">
+        <ul class="flex ml-auto">
           <li>
-            <a href="#" class="px-2 text-black" @click.prevent="changeLocale">{{
+            <a href="#" class="pl-4 text-black" @click.prevent="changeLocale">{{
               currentLocale
             }}</a>
           </li>
@@ -64,11 +73,12 @@ const route = useRoute()
 // 使用 storeToRefs 創建響應式的值
 // FIXME: 為何一個要 () 執行，一個不用?
 const { userLoggedIn } = storeToRefs(useUser())
-const { isOpen } = storeToRefs(modalStore)
+const { isOpen, uploadModalOpen } = storeToRefs(modalStore)
 
 const currentLocale = computed(() => (locale.value === 'zhTw' ? '繁體中文' : 'English'))
 
 const toggleAuthModal = () => (isOpen.value = !isOpen.value)
+const toggleUploadModal = () => (uploadModalOpen.value = !uploadModalOpen.value)
 const changeLocale = () => (locale.value = locale.value === 'zhTw' ? 'en' : 'zhTw')
 
 const signingOut = () => {
