@@ -10,7 +10,6 @@ export const usePlayer = defineStore('player', {
     seek: '-:--',
     duration: '-:--',
     playerProgress: '0%',
-    inputVolumeValue: '1',
     volumeValue: '100%'
   }),
   actions: {
@@ -26,7 +25,7 @@ export const usePlayer = defineStore('player', {
       this.sound = new Howl({
         src: [song.url],
         html5: true,
-        loop: true,
+        // loop: true,
         volume: 1
       })
       // 播放歌曲
@@ -63,9 +62,29 @@ export const usePlayer = defineStore('player', {
       this.seek = helper.formatTime(this.sound.seek())
       this.duration = helper.formatTime(this.sound.duration())
       this.playerProgress = `${(this.sound.seek() / this.sound.duration()) * 100}%`
-
       if (this.sound.playing()) {
         requestAnimationFrame(this.progress)
+      }
+    },
+    fastSeek(move) {
+      let currentMove
+      const currentSeek = this.sound.seek()
+
+      if (move === 'backward') {
+        currentMove = currentSeek - 5
+      } else if (move === 'forward') {
+        currentMove = currentSeek + 5
+      }
+
+      if (
+        this.sound.seek(currentMove) <= 5 ||
+        this.sound.seek(currentMove) >= this.sound.duration()
+      ) {
+        this.seek = helper.formatTime(this.sound.seek(0))
+        this.playerProgress = '0%'
+      } else {
+        this.seek = helper.formatTime(currentSeek)
+        this.playerProgress = `${(currentSeek / this.sound.duration()) * 100}%`
       }
     },
     updateSeek(event) {

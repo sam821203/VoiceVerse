@@ -1,8 +1,7 @@
 <template>
-  <div class="fixed bottom-0 left-0 bg-white px-8 py-2 w-full h-20 shadow-2xl">
+  <div class="fixed bottom-0 left-0 bg-white px-8 pt-2 pb-1 w-full h-24 shadow-2xl">
     <div class="flex justify-between items-center h-full">
-      <!-- Basic Info -->
-      <div class="flex w-3/12">
+      <div class="flex w-1/4">
         <div class="mr-4 overflow-hidden" style="width: 50px; height: 50px">
           <img
             src="https://imgv3.fotor.com/images/videoImage/wonderland-girl-generated-by-Fotor-ai-art-generator_2023-05-15-104543_ibow.jpg"
@@ -15,59 +14,60 @@
           <p class="song-artist">{{ current_song.displayName }}</p>
         </div>
       </div>
-      <!-- Player -->
-      <div class="flex justify-around w-1/12">
-        <div class="flex items-center justify-center">
-          <button type="button" class="hidden sm:block lg:hidden xl:block" aria-label="Previous">
+      <div class="flex flex-wrap justify-between items-center w-2/4 gap-2">
+        <!-- Player -->
+        <div class="flex justify-center items-center w-full">
+          <!-- backward -->
+          <button @click.prevent="fastSeek('backward')">
             <i class="fas fa-fast-backward"></i>
           </button>
-        </div>
-        <!-- Play/Pause Button -->
-        <button
-          class="bg-cyan-400 text-slate-900 transition-all duration-500 dark:bg-slate-100 transition-all duration-500 dark:text-slate-700 -my-2 w-12 h-12 rounded-full ring-1 ring-slate-900/5 shadow-md"
-          type="button"
-          @click.prevent="toggleAudio"
-        >
-          <i
-            class="fa text-white text-lg"
-            :class="{ 'fa-play': !playing, 'fa-pause': playing }"
-          ></i>
-        </button>
-        <div class="flex items-center justify-center">
-          <button type="button" aria-label="Skip 10 seconds" class="">
+          <!-- Play/Pause Button -->
+          <button
+            class="bg-cyan-500 text-slate-900 transition-all duration-500 dark:bg-slate-100 transition-all duration-500 dark:text-slate-700 -my-2 w-12 h-12 mx-4 rounded-full ring-1 ring-slate-900/5 shadow-md"
+            type="button"
+            @click.prevent="toggleAudio"
+          >
+            <i
+              class="fa text-white text-lg"
+              :class="{ 'fa-play': !playing, 'fa-pause': playing }"
+            ></i>
+          </button>
+          <!-- forward -->
+          <button @click.prevent="fastSeek('forward')">
             <i class="fas fa-fast-forward"></i>
           </button>
         </div>
-      </div>
 
-      <div class="flex justify-between items-center w-8/12 gap-2">
-        <!-- Current Position -->
-        <div class="text-center w-1/12">{{ seek }}</div>
-
-        <!-- Scrub Container  -->
-        <div
-          class="w-9/12 h-1 rounded bg-gray-200 relative cursor-pointer"
-          @click.prevent="updateSeek"
-        >
-          <!-- Player Ball -->
-          <span
-            class="absolute -top-3 -ml-2.5 text-gray-800 text-lg"
-            :style="{ left: playerProgress }"
+        <div class="flex justify-between items-center w-full align-middle">
+          <!-- Current Position -->
+          <div class="text-center w-1/12">{{ seek }}</div>
+          <!-- Scrub Container  -->
+          <div
+            class="w-10/12 h-1 rounded bg-gray-200 relative cursor-pointer"
+            @click.prevent="updateSeek"
           >
-            <i class="fa fa-circle fa-sm ripple" style="color: rgb(6, 182, 212)"></i>
-          </span>
-          <!-- Player Progress Bar-->
-          <span
-            class="block h-1 rounded bg-gradient-to-r from-cyan-400 to-cyan-400"
-            :style="{ width: playerProgress }"
-          ></span>
+            <!-- Player Ball -->
+            <span
+              class="absolute -top-3 -ml-2.5 text-gray-800 text-lg"
+              :style="{ left: playerProgress }"
+            >
+              <i class="fa fa-circle fa-sm ripple" style="color: rgb(6, 182, 212)"></i>
+            </span>
+            <!-- Player Progress Bar-->
+            <span
+              class="block h-1 rounded bg-gradient-to-r from-cyan-400 to-cyan-400"
+              :style="{ width: playerProgress }"
+            ></span>
+          </div>
+          <!-- Song Duration -->
+          <div class="text-center w-1/12">{{ duration }}</div>
         </div>
-        <!-- Song Duration -->
-        <div class="text-center w-1/12">{{ duration }}</div>
-
-        <div class="flex justify-between items-center w-2/12">
+      </div>
+      <div class="flex justify-end items-center w-1/4">
+        <div class="w-3/6"></div>
+        <div class="flex justify-center items-center w-3/6">
           <i
-            class="fas w-1/4 cursor-pointer"
+            class="fas cursor-pointer mr-2"
             :class="{
               'fa-volume-up': volumeValue !== '0%',
               'fa-volume-off': volumeValue === '0%'
@@ -75,7 +75,7 @@
             @click.prevent="volumeOff($event)"
           ></i>
           <input
-            class="w-3/4 input-range"
+            class="input-range"
             type="range"
             value="1"
             @input="setSoundVolume($event)"
@@ -91,23 +91,20 @@
 </template>
 
 <script name="Player" setup>
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 
 const { usePlayer } = useStore()
-const { toggleAudio, updateSeek, setSoundVolume, volumeOff } = usePlayer()
-const { playing, seek, duration, playerProgress, current_song, volumeValue, inputVolumeValue } =
-  storeToRefs(usePlayer())
+const { toggleAudio, updateSeek, setSoundVolume, volumeOff, fastSeek } = usePlayer()
+const { playing, seek, duration, playerProgress, current_song, volumeValue } = storeToRefs(
+  usePlayer()
+)
 
 const volumeBackground = computed(
   () =>
     `linear-gradient(to right, rgb(6, 182, 212) ${volumeValue.value}, rgb(204, 204, 204) ${volumeValue.value})`
 )
-
-watch(inputVolumeValue, (newX) => {
-  console.log(`x is ${newX}`)
-})
 </script>
 
 <style lang="scss" scoped>
@@ -119,6 +116,7 @@ watch(inputVolumeValue, (newX) => {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
+  max-width: 120px;
   cursor: pointer;
   outline: none;
   border-radius: 15px;
@@ -133,14 +131,14 @@ watch(inputVolumeValue, (newX) => {
   width: 15px;
   background-color: $bg-white;
   border-radius: 50%;
-  border: 2px solid $bg-cyan-400;
+  border: 2px solid $bg-cyan-500;
   transition: 0.2s ease-in-out;
 }
 
 .input-range::-moz-range-thumb {
   height: 15px;
   width: 15px;
-  background-color: $bg-cyan-400;
+  background-color: $bg-cyan-500;
   border-radius: 50%;
   border: none;
   transition: 0.2s ease-in-out;

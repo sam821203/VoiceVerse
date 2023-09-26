@@ -78,7 +78,7 @@
         />
         <button
           type="submit"
-          class="absolute top-0 right-0 flex justify-center items-center p-2.5 text-sm font-medium w-24 h-full text-white bg-cyan-400 rounded-r-lg border border-cyan-400 hover:bg-cyan-500 focus:ring-4 focus:outline-none focus:ring-cyan-500 dark:bg-cyan-700 dark:hover:bg-cyan-800 dark:focus:ring-cyan-900"
+          class="absolute top-0 right-0 flex justify-center items-center p-2.5 text-sm font-medium w-24 h-full text-white bg-cyan-500 rounded-r-lg border border-cyan-500 hover:bg-cyan-600 focus:ring-4 focus:outline-none focus:ring-cyan-600 dark:bg-cyan-700 dark:hover:bg-cyan-800 dark:focus:ring-cyan-900"
         >
           <svg
             class="w-4 h-4"
