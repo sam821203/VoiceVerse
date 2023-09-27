@@ -26,7 +26,7 @@
     <audio controls>
       <source :src="songUrl" ref="songUrl" type="audio/mp3" />
     </audio>
-    <button @click.prevent="downloadSong">download</button>
+    <button @click.prevent="downloadSong()">download</button>
   </li>
 </template>
 
@@ -47,7 +47,7 @@ const { song } = toRefs(props)
 const downloadSong = async () => {
   try {
     // Create a reference with an initial file path and name
-    const targetSong = song.value.modified_name
+    const targetSong = song.value.original_name
     const songRef = ref(storage, `songs/${targetSong}`)
     const blob = await getBlob(songRef)
     const objectURL = URL.createObjectURL(blob)
@@ -56,7 +56,7 @@ const downloadSong = async () => {
     const link = document.createElement('a')
     link.style.display = 'none'
     link.href = objectURL
-    link.download = targetSong
+    link.download = song.value.modified_name
     link.click()
 
     // 釋放 URL 對象，以避免內存泄露

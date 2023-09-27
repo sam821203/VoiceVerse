@@ -49,8 +49,8 @@ const router = createRouter({
   BASE_URL: 可以在 vite.config.js 裡做修改
   */
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
-  linkExactActiveClass: 'text-cyan-500'
+  routes
+  // linkExactActiveClass: 'text-cyan-500'
 })
 
 router.beforeEach((to, from, next) => {

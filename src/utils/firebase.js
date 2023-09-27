@@ -50,9 +50,19 @@ db.enablePersistence().catch((error) => {
 const usersCollection = db.collection('users')
 const songsCollection = db.collection('songs')
 const commentsCollection = db.collection('comments')
+const avatarsCollection = db.collection('avatars')
 
 // const usersCollection = collection(dbModular, 'users')
 // const songsCollection = collection(dbModular, 'songs')
 // const commentsCollection = collection(dbModular, 'comments')
 
-export { auth, db, dbModular, usersCollection, songsCollection, commentsCollection, storage }
+export {
+  auth,
+  db,
+  dbModular,
+  usersCollection,
+  songsCollection,
+  commentsCollection,
+  avatarsCollection,
+  storage
+}

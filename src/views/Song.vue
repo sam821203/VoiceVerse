@@ -89,7 +89,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { auth, songsCollection, commentsCollection, dbModular } from '@/utils/firebase'
-// import { query, where, doc, getDocs } from 'firebase/firestore'
+import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 
@@ -122,13 +122,13 @@ const sortedComments = computed(() =>
 )
 
 const getComments = async () => {
-  const snapshots = await commentsCollection.where('sid', '==', route.params.id).get()
-  // const snapshots = await query(commentsCollection, where('sid', '==', route.params.id))
+  const q = query(collection(dbModular, 'comments'), where('sid', '==', route.params.id))
+  const querySnapshot = await getDocs(q)
 
   // initiate
   comments.value = []
 
-  snapshots.forEach((doc) => {
+  querySnapshot.forEach((doc) => {
     comments.value.push({
       docID: doc.id,
       ...doc.data()
@@ -137,11 +137,10 @@ const getComments = async () => {
 }
 
 const getSongsCollection = async () => {
-  const docSnapshot = await songsCollection.doc(route.params.id).get()
-  // const songsDocRef = doc(dbModular, 'songs', route.params.id)
-  // const docSnapshot = await getDocs(songsDocRef)
+  const songsDocRef = doc(dbModular, 'songs', route.params.id)
+  const docSnapshot = await getDoc(songsDocRef)
 
-  if (!docSnapshot.exists) {
+  if (!docSnapshot.exists()) {
     router.push({ name: 'home' })
     return
   }
@@ -163,7 +162,6 @@ const addComment = async (commentVal, { resetForm }) => {
     datePosted: new Date().toString(),
     sid: route.params.id,
     name: auth.currentUser.displayName,
-    name: 'displayName',
     uid: auth.currentUser.uid
   })
 
@@ -172,10 +170,9 @@ const addComment = async (commentVal, { resetForm }) => {
   // 更新留言數量
   song.value.comment_count += 1
 
-  const songsDocRef = doc(dbModular, 'songs', route.params.id)
-  const docSnapshot = await getDocs(songsDocRef)
+  const songRef = doc(dbModular, 'songs', route.params.id)
 
-  await songsCollection.doc(route.params.id).update({
+  await updateDoc(songRef, {
     comment_count: song.value.comment_count
   })
 
@@ -196,7 +193,7 @@ onMounted(() => {
 
 watch([() => route.params.id, sortOrder], ([newId, newOrder], [oldId, oldOrder]) => {
   // beforeRouteEnter 的替代方案
-  getSongsCollection()
+  // getSongsCollection()
 
   if (newOrder !== oldOrder) {
     if (newOrder === route.query.sortOrder) return

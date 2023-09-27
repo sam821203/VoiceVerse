@@ -1,8 +1,8 @@
 <template>
-  <div class="fixed bottom-0 left-0 bg-white px-8 pt-2 pb-1 w-full h-24 shadow-2xl">
-    <div class="flex justify-between items-center h-full">
+  <div class="fixed bottom-0 left-0 bg-white px-8 pt-2 w-full h-24 shadow-2xl">
+    <div class="flex justify-between items-center mx-auto max-w-screen-2xl h-full">
       <div class="flex w-1/4">
-        <div class="mr-4 overflow-hidden" style="width: 50px; height: 50px">
+        <div class="mr-4 overflow-hidden" style="width: 60px; height: 60px">
           <img
             src="https://imgv3.fotor.com/images/videoImage/wonderland-girl-generated-by-Fotor-ai-art-generator_2023-05-15-104543_ibow.jpg"
             alt=""

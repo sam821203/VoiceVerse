@@ -1,7 +1,7 @@
 <template>
   <!-- Header -->
   <header id="header" class="bg-zinc-100 border-b border-zinc-300 mx-auto">
-    <nav class="container mx-auto max-w-6xl flex justify-start items-center py-5 px-4">
+    <nav class="container mx-auto max-w-screen-2xl flex justify-start items-center py-5 px-4">
       <!-- App Name -->
       <router-link
         class="text-black font-bold uppercase text-2xl mr-4"
@@ -9,7 +9,7 @@
         exact-active-class="no-active"
         >Music</router-link
       >
-      <div class="flex flex-grow items-center">
+      <div class="flex flex-grow justify-between items-center">
         <ul class="flex flex-row mt-1">
           <li>
             <router-link class="px-2 text-black" :to="{ name: 'about' }">{{
@@ -28,7 +28,7 @@
               }}</router-link>
             </li>
             <li>
-              <a href="#" class="pl-4 text-black" @click.prevent="toggleUploadModal">{{
+              <a href="#" class="text-black" @click.prevent="toggleUploadModal">{{
                 $t('header.upload')
               }}</a>
             </li>
@@ -39,11 +39,20 @@
             </li>
           </template>
         </ul>
-        <ul class="flex ml-auto">
-          <li>
-            <a href="#" class="pl-4 text-black" @click.prevent="changeLocale">{{
-              currentLocale
-            }}</a>
+        <ul class="flex justify-between gap-2">
+          <li
+            class="flex justify-end items-center p-1 border bg-cyan-500 border-cyan-500 rounded-full"
+          >
+            <div class="w-24 py-1 text-center">
+              <a href="#" class="text-white" @click.prevent="toggleUploadModal">{{
+                $t('header.upload')
+              }}</a>
+            </div>
+          </li>
+          <li class="flex justify-end items-center p-1">
+            <div class="w-20 text-center">
+              <a href="#" class="text-black" @click.prevent="changeLocale">{{ currentLocale }}</a>
+            </div>
           </li>
         </ul>
       </div>
@@ -75,7 +84,7 @@ const route = useRoute()
 const { userLoggedIn } = storeToRefs(useUser())
 const { isOpen, uploadModalOpen } = storeToRefs(modalStore)
 
-const currentLocale = computed(() => (locale.value === 'zhTw' ? '繁體中文' : 'English'))
+const currentLocale = computed(() => (locale.value === 'zhTw' ? '繁' : 'EN'))
 
 const toggleAuthModal = () => (isOpen.value = !isOpen.value)
 const toggleUploadModal = () => (uploadModalOpen.value = !uploadModalOpen.value)

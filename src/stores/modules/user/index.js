@@ -38,4 +38,7 @@ export const useUser = defineStore('user', {
       this.userLoggedIn = false
     }
   }
+  // getters: {
+
+  // }
 })
