@@ -45,6 +45,7 @@ import { ref, reactive, onBeforeUnmount, toRefs } from 'vue'
 import { storage, songsCollection } from '@/utils/firebase'
 import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { auth } from '@/utils/firebase'
+import helper from '@/utils/helper'
 
 const props = defineProps({
   addSong: {
@@ -87,7 +88,7 @@ const upload = ($event) => {
     */
     const songsRef = storageRef(storage, `songs/${file.name}`)
     const uploadTask = uploadBytesResumable(songsRef, file)
-
+    console.log(currentUser)
     // -1 來矯正 length 出來的數值
     const uploadIndex =
       uploads.push({
@@ -112,6 +113,7 @@ const upload = ($event) => {
         console.log(error.message)
       },
       async () => {
+        const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
         const song = {
           uid: currentUser.uid,
           display_name: currentUser.displayName || 'Anonymous',
@@ -122,6 +124,11 @@ const upload = ($event) => {
         }
 
         song.url = await getDownloadURL(uploadTask.snapshot.ref)
+
+        querySnapshot.forEach((avatar) => {
+          song.user_avatar = avatar.data().url
+        })
+
         const songRef = await songsCollection.add(song)
         const songSnapshot = await songRef.get()
 

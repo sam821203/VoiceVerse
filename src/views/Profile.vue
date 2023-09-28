@@ -1,15 +1,14 @@
 <template>
   <!-- Main Content -->
   <section class="container mx-auto max-w-6xl mt-6">
-    <div class="md:grid md:grid-cols-3 md:gap-8">
-      <div class="col-span-2">
+    <div class="md:grid md:grid-cols-7 md:gap-8">
+      <div class="col-span-5">
         <div class="bg-white rounded border border-gray-200 relative flex flex-col">
           <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
             <span class="card-title">{{ $t('profile.my_songs') }}</span>
             <i class="fa fa-compact-disc float-right text-green-400 text-2xl"></i>
           </div>
           <div class="p-6">
-            <!-- Composition Items -->
             <composition-item
               v-for="(song, i) in songs"
               :key="song.docID"
@@ -22,7 +21,7 @@
           </div>
         </div>
       </div>
-      <div class="col-span-1">
+      <div class="col-span-2">
         <div class="profile mx-auto max-w-6xl">
           <div class="cover-photo relative mb-6">
             <div class="img-wrap">
@@ -38,7 +37,6 @@
               accept="image/jpeg, image/png, image/jpg"
               @change="uploadAvatar"
             />
-            <button @click.prevent="deletePhoto">Delete</button>
           </div>
           <div class="text-4xl font-bold text-center">{{ currentUser.displayName }}</div>
           <div class="form-control">
@@ -56,35 +54,30 @@
 </template>
 
 <script name="profile" setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import CompositionItem from '@/components/CompositionItem.vue'
-import { auth, storage, songsCollection, avatarsCollection, dbModular, db } from '@/utils/firebase'
-import {
-  ref as storageRef,
-  uploadBytesResumable,
-  getDownloadURL,
-  deleteObject
-} from 'firebase/storage'
-import { getDoc, getDocs, query, where, collection, doc, deleteDoc } from 'firebase/firestore'
+import { auth, dbModular } from '@/utils/firebase'
+import { uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
+import { doc, deleteDoc, addDoc, getDoc, collection } from 'firebase/firestore'
+import helper from '@/utils/helper'
 
 const songs = reactive([])
 const unsavedFlag = ref(false)
 const currentUser = auth.currentUser
 const avatarImageDOM = ref(null)
-// const uploadImages = reactive([])
 
-const fetchSongs = async () => {
-  const snapshot = await songsCollection.where('uid', '==', currentUser.uid).get()
+const removeSong = (i) => songs.splice(i, 1)
 
-  snapshot.forEach(addSong)
+const getSongs = async () => {
+  const querySnapshot = await helper.getDocuments('songs', 'uid', currentUser.uid)
+
+  querySnapshot.forEach(addSong)
 }
 
 const updateSong = (i, values) => {
   songs[i].modified_name = values.modified_name
   songs[i].genre = values.genre
 }
-
-const removeSong = (i) => songs.splice(i, 1)
 
 const addSong = (document) => {
   const song = reactive({
@@ -98,35 +91,36 @@ const addSong = (document) => {
 const updateUnsavedFlag = (status) => (unsavedFlag.value = status)
 
 const getAvatar = async () => {
-  const q = query(collection(dbModular, 'avatars'), where('uid', '==', currentUser.uid))
-  const querySnapshot = await getDocs(q)
+  const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
 
-  // if (querySnapshot.empty !== true) {
-  //   querySnapshot.forEach(async (avatar) => {
-  //     const avatarRef = storageRef(storage, `avatars/${avatar.data().image_name}`)
-
-  //     await deleteObject(avatarRef)
-  //     await deleteDoc(doc(dbModular, 'avatars', avatar.data().uid))
-  //   })
-  // }
-  // FIXME: 重新整理後，都會是第一張圖片，因為是陣列裡的最後一個
   querySnapshot.forEach((avatar) => {
-    console.log('getAvatar: ', avatar.data().image_name)
     avatarImageDOM.value.src = avatar.data().url
   })
 }
 
-const deletePhoto = async () => {
-  const q = query(collection(db, 'avatars'), where('uid', '==', currentUser.uid))
-  const querySnapshot = await getDocs(q)
-
+const deleteAvatar = async (querySnapshot) => {
   querySnapshot.forEach(async (avatar) => {
-    const avatarRef = storageRef(storage, `avatars/${avatar.data().image_name}`)
+    const avatarRef = helper.getStorage(`avatars/${avatar.data().image_name}`)
 
     await deleteObject(avatarRef)
     await deleteDoc(doc(dbModular, 'avatars', avatar.id))
-    console.log('delete')
   })
+}
+
+const addAvatar = async (uploadTask) => {
+  const image = {
+    uid: currentUser.uid,
+    user_name: currentUser.displayName || 'Anonymous',
+    image_name: uploadTask.snapshot.ref.name,
+    dateUpload: new Date().toString()
+  }
+
+  image.url = await getDownloadURL(uploadTask.snapshot.ref)
+
+  const imageRef = await addDoc(collection(dbModular, 'avatars'), image)
+  const imageSnapshot = await getDoc(imageRef)
+
+  avatarImageDOM.value.src = imageSnapshot.data().url
 }
 
 const uploadAvatar = async (event) => {
@@ -134,39 +128,10 @@ const uploadAvatar = async (event) => {
 
   if (!imageFile.type.includes('image')) return
 
-  const imageRef = storageRef(storage, `avatars/${imageFile.name}`)
+  const imageRef = helper.getStorage(`avatars/${imageFile.name}`)
+
   const uploadTask = uploadBytesResumable(imageRef, imageFile)
-  const q = query(collection(dbModular, 'avatars'), where('uid', '==', currentUser.uid))
-  const querySnapshot = await getDocs(q)
-
-  const addAvatar = async () => {
-    // if (querySnapshot.empty === true) {
-    const image = {
-      uid: currentUser.uid,
-      user_name: currentUser.displayName || 'Anonymous',
-      image_name: uploadTask.snapshot.ref.name,
-      dateUpload: new Date().toString()
-    }
-
-    image.url = await getDownloadURL(uploadTask.snapshot.ref)
-
-    const imageRef = await avatarsCollection.add(image)
-    const imageSnapshot = await imageRef.get()
-
-    avatarImageDOM.value.src = imageSnapshot.data().url
-    console.log('add')
-    // }
-  }
-
-  const deleteAvatar = async () => {
-    querySnapshot.forEach(async (avatar) => {
-      const avatarRef = storageRef(storage, `avatars/${avatar.data().image_name}`)
-
-      await deleteObject(avatarRef)
-      await deleteDoc(doc(dbModular, 'avatars', avatar.id))
-      console.log('delete')
-    })
-  }
+  const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
 
   uploadTask.on(
     'stage_change',
@@ -183,56 +148,18 @@ const uploadAvatar = async (event) => {
       console.log(error.message)
     },
     async () => {
-      // 刪除目前的圖片
-      // const q = query(collection(dbModular, 'avatars'), where('uid', '==', currentUser.uid))
-      // const querySnapshot = await getDocs(q)
-      const deletePromises = []
-
-      // 第一次不會跑這個步驟，因為 querySnapshot 還沒有東西
-      // querySnapshot.forEach(async (avatar) => {
-      //   console.log('uploadAvatar: ', avatar.data().image_name)
-      //   const avatarRef = storageRef(storage, `avatars/${avatar.data().image_name}`)
-      //   // console.log(avatar.data().url)
-      //   const deletePromise = Promise.all([
-      //     deleteObject(avatarRef),
-      //     deleteDoc(doc(dbModular, 'avatars', avatar.id))
-      //   ])
-      //   deletePromises.push(deletePromise)
-
-      //   console.log(1)
-      // })
-
-      // 等待所有刪除操作完成
-      // await Promise.all(deletePromises)
-
-      // console.log(querySnapshot.empty ? 'empty' : 'not empty')
-      deleteAvatar()
-      // 如果 Cloud Firestore 為空才會新增
-      console.log('middle')
-      addAvatar()
-      // const isDefault = avatarImageDOM.value.src.includes('default-cover-photo.png')
-
-      // await nextTick(async () => {
-      //   const isDefault = avatarImageDOM.value.src.includes('default-cover-photo.png')
-
-      //   if (!isDefault) {
-      //     const regex = /avatars%2F(.*?)\?alt/
-      //     const currentURL = avatarImageDOM.value.src
-      //     const matchArr = currentURL.match(regex)
-      //     const currentImageName = matchArr[1]
-
-      //     const avatarRef = storageRef(storage, `avatars/${currentImageName}`)
-
-      //     await deleteObject(avatarRef)
-      //     await deleteDoc(doc(dbModular, 'avatars', currentUser.uid))
-      //   }
-      // })
+      try {
+        await deleteAvatar(querySnapshot)
+        await addAvatar(uploadTask)
+      } catch (error) {
+        console.error('上傳和刪除操作錯誤：', error)
+      }
     }
   )
 }
 
 onMounted(() => {
-  fetchSongs()
+  getSongs()
   getAvatar()
 })
 </script>
