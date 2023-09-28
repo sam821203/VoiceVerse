@@ -38,6 +38,7 @@
               accept="image/jpeg, image/png, image/jpg"
               @change="uploadAvatar"
             />
+            <button @click.prevent="deletePhoto">Delete</button>
           </div>
           <div class="text-4xl font-bold text-center">{{ currentUser.displayName }}</div>
           <div class="form-control">
@@ -57,14 +58,14 @@
 <script name="profile" setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import CompositionItem from '@/components/CompositionItem.vue'
-import { auth, storage, songsCollection, avatarsCollection, dbModular } from '@/utils/firebase'
+import { auth, storage, songsCollection, avatarsCollection, dbModular, db } from '@/utils/firebase'
 import {
   ref as storageRef,
   uploadBytesResumable,
   getDownloadURL,
   deleteObject
 } from 'firebase/storage'
-import { getDocs, query, where, collection, doc, deleteDoc } from 'firebase/firestore'
+import { getDoc, getDocs, query, where, collection, doc, deleteDoc } from 'firebase/firestore'
 
 const songs = reactive([])
 const unsavedFlag = ref(false)
@@ -115,6 +116,19 @@ const getAvatar = async () => {
   })
 }
 
+const deletePhoto = async () => {
+  const q = query(collection(db, 'avatars'), where('uid', '==', currentUser.uid))
+  const querySnapshot = await getDocs(q)
+
+  querySnapshot.forEach(async (avatar) => {
+    const avatarRef = storageRef(storage, `avatars/${avatar.data().image_name}`)
+
+    await deleteObject(avatarRef)
+    await deleteDoc(doc(dbModular, 'avatars', avatar.id))
+    console.log('delete')
+  })
+}
+
 const uploadAvatar = async (event) => {
   const imageFile = event.target.files[0]
 
@@ -122,6 +136,37 @@ const uploadAvatar = async (event) => {
 
   const imageRef = storageRef(storage, `avatars/${imageFile.name}`)
   const uploadTask = uploadBytesResumable(imageRef, imageFile)
+  const q = query(collection(dbModular, 'avatars'), where('uid', '==', currentUser.uid))
+  const querySnapshot = await getDocs(q)
+
+  const addAvatar = async () => {
+    // if (querySnapshot.empty === true) {
+    const image = {
+      uid: currentUser.uid,
+      user_name: currentUser.displayName || 'Anonymous',
+      image_name: uploadTask.snapshot.ref.name,
+      dateUpload: new Date().toString()
+    }
+
+    image.url = await getDownloadURL(uploadTask.snapshot.ref)
+
+    const imageRef = await avatarsCollection.add(image)
+    const imageSnapshot = await imageRef.get()
+
+    avatarImageDOM.value.src = imageSnapshot.data().url
+    console.log('add')
+    // }
+  }
+
+  const deleteAvatar = async () => {
+    querySnapshot.forEach(async (avatar) => {
+      const avatarRef = storageRef(storage, `avatars/${avatar.data().image_name}`)
+
+      await deleteObject(avatarRef)
+      await deleteDoc(doc(dbModular, 'avatars', avatar.id))
+      console.log('delete')
+    })
+  }
 
   uploadTask.on(
     'stage_change',
@@ -139,48 +184,32 @@ const uploadAvatar = async (event) => {
     },
     async () => {
       // 刪除目前的圖片
-      const q = query(collection(dbModular, 'avatars'), where('uid', '==', currentUser.uid))
-      const querySnapshot = await getDocs(q)
+      // const q = query(collection(dbModular, 'avatars'), where('uid', '==', currentUser.uid))
+      // const querySnapshot = await getDocs(q)
       const deletePromises = []
 
       // 第一次不會跑這個步驟，因為 querySnapshot 還沒有東西
-      querySnapshot.forEach(async (avatar) => {
-        console.log('uploadAvatar: ', avatar.data().image_name)
-        const avatarRef = storageRef(storage, `avatars/${avatar.data().image_name}`)
-        console.log(avatar.data().url)
-        const deletePromise = Promise.all([
-          deleteObject(avatarRef),
-          deleteDoc(doc(dbModular, 'avatars', avatar.data().url))
-        ])
-        console.log('1', deletePromises)
-        deletePromises.push(deletePromise)
-        console.log('2', deletePromises)
-        console.log(1)
-      })
+      // querySnapshot.forEach(async (avatar) => {
+      //   console.log('uploadAvatar: ', avatar.data().image_name)
+      //   const avatarRef = storageRef(storage, `avatars/${avatar.data().image_name}`)
+      //   // console.log(avatar.data().url)
+      //   const deletePromise = Promise.all([
+      //     deleteObject(avatarRef),
+      //     deleteDoc(doc(dbModular, 'avatars', avatar.id))
+      //   ])
+      //   deletePromises.push(deletePromise)
+
+      //   console.log(1)
+      // })
 
       // 等待所有刪除操作完成
-      await Promise.all(deletePromises)
+      // await Promise.all(deletePromises)
 
-      console.log(querySnapshot.empty ? 'empty' : 'not empty')
-
-      // 如果 querySnapshot 為空
-      if (querySnapshot.empty === true) {
-        const image = {
-          uid: currentUser.uid,
-          user_name: currentUser.displayName || 'Anonymous',
-          image_name: uploadTask.snapshot.ref.name,
-          dateUpload: new Date().toString()
-        }
-
-        image.url = await getDownloadURL(uploadTask.snapshot.ref)
-
-        const imageRef = await avatarsCollection.add(image)
-        const imageSnapshot = await imageRef.get()
-
-        avatarImageDOM.value.src = imageSnapshot.data().url
-        console.log(2)
-      }
-
+      // console.log(querySnapshot.empty ? 'empty' : 'not empty')
+      deleteAvatar()
+      // 如果 Cloud Firestore 為空才會新增
+      console.log('middle')
+      addAvatar()
       // const isDefault = avatarImageDOM.value.src.includes('default-cover-photo.png')
 
       // await nextTick(async () => {
