@@ -10,6 +10,10 @@
   <!-- 底下音樂播放進度條 -->
   <AppPlayer />
 
+  <!-- Scroll to Top -->
+  <AppLocale />
+  <AppScrollToTop />
+
   <!-- 彈跳視窗 -->
   <AuthModal />
   <UploadModal />
@@ -17,6 +21,8 @@
 
 <script setup>
 import AppHeader from '@/components/AppHeader.vue'
+import AppLocale from '@/components/AppLocale.vue'
+import AppScrollToTop from '@/components/AppScrollToTop.vue'
 import AuthModal from '@/components/modal/AuthModal.vue'
 import UploadModal from '@/components/modal/UploadModal.vue'
 import AppPlayer from '@/components/Player.vue'

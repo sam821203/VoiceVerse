@@ -1,20 +1,28 @@
 <template>
   <!-- Header -->
   <header id="header" class="bg-zinc-100 border-b border-zinc-300 mx-auto">
-    <nav class="container mx-auto max-w-screen-2xl flex justify-start items-center py-5 px-4">
+    <nav class="container mx-auto max-w-9.6/10 flex justify-start items-center py-4">
       <!-- App Name -->
       <router-link
-        class="text-black font-bold uppercase text-2xl mr-4"
+        class="logo-text text-cyan-500 text-3xl"
         :to="{ name: 'home' }"
         exact-active-class="no-active"
-        >Music</router-link
+        >VoiceVerse</router-link
       >
       <div class="flex flex-grow justify-between items-center">
-        <ul class="flex flex-row mt-1">
+        <ul class="flex flex-row mt-1"></ul>
+        <ul class="flex justify-between items-center gap-2">
           <li>
             <router-link class="px-2 text-black" :to="{ name: 'about' }">{{
               $t('header.about')
             }}</router-link>
+          </li>
+          <li class="flex justify-end items-center py-3 bg-cyan-500 border-cyan-500 rounded-full">
+            <div class="w-32 text-center">
+              <a href="#" class="text-white" @click.prevent="toggleUploadModal">{{
+                $t('header.upload')
+              }}</a>
+            </div>
           </li>
           <li v-if="!userLoggedIn">
             <a class="px-2 text-black" href="#" @click.prevent="toggleAuthModal"
@@ -28,32 +36,23 @@
               }}</router-link>
             </li>
             <li>
-              <a href="#" class="text-black" @click.prevent="toggleUploadModal">{{
-                $t('header.upload')
-              }}</a>
-            </li>
-            <li>
               <a class="px-2 text-black" href="#" @click.prevent="signingOut">{{
                 $t('header.logout')
               }}</a>
             </li>
           </template>
-        </ul>
-        <ul class="flex justify-between gap-2">
-          <li
-            class="flex justify-end items-center p-1 border bg-cyan-500 border-cyan-500 rounded-full"
-          >
-            <div class="w-24 py-1 text-center">
-              <a href="#" class="text-white" @click.prevent="toggleUploadModal">{{
-                $t('header.upload')
-              }}</a>
-            </div>
-          </li>
-          <li class="flex justify-end items-center p-1">
+          <!-- <li class="flex justify-end items-center w-12">
             <div class="w-20 text-center">
-              <a href="#" class="text-black" @click.prevent="changeLocale">{{ currentLocale }}</a>
+              <a href="#" class="text-black">
+                <img
+                  ref="avatarImageDOM"
+                  src="@/assets/images/default-cover-photo.png"
+                  class="rounded-full"
+                  alt=""
+                />
+              </a>
             </div>
-          </li>
+          </li> -->
         </ul>
       </div>
     </nav>
@@ -61,11 +60,12 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref } from 'vue'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
+import { auth } from '@/utils/firebase'
+import helper from '@/utils/helper'
 
 /*
 - 此步驟創建了名為 useModal 的存儲實例，使用了之前引入的 useStore 函數
@@ -74,7 +74,6 @@ import { useI18n } from 'vue-i18n'
 */
 const { useModal, useUser } = useStore()
 const { signOut } = useUser()
-const { locale } = useI18n()
 const modalStore = useModal()
 const router = useRouter()
 const route = useRoute()
@@ -83,20 +82,33 @@ const route = useRoute()
 // FIXME: 為何一個要 () 執行，一個不用?
 const { userLoggedIn } = storeToRefs(useUser())
 const { isOpen, uploadModalOpen } = storeToRefs(modalStore)
-
-const currentLocale = computed(() => (locale.value === 'zhTw' ? '繁' : 'EN'))
+const avatarImageDOM = ref(null)
+const currentUser = auth.currentUser
 
 const toggleAuthModal = () => (isOpen.value = !isOpen.value)
 const toggleUploadModal = () => (uploadModalOpen.value = !uploadModalOpen.value)
-const changeLocale = () => (locale.value = locale.value === 'zhTw' ? 'en' : 'zhTw')
 
 const signingOut = () => {
   signOut()
 
   if (route.meta.requiresAuth) router.push({ name: 'home' })
 }
+
+const getAvatar = async () => {
+  const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
+
+  querySnapshot.forEach((avatar) => {
+    avatarImageDOM.value.src = avatar.data().url
+  })
+}
+
+// onMounted(() => {
+//   getAvatar()
+// })
 </script>
 
 <style lang="scss" scoped>
-// some
+.logo-text {
+  font-family: 'Pacifico', sans-serif;
+}
 </style>

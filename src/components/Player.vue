@@ -3,16 +3,7 @@
     <div class="flex justify-between items-center mx-auto max-w-screen-2xl h-full">
       <div class="flex w-1/4">
         <div class="mr-4 overflow-hidden" style="width: 60px; height: 60px">
-          <img
-            :src="current_song.user_avatar"
-            alt=""
-            class="w-full h-full rounded-md object-cover"
-          />
-          <!-- <img
-            src="@/assets/images/default-cover-photo.png"
-            alt=""
-            class="w-full h-full rounded-md object-cover"
-          /> -->
+          <img :src="songAvatar" alt="" class="w-full h-full rounded-md object-cover" />
         </div>
         <div v-if="current_song.modified_name">
           <h6 class="song-title font-bold">{{ current_song.modified_name }}</h6>
@@ -96,11 +87,9 @@
 </template>
 
 <script name="Player" setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
-import { auth } from '@/utils/firebase'
-import helper from '@/utils/helper'
 
 const { usePlayer } = useStore()
 const { toggleAudio, updateSeek, setSoundVolume, volumeOff, fastSeek } = usePlayer()
@@ -108,25 +97,18 @@ const { playing, seek, duration, playerProgress, current_song, volumeValue } = s
   usePlayer()
 )
 
-// const avatarImageDOM = ref(null)
-
 const volumeBackground = computed(
   () =>
     `linear-gradient(to right, rgb(6, 182, 212) ${volumeValue.value}, rgb(204, 204, 204) ${volumeValue.value})`
 )
 
-const getAvatar = async (currentSong) => {
-  // 是需要 song 的 user 的 Avatar
-  const querySnapshot = await helper.getDocuments('avatars', 'uid', currentSong)
-
-  querySnapshot.forEach(async (avatar) => {
-    return await avatar.data().url
-  })
-}
-
-// onMounted(() => {
-//   getAvatar()
-// })
+const songAvatar = computed(
+  () =>
+    current_song.value.user_avatar
+      ? current_song.value.user_avatar
+      : 'https://discussions.apple.com/content/attachment/592590040'
+  // : 'https://i.ibb.co/PDTprGt/default-cover-photo.png'
+)
 </script>
 
 <style lang="scss" scoped>
