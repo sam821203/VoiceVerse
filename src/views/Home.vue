@@ -2,23 +2,20 @@
   <main>
     <!-- Introduction -->
     <section class="introduction relative text-white">
-      <!-- <img class="block mx-auto w-auto max-w-full" src="@/assets/images/bg-hero.png" /> -->
-      <div class="container mx-auto max-w-6xl">
-        <div class="w-3/5">
-          <div class="text-black">
-            <BaseSearchBar ref="songItemDOM" :songs="songs" @filterChanged="handleFilterChanged" />
-            <BaseTag v-for="tag in tagList" :key="tag.name" />
-          </div>
-        </div>
-      </div>
+      <div class="container mx-auto max-w-6xl"></div>
     </section>
+
+    <div class="">
+      <BaseSearchBar ref="songItemDOM" :songs="songs" />
+      <!-- <BaseTag v-for="tag in tagList" :key="tag.name" /> -->
+    </div>
 
     <!-- <AppRecommendation /> -->
     <!-- <div>
       <button @click.prevent="getValue">get Value</button>
     </div> -->
     <!-- Main Content -->
-    <section class="container mx-auto max-w-6xl">
+    <!-- <section class="container mx-auto max-w-6xl">
       <div class="rounded relative flex flex-col">
         <div
           class="px-6 pt-6 pb-5 font-bold border-b border-gray-200"
@@ -30,7 +27,7 @@
           <AppSongItem v-for="song in songs" :key="song.docID" :song="song" />
         </ol>
       </div>
-    </section>
+    </section> -->
   </main>
 </template>
 
@@ -153,9 +150,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .introduction {
   width: 100%;
-  padding-top: 8%;
-  padding-bottom: 8%;
-  margin-bottom: 32px;
+  height: 396px;
   background-image: url('@/assets/images/bg-hero.png');
   background-size: cover;
   background-position: 67% center;

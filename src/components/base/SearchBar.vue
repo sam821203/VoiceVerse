@@ -1,29 +1,49 @@
 <template>
-  <form>
-    <div class="flex mb-4">
-      <div class="relative w-full">
-        <input
-          type="search"
-          class="block p-3 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded border-l-2 border border-gray-300 focus:outline-none"
-          autocomplete="off"
-          placeholder="Search Songs..."
-          required
-          v-model="search"
-        />
-        <button
-          type="submit"
-          class="absolute top-0 right-0 flex justify-center items-center p-2.5 text-sm font-medium w-24 h-full text-white bg-cyan-500 rounded-r border border-cyan-500 hover:bg-cyan-600 focus:outline-none"
-          @click.prevent="searchList"
+  <div class="w-full mx-auto max-w-6xl">
+    <div class="search-wrap absolute top-64 w-1/3">
+      <input
+        type="search"
+        class="z-20 block p-3 w-full h-14 text-sm text-gray-900 bg-gray-50 rounded border-l-2 border border-gray-300 focus:outline-none"
+        autocomplete="off"
+        placeholder="Search Songs..."
+        required
+        v-model="search"
+      />
+      <Transition name="slide-fade">
+        <i
+          class="absolute bottom-3 right-4 fas fa-search text-2xl"
+          style="color: rgb(6, 182, 212)"
+          v-if="!search"
+        ></i>
+      </Transition>
+    </div>
+    <div class="list-wrap container">
+      <div class="rounded relative flex flex-col">
+        <div
+          class="px-6 pt-6 pb-5 font-bold border-b border-gray-200"
+          v-icon-secondary="{ icon: 'headphones-alt', right: true }"
         >
-          <i class="fas fa-search fa-lg" style="color: #ffffff"></i>
-        </button>
+          <span class="card-title">Songs</span>
+        </div>
+        <ol id="playlist">
+          <AppSongItem v-for="song in filteredList" :key="song.docID" :song="song" />
+        </ol>
       </div>
     </div>
-  </form>
+  </div>
 </template>
 
 <script setup>
-import { ref, reactive, toRefs, defineExpose } from 'vue'
+import { ref, reactive, onBeforeUnmount, computed, toRefs, defineExpose } from 'vue'
+import { songsCollection } from '@/utils/firebase'
+
+import AppSongItem from '@/components/SongItem.vue'
+import vIconSecondary from '@/directives/icon-secondary'
+
+const songs = reactive([])
+const search = ref('')
+const perPageSongsMax = ref(8)
+const pendingRequest = ref(false)
 
 const props = defineProps({
   songs: {
@@ -31,38 +51,114 @@ const props = defineProps({
     required: true
   }
 })
-const emits = defineEmits(['filterChanged'])
 
-const search = ref('')
-const filteredList = reactive([])
-const { songs } = toRefs(props)
+const getSongs = async () => {
+  if (pendingRequest.value) return
 
-const searchList = () => {
-  const result = songs.value.filter((song) => {
-    return song.modified_name.toLowerCase().includes(search.value.toLowerCase())
+  pendingRequest.value = true
+
+  let snapshots
+
+  if (songs.length) {
+    const lastDocument = await songsCollection.doc(songs[songs.length - 1].docID).get()
+    // const lastDocument = await doc(songsCollection, songs[songs.length - 1].docID)
+
+    // 建立查詢
+    // const querySongs = query(
+    //   songsCollection,
+    //   orderBy('modified_name'),
+    //   startAt(lastDocument),
+    //   limit(perPageSongsMax.value)
+    // )
+
+    // 執行查詢
+    // snapshots = await getDocs(querySongs)
+
+    snapshots = await songsCollection
+      .orderBy('modified_name')
+      .startAfter(lastDocument)
+      .limit(perPageSongsMax.value)
+      .get()
+  } else {
+    // const querySongs = query(
+    //   songsCollection,
+    //   orderBy('modified_name'),
+    //   limit(perPageSongsMax.value)
+    // )
+
+    // snapshots = await getDocs(querySongs)
+
+    snapshots = await songsCollection.orderBy('modified_name').limit(perPageSongsMax.value).get()
+  }
+
+  snapshots.forEach((document) => {
+    songs.push({
+      docID: document.id,
+      ...document.data()
+    })
   })
 
-  filteredList.push(result)
-
-  // 'filterChanged' 是自己定義的事件名稱，會用在父組件
-  // filteredList 則是傳遞的參數
-  emits('filterChanged', filteredList)
-  // filteredList[0].forEach((list) => {
-  //   console.log(list.docID)
-  // })
+  pendingRequest.value = false
 }
 
-// defineExpose({ filteredList })
+getSongs()
 
-// const filteredList = computed(() => {
-//   return songs.value.filter((song) => {
-//     return song.modified_name.toLowerCase().includes(search.value.toLowerCase())
-//   })
-// })
+const handleScroll = () => {
+  // 解構底下方法的步驟可以省略
+  const { scrollTop, offsetHeight } = document.documentElement
+  const { innerHeight } = window
 
-// const update = ($event) => {
-//   emits('update:songs', filteredList($event.target.value))
-// }
+  const bottomOfWindow = Math.round(scrollTop) + innerHeight - 100 === offsetHeight - 100
+
+  if (bottomOfWindow) {
+    getSongs()
+  }
+}
+
+const filteredList = computed(() => {
+  return songs.filter((song) => {
+    return song.modified_name.toLowerCase().includes(search.value.toLowerCase())
+  })
+})
+
+window.addEventListener('scroll', handleScroll)
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+/* clears the X from Internet Explorer */
+input[type='search']::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
+input[type='search']::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* clears the X from Chrome */
+input[type='search']::-webkit-search-decoration,
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-results-button,
+input[type='search']::-webkit-search-results-decoration {
+  display: none;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+</style>
