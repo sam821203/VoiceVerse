@@ -18,7 +18,7 @@
         <div class="pt-8 pb-10 text-left px-6">
           <!--Title-->
           <div class="flex justify-between items-center pb-4">
-            <p class="text-2xl font-bold">Your Account</p>
+            <p class="text-2xl font-bold">{{ $t('authModal.yourAccount') }}</p>
             <!-- Modal Close Button -->
             <div class="modal-close cursor-pointer z-50" @click="isOpen = false">
               <i class="fas fa-times"></i>
@@ -36,7 +36,7 @@
                   'hover:text-white text-white bg-cyan-700': tab === 'login',
                   'hover:text-cyan-800': tab === 'register'
                 }"
-                >Login</a
+                >{{ $t('header.login') }}</a
               >
             </li>
             <li class="flex-auto text-center">
@@ -48,7 +48,7 @@
                   'hover:text-white text-white bg-cyan-700': tab === 'register',
                   'hover:text-cyan-800': tab === 'login'
                 }"
-                >Register</a
+                >{{ $t('header.register') }}</a
               >
             </li>
           </ul>

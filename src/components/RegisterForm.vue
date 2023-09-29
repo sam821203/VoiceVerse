@@ -10,7 +10,7 @@
     <vee-form :validation-schema="schema" :initial-values="userData" @submit="register">
       <!-- Name -->
       <div class="mb-3">
-        <label class="inline-block mb-2">Name</label>
+        <label class="inline-block mb-2">{{ $t('authModal.name') }}</label>
         <vee-field
           name="name"
           type="text"
@@ -21,7 +21,7 @@
       </div>
       <!-- Email -->
       <div class="mb-3">
-        <label class="inline-block mb-2">Email</label>
+        <label class="inline-block mb-2">{{ $t('authModal.email') }}</label>
         <vee-field
           name="email"
           type="email"
@@ -32,7 +32,7 @@
       </div>
       <!-- Age -->
       <div class="mb-3">
-        <label class="inline-block mb-2">Age</label>
+        <label class="inline-block mb-2">{{ $t('authModal.age') }}</label>
         <vee-field
           name="age"
           type="number"
@@ -42,7 +42,7 @@
       </div>
       <!-- Password -->
       <div class="mb-3">
-        <label class="inline-block mb-2">Password</label>
+        <label class="inline-block mb-2">{{ $t('authModal.password') }}</label>
         <vee-field name="password" :bails="false" v-slot="{ field, errors }">
           <input
             type="password"
@@ -56,7 +56,7 @@
       </div>
       <!-- Confirm Password -->
       <div class="mb-3">
-        <label class="inline-block mb-2">Confirm Password</label>
+        <label class="inline-block mb-2">{{ $t('authModal.confirmPassword') }}</label>
         <vee-field
           name="confirm_password"
           type="password"
@@ -67,7 +67,7 @@
       </div>
       <!-- Country -->
       <div class="mb-3">
-        <label class="inline-block mb-2">Country</label>
+        <label class="inline-block mb-2">{{ $t('authModal.country') }}</label>
         <vee-field
           as="select"
           name="country"
@@ -88,8 +88,8 @@
           value="1"
           class="w-4 h-4 float-left -ml-6 mt-1 rounded"
         />
-        <i18n-t class="inline-block" keypath="register.accept" tag="label"
-          ><a href="#">{{ $t('register.tos') }}</a></i18n-t
+        <i18n-t class="inline-block" keypath="authModal.accept" tag="label"
+          ><a href="#">{{ $t('authModal.tos') }}</a></i18n-t
         >
         <ErrorMessage class="text-red-600" name="tos" />
       </div>
@@ -98,7 +98,7 @@
         class="block w-full bg-cyan-500 text-white py-3 px-3 rounded transition hover:bg-cyan-600"
         :disabled="reg_in_submission"
       >
-        Submit
+        {{ $t('authModal.submit') }}
       </button>
     </vee-form>
   </div>

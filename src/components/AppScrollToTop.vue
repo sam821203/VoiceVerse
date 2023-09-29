@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed bottom-32 right-1/50 w-12 h-12 pt-px leading-11 bg-cyan-500 rounded-md text-center shadow-md cursor-pointer"
+    class="fixed bottom-32 right-1/50 w-12 h-12 pt-px leading-11 bg-cyan-500 rounded text-center shadow-md cursor-pointer"
     @click="scrollToTop"
   >
     <i class="fas fa-chevron-up" style="color: #ffffff"></i>

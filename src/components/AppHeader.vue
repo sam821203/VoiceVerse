@@ -1,47 +1,48 @@
 <template>
   <!-- Header -->
   <header id="header" class="bg-zinc-100 border-b border-zinc-300 mx-auto">
-    <nav class="container mx-auto max-w-9.6/10 flex justify-start items-center py-4">
+    <nav class="container mx-auto max-w-9.6/10 flex justify-between items-center py-4">
       <!-- App Name -->
       <router-link
-        class="logo-text text-cyan-500 text-3xl"
+        class="logo-text text-cyan-500 text-logo"
         :to="{ name: 'home' }"
         exact-active-class="no-active"
         >VoiceVerse</router-link
       >
-      <div class="flex flex-grow justify-between items-center">
-        <ul class="flex flex-row mt-1"></ul>
-        <ul class="flex justify-between items-center gap-2">
+      <ul class="flex justify-between items-center gap-2">
+        <li>
+          <router-link class="px-2 text-black" :to="{ name: 'about' }">{{
+            $t('header.about')
+          }}</router-link>
+        </li>
+        <li
+          class="w-36 py-2.5 text-center border border-gray-500 rounded-full"
+          v-if="!userLoggedIn"
+        >
+          <a class="px-2 text-black" href="#" @click.prevent="toggleAuthModal">{{
+            $t('header.login_register')
+          }}</a>
+        </li>
+        <template v-else>
           <li>
-            <router-link class="px-2 text-black" :to="{ name: 'about' }">{{
-              $t('header.about')
+            <router-link class="px-2 mr-1.5 text-black" :to="{ name: 'profile' }">{{
+              $t('header.profile')
             }}</router-link>
           </li>
-          <li class="flex justify-end items-center py-3 bg-cyan-500 border-cyan-500 rounded-full">
-            <div class="w-32 text-center">
-              <a href="#" class="text-white" @click.prevent="toggleUploadModal">{{
-                $t('header.upload')
-              }}</a>
-            </div>
+          <li
+            class="items-center py-2.5 w-36 text-center border bg-cyan-500 border-cyan-500 rounded-full"
+          >
+            <a href="#" class="text-white font-bold" @click.prevent="toggleUploadModal">{{
+              $t('header.upload')
+            }}</a>
           </li>
-          <li v-if="!userLoggedIn">
-            <a class="px-2 text-black" href="#" @click.prevent="toggleAuthModal"
-              >Login / Register</a
-            >
+          <li class="w-36 py-2.5 text-center border border-gray-500 rounded-full">
+            <a class="px-2 text-black" href="#" @click.prevent="signingOut">{{
+              $t('header.logout')
+            }}</a>
           </li>
-          <template v-else>
-            <li>
-              <router-link class="px-2 text-black" :to="{ name: 'profile' }">{{
-                $t('header.profile')
-              }}</router-link>
-            </li>
-            <li>
-              <a class="px-2 text-black" href="#" @click.prevent="signingOut">{{
-                $t('header.logout')
-              }}</a>
-            </li>
-          </template>
-          <!-- <li class="flex justify-end items-center w-12">
+        </template>
+        <!-- <li class="flex justify-end items-center w-12">
             <div class="w-20 text-center">
               <a href="#" class="text-black">
                 <img
@@ -53,8 +54,7 @@
               </a>
             </div>
           </li> -->
-        </ul>
-      </div>
+      </ul>
     </nav>
   </header>
 </template>

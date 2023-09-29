@@ -6,8 +6,7 @@
       <div class="container mx-auto max-w-6xl">
         <div class="w-3/5">
           <div class="text-black">
-            <BaseSearchBar />
-            <!-- Tags -->
+            <BaseSearchBar ref="songItemDOM" :songs="songs" @filterChanged="handleFilterChanged" />
             <BaseTag v-for="tag in tagList" :key="tag.name" />
           </div>
         </div>
@@ -15,33 +14,31 @@
     </section>
 
     <!-- <AppRecommendation /> -->
-
+    <!-- <div>
+      <button @click.prevent="getValue">get Value</button>
+    </div> -->
     <!-- Main Content -->
     <section class="container mx-auto max-w-6xl">
-      <div class="bg-white rounded border border-gray-200 relative flex flex-col">
+      <div class="rounded relative flex flex-col">
         <div
           class="px-6 pt-6 pb-5 font-bold border-b border-gray-200"
           v-icon-secondary="{ icon: 'headphones-alt', right: true }"
         >
           <span class="card-title">Songs</span>
-          <!-- Icon -->
         </div>
-        <!-- Playlist -->
         <ol id="playlist">
-          <app-song-item v-for="song in songs" :key="song.docID" :song="song" />
+          <AppSongItem v-for="song in songs" :key="song.docID" :song="song" />
         </ol>
-        <!-- .. end Playlist -->
       </div>
     </section>
   </main>
 </template>
 
 <script name="Home" setup>
-import { ref, reactive, onBeforeUnmount } from 'vue'
+import { ref, reactive, onBeforeUnmount, computed, watch } from 'vue'
 import { songsCollection } from '@/utils/firebase'
-// import { query, orderBy, limit, startAt, getDocs, doc } from 'firebase/firestore'
 import AppSongItem from '@/components/SongItem.vue'
-import AppRecommendation from '@/components/Recommendation.vue'
+// import AppRecommendation from '@/components/Recommendation.vue'
 import vIconSecondary from '@/directives/icon-secondary'
 
 const songs = reactive([])
@@ -58,6 +55,8 @@ const tagList = reactive([
 ])
 const perPageSongsMax = ref(8)
 const pendingRequest = ref(false)
+const songItemDOM = ref(null)
+const filteredSongs = ref(null)
 
 const getSongs = async () => {
   if (pendingRequest.value) return
@@ -107,6 +106,7 @@ const getSongs = async () => {
 
   pendingRequest.value = false
 }
+getSongs()
 
 const handleScroll = () => {
   // 解構底下方法的步驟可以省略
@@ -120,9 +120,30 @@ const handleScroll = () => {
   }
 }
 
-getSongs()
+// const getValue = () => {
+//   console.log(songItemDOM.value.filteredList[0] === undefined)
+// }
+
+// FIXME: TypeError: Cannot read properties of null (reading 'filteredList')
+// const filteredSongs = computed(() => {
+//   if (!songItemDOM.value.filteredList || songItemDOM.value.filteredList.length === 0) {
+//     return songs
+//   } else {
+//     return songItemDOM.value.filteredList[0]
+//   }
+// })
+
+// const handleFilterChanged = (filtered) => {
+//   filteredSongs.value = filtered.length === 0 ? songs : filtered
+//   // console.log(songs)
+//   console.log('更新：', filteredSongs.value)
+// }
 
 window.addEventListener('scroll', handleScroll)
+
+// watch(songs.value, (newVal) => {
+//   console.log(`${newVal}`)
+// })
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll)

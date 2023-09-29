@@ -11,14 +11,25 @@
   "components": {
     "upload": "Upload"
   },
-  "register": {
+  "authModal": {
+    "name": "Name",
+    "email": "Email",
+    "age": "Age",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "country": "Country",
+    "submit": "Submit",
     "accept": "I accept Music's {0}",
-    "tos": "Terms of Service"
+    "tos": "Terms of Service",
+    "yourAccount": "Your Account"
   },
   "header": {
     "profile": "Profile",
     "about": "About Us",
+    "login": "Login",
     "logout": "Logout",
-    "upload": "Upload"
+    "register": "Register",
+    "upload": "Upload",
+    "login_register": "Login / Register"
   }
 }
