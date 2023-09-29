@@ -13,7 +13,7 @@ export const usePlayer = defineStore('player', {
     volumeValue: '100%'
   }),
   actions: {
-    async newSong(song) {
+    async newSong(song, target) {
       // 如果有歌曲播放中，銷毀目前曲目
       if (this.sound instanceof Howl) {
         this.sound.unload()
@@ -31,9 +31,14 @@ export const usePlayer = defineStore('player', {
       // 播放歌曲
       this.sound.play()
 
+      target.classList.add('active')
+
       // 監聽 play 方法
       this.sound.on('play', () => {
         requestAnimationFrame(this.progress)
+      })
+      this.sound.on('end', () => {
+        target.classList.remove('active')
       })
     },
     async toggleAudio() {

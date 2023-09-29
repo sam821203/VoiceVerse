@@ -1,8 +1,8 @@
 <template>
   <div class="bg-white rounded border border-gray-200 relative flex flex-col">
     <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
-      <span class="card-title">{{ $t('components.upload') }}</span>
-      <i class="fas fa-upload float-right text-green-400 text-2xl"></i>
+      <span class="card-title">{{ $t('uploadModal.upload') }}</span>
+      <i class="fas fa-upload float-right text-cyan-500 text-2xl"></i>
     </div>
     <div class="p-6">
       <!-- Upload Dropbox -->
@@ -17,7 +17,7 @@
         @dragleave.prevent.stop="is_dragover = false"
         @drop.prevent.stop="upload($event)"
       >
-        <h5>Drop your files here</h5>
+        <h5>{{ $t('uploadModal.drop_file') }}</h5>
       </div>
       <input type="file" multiple @change="upload($event)" />
       <hr class="my-6" />
@@ -146,7 +146,8 @@ const upload = ($event) => {
           original_name: uploadTask.snapshot.ref.name,
           modified_name: uploadTask.snapshot.ref.name,
           genre: '',
-          comment_count: 0
+          comment_count: 0,
+          dateUploaded: new Date().toString()
         }
 
         song.url = await getDownloadURL(uploadTask.snapshot.ref)

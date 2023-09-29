@@ -24,13 +24,13 @@
         @click.prevent="insertSearch(tag.name)"
       />
     </div>
-    <div class="list-wrap container">
-      <div class="rounded relative flex flex-col">
+    <div class="list-wrap">
+      <div class="rounded relative flex flex-col mb-40">
         <!-- <div
           class="px-1 pt-6 pb-5 font-bold border-b border-gray-200"
           v-icon-secondary="{ icon: 'headphones-alt', right: true }"
         > -->
-        <div class="px-1 pt-6 pb-5 font-bold border-b border-gray-200">
+        <div class="px-1 pt-6 pb-5 font-bold">
           <span class="text-2xl">{{ $t('home.songs') }}</span>
         </div>
         <ol id="playlist">
@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeUnmount, computed, watch, toRefs, defineExpose } from 'vue'
+import { ref, reactive, onBeforeUnmount, computed, watch, toRefs } from 'vue'
 import { songsCollection } from '@/utils/firebase'
 
 import AppSongItem from '@/components/SongItem.vue'
@@ -143,10 +143,6 @@ const filteredList = computed(() => {
     return song.modified_name.toLowerCase().includes(search.value.toLowerCase())
   })
 })
-
-// watch(search, (newValue) => {
-//   console.log(`x is ${newValue}`)
-// })
 
 window.addEventListener('scroll', handleScroll)
 

@@ -1,9 +1,10 @@
 <template>
   <li
-    class="flex justify-between items-center px-3 py-8 mb-4 bg-white shadow-md rounded-lg cursor-pointer transition-all duration-500"
+    class="flex justify-between items-center pl-5 pr-6 py-8 mb-4 bg-white rounded-lg cursor-pointer transition-all duration-300"
+    @dblclick="newSong(song, $event.target)"
   >
     <div class="flex items-center gap-4">
-      <i class="play-icon invisible fas fa-play fa-xs leading-14"></i>
+      <i class="play-icon opacity-5 fas fa-play fa-xs leading-14"></i>
       <div style="width: 60px; height: 60px">
         <img :src="songAvatar" alt="" class="w-full h-full rounded-md object-cover" />
       </div>
@@ -13,37 +14,43 @@
           class="font-bold block text-gray-600 hover:underline"
           >{{ song.modified_name }}
         </router-link>
-        <span class="text-gray-500 text-sm">{{ song.display_name }}</span>
-        <span>{{ audioDuration }}</span>
+        <span class="text-gray-400 text-sm">{{ song.display_name }}</span>
       </div>
     </div>
 
-    <div class="text-gray-600 text-lg hover:underline">
-      <router-link
-        custom
-        :to="{ name: 'song', params: { id: song.docID }, hash: '#comments' }"
-        v-slot="{ navigate }"
-      >
-        <span class="comments" @click="navigate">
-          <i class="fa fa-comments text-gray-600"></i>
-          {{ song.comment_count }}
-        </span>
-      </router-link>
+    <div class="flex items-center gap-16">
+      <div class="flex gap-4">
+        <div class="text-gray-600 text-lg hover:underline">
+          <router-link
+            custom
+            :to="{ name: 'song', params: { id: song.docID }, hash: '#comments' }"
+            v-slot="{ navigate }"
+          >
+            <span class="comments" @click="navigate">
+              <i class="fa fa-comments text-gray-600"></i>
+              {{ song.comment_count }}
+            </span>
+          </router-link>
+        </div>
+        <audio controls>
+          <source :src="songUrl" ref="songUrlDOM" type="audio/mp3" />
+        </audio>
+        <button @click.prevent="downloadSong()">
+          <!-- <i class="fas fa-download"></i> -->
+          <!-- <i class="far fa-arrow-alt-circle-down fa-lg"></i> -->
+          <i class="fas fa-arrow-alt-circle-down fa-lg" style="color: rgb(75, 85, 99)"></i>
+        </button>
+      </div>
+      <div class="text-gray-400">{{ songDuration }}</div>
     </div>
-    <audio controls>
-      <source :src="songUrl" ref="songUrlDOM" type="audio/mp3" />
-    </audio>
-    <button @click.prevent="downloadSong()">
-      <i class="fas fa-download"></i>
-    </button>
   </li>
 </template>
 
 <script name="SongItem" setup>
-import { toRefs, computed, onMounted } from 'vue'
+import { toRefs, computed } from 'vue'
 import { ref, getBlob } from 'firebase/storage'
 import { storage } from '@/utils/firebase'
-import helper from '@/utils/helper'
+import { useStore } from '@/stores/index.js'
 
 const props = defineProps({
   song: {
@@ -52,15 +59,18 @@ const props = defineProps({
   }
 })
 
+const { usePlayer } = useStore()
+const { newSong } = usePlayer()
 const { song } = toRefs(props)
 const songUrlDOM = ref(null)
-const audioDuration = ref([])
 
 const songAvatar = computed(() =>
   song.value.user_avatar
     ? song.value.user_avatar
     : 'https://discussions.apple.com/content/attachment/592590040'
 )
+
+const songDuration = computed(() => (song.value.duration ? song.value.duration : '0:00'))
 
 const downloadSong = async () => {
   try {
@@ -82,30 +92,6 @@ const downloadSong = async () => {
     console.error('下載音頻失敗：', error)
   }
 }
-
-const getAudioDuration = (url) => {
-  // Create a non-dom allocated Audio element
-  var au = document.createElement('audio')
-
-  // Define the URL of the MP3 audio file
-  au.src = url
-
-  // Once the metadata has been loaded, display the duration in the console
-  au.addEventListener(
-    'loadedmetadata',
-    function () {
-      // Obtain the duration in seconds of the audio file (with milliseconds as well, a float value)
-      var duration = au.duration
-      console.log(audioDuration)
-      audioDuration.value = helper.formatTime(duration)
-    },
-    false
-  )
-}
-
-onMounted(() => {
-  getAudioDuration(song.value.url)
-})
 </script>
 
 <style lang="scss" scoped>
@@ -113,10 +99,17 @@ audio {
   display: none;
 }
 li {
-  &:hover {
-    background-color: rgb(249, 250, 251);
+  &.active {
     .play-icon {
-      visibility: visible;
+      opacity: 1;
+    }
+  }
+  &:hover {
+    // background-color: rgb(243, 243, 243);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+    .play-icon {
+      // visibility: visible;
+      opacity: 1;
     }
   }
 }

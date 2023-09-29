@@ -59,7 +59,7 @@ const login = async (values) => {
   // reset 變數
   login_in_submission.value = true
   login_show_alert.value = true
-  login_alert_variant.value = 'bg-blue-500'
+  login_alert_variant.value = 'text-blue-500'
   login_alert_msg.value = 'Please wait! We are logging you in.'
 
   const { authenticate } = useUser()
@@ -68,13 +68,13 @@ const login = async (values) => {
     await authenticate(values)
   } catch (error) {
     login_in_submission.value = false
-    login_alert_variant.value = 'bg-red-500'
+    login_alert_variant.value = 'text-red-500'
     login_alert_msg.value = 'Invalid login details.'
     return
   }
 
   // 成功時，修改變數
-  login_alert_variant.value = 'bg-green-500'
+  login_alert_variant.value = 'text-green-500'
   login_alert_msg.value = 'Success! You are now logged in.'
 
   // 登入成功，重新整理頁面

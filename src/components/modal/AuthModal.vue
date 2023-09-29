@@ -12,7 +12,7 @@
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
 
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full"
       >
         <!-- Add margin if you want to see some of the overlay behind the modal-->
         <div class="pt-8 pb-10 text-left px-6">
@@ -33,8 +33,8 @@
                 href="#"
                 @click.prevent="tab = 'login'"
                 :class="{
-                  'hover:text-white text-white bg-cyan-700': tab === 'login',
-                  'hover:text-cyan-800': tab === 'register'
+                  'hover:text-white text-white bg-gray-400': tab === 'login',
+                  'hover:text-gray-500': tab === 'register'
                 }"
                 >{{ $t('header.login') }}</a
               >
@@ -45,8 +45,8 @@
                 href="#"
                 @click.prevent="tab = 'register'"
                 :class="{
-                  'hover:text-white text-white bg-cyan-700': tab === 'register',
-                  'hover:text-cyan-800': tab === 'login'
+                  'hover:text-white text-white bg-gray-400': tab === 'register',
+                  'hover:text-gray-500': tab === 'login'
                 }"
                 >{{ $t('header.register') }}</a
               >

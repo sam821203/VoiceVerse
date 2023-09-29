@@ -25,9 +25,9 @@ a:hover {
   z-index: -1;
 }
 
-#playlist li:first-child {
+/* #playlist li:first-child {
   padding-top: 25px;
-}
+} */
 
 .upload-dropbox.upload-dropbox-drag {
   color: #fff;

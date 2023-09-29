@@ -8,7 +8,16 @@
     "comment_count": "No comments | 1 comment | {count} comments"
   },
   "profile": {
-    "my_songs": "My Songs"
+    "my_songs": "My Songs",
+    "edit": "Edit",
+    "song_title": "Song Title",
+    "genre": "Genre",
+    "submit": "Submit",
+    "go_back": "Go Back",
+    "description": "Description",
+    "user_name": "User Name",
+    "songs": "Songs",
+    "comments": "Comments"
   },
   "components": {
     "upload": "Upload"
@@ -20,10 +29,16 @@
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "country": "Country",
+    "description": "Description",
     "submit": "Submit",
     "accept": "I accept Music's {0}",
     "tos": "Terms of Service",
     "yourAccount": "Your Account"
+  },
+  "uploadModal": {
+    "upload_song": "Upload Song",
+    "upload": "Upload",
+    "drop_file": "Drop Your files here"
   },
   "header": {
     "profile": "Profile",

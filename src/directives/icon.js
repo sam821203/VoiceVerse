@@ -13,7 +13,7 @@ export default {
     if (binding.modifiers.yellow) {
       iconClass += ' text-yellow-400'
     } else {
-      iconClass += ' text-green-400'
+      iconClass += ' text-cyan-400'
     }
 
     el.innerHTML += `<i class="${iconClass}"></i>`

@@ -9,6 +9,29 @@ export default {
 
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
   },
+  formatUtcDate(timeString) {
+    const inputDate = new Date(timeString)
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ]
+
+    const year = inputDate.getFullYear()
+    const month = months[inputDate.getMonth()]
+    const day = inputDate.getDate()
+
+    return `${day} ${month} ${year}`
+  },
   async getDocuments(docs, id, target) {
     const q = query(collection(dbModular, docs), where(id, '==', target))
     const querySnapshot = await getDocs(q)

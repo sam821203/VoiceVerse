@@ -1,34 +1,37 @@
 <template>
   <!-- Main Content -->
-  <section class="container mx-auto max-w-6xl mt-6">
-    <div class="md:grid md:grid-cols-7 md:gap-8">
-      <div class="col-span-5">
-        <div class="bg-white rounded border border-gray-200 relative flex flex-col">
-          <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
-            <span class="card-title">{{ $t('profile.my_songs') }}</span>
-            <i class="fa fa-compact-disc float-right text-green-400 text-2xl"></i>
-          </div>
-          <div class="p-6">
-            <composition-item
-              v-for="(song, i) in songs"
-              :key="song.docID"
-              :song="song"
-              :updateSong="updateSong"
-              :index="i"
-              :removeSong="removeSong"
-              :updateUnsavedFlag="updateUnsavedFlag"
-            />
-          </div>
+  <section class="container max-w-6xl mx-auto mt-20 mb-40">
+    <div class="md:grid md:grid-cols-7 md:gap-4">
+      <div class="col-span-5 pt-2 px-2 bg-white rounded">
+        <div class="px-6 pt-6 pb-5 font-bold">
+          <span class="text-2xl">{{ $t('profile.my_songs') }}</span>
+          <i class="fa fa-compact-disc float-right text-cyan-500 text-2xl"></i>
+        </div>
+        <div class="p-6">
+          <composition-item
+            v-for="(song, i) in songs"
+            :key="song.docID"
+            :song="song"
+            :updateSong="updateSong"
+            :index="i"
+            :removeSong="removeSong"
+            :updateUnsavedFlag="updateUnsavedFlag"
+          />
         </div>
       </div>
       <div class="col-span-2">
-        <div class="profile mx-auto max-w-6xl">
-          <div class="cover-photo relative mb-6">
-            <div class="img-wrap">
-              <img ref="avatarImageDOM" src="@/assets/images/default-cover-photo.png" alt="" />
+        <div class="mx-auto max-w-6xl bg-white pt-2 pb-10 px-5 rounded">
+          <div class="cover-photo relative mb-10">
+            <div class="w-44 h-44 mx-auto mb-2">
+              <img
+                ref="avatarImageDOM"
+                src="@/assets/images/default-cover-photo.png"
+                alt=""
+                class="shadow-xl"
+              />
             </div>
-            <label for="coverPhoto" class="absolute -bottom-4 right-28 w-10 h-10 bg-gray-300">
-              <i class="fas fa-pencil-alt fa-lg"></i>
+            <label for="coverPhoto" class="absolute -bottom-4 right-20 w-10 h-10 bg-gray-700">
+              <i class="fas fa-pencil-alt" style="color: #fff"></i>
             </label>
             <input
               id="coverPhoto"
@@ -38,15 +41,20 @@
               @change="uploadAvatar"
             />
           </div>
-          <div class="text-4xl font-bold text-center">{{ currentUser.displayName }}</div>
-          <div class="form-control">
-            <label for="description"> Description </label>
-            <p>
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laboriosam excepturi eos
-              natus pariatur hic inventore delectus fugiat sapiente optio sit? Hic repellat nobis
-              amet, natus saepe porro aut odit autem.
-            </p>
-          </div>
+          <ul class="flex justify-between">
+            <li class="w-1/3 text-center">
+              <span class="text-lg font-medium">{{ $t('profile.user_name') }}</span>
+              <p class="mt-1 text-gray-400 break-all">{{ currentUser.displayName }}</p>
+            </li>
+            <li class="w-1/3 text-center">
+              <span class="text-lg font-medium">{{ $t('profile.songs') }}</span>
+              <p class="mt-1 text-gray-400 break-all">{{ songsUploaded }}</p>
+            </li>
+            <li class="w-1/3 text-center">
+              <span class="text-lg font-medium">{{ $t('profile.comments') }}</span>
+              <p class="mt-1 text-gray-400 break-all">{{ commentsLeft }}</p>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -54,7 +62,7 @@
 </template>
 
 <script name="profile" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import CompositionItem from '@/components/CompositionItem.vue'
 import { auth, dbModular } from '@/utils/firebase'
 import { uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
@@ -63,6 +71,8 @@ import helper from '@/utils/helper'
 
 const songs = reactive([])
 const unsavedFlag = ref(false)
+const commentsLeft = ref('')
+const songsUploaded = ref('')
 const currentUser = auth.currentUser
 const avatarImageDOM = ref(null)
 
@@ -86,6 +96,16 @@ const addSong = (document) => {
   })
 
   songs.push(song)
+}
+
+const getSongsUploaded = async () => {
+  const querySnapshot = await helper.getDocuments('songs', 'uid', currentUser.uid)
+  songsUploaded.value = querySnapshot.docs.length
+}
+
+const getCommentsLeft = async () => {
+  const querySnapshot = await helper.getDocuments('comments', 'uid', currentUser.uid)
+  commentsLeft.value = querySnapshot.docs.length
 }
 
 const updateUnsavedFlag = (status) => (unsavedFlag.value = status)
@@ -161,6 +181,8 @@ const uploadAvatar = async (event) => {
 onMounted(() => {
   getSongs()
   getAvatar()
+  getSongsUploaded()
+  getCommentsLeft()
 })
 </script>
 
@@ -246,14 +268,6 @@ h3 {
   color: #333;
   background-color: #fff;
   border-radius: 15px;
-}
-
-.cover-photo .img-wrap {
-  margin-bottom: 2%;
-  margin-left: auto;
-  margin-right: auto;
-  width: 180px;
-  height: 180px;
 }
 
 .cover-photo img {

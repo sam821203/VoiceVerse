@@ -1,23 +1,24 @@
 <template>
-  <div class="border border-gray-200 p-3 mb-4 rounded">
-    <div v-show="!showForm">
-      <h4 class="inline-block text-2xl font-bold">{{ song.modified_name }}</h4>
+  <div class="px-5 py-3 mb-6 border border-gray-200 leading-10 rounded">
+    <div class="relative" v-show="!showForm">
+      <div class="inline-block text-md font-bold">{{ song.modified_name }}</div>
+      <div class="text-sm text-gray-400">{{ getUploadDate }}</div>
       <button
-        class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right"
+        class="absolute -top-6 -right-8 ml-1 w-5 h-5 text-sm rounded-full text-white bg-red-500 float-right"
         @click.prevent="deleteSong"
       >
         <i class="fa fa-times"></i>
       </button>
       <button
-        class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right"
+        class="absolute top-2.5 right-1.5 ml-1 w-20 h-10 text-sm rounded text-white bg-gray-400 float-right"
         @click.prevent="showForm = !showForm"
       >
-        <i class="fa fa-pencil-alt"></i>
+        <span class="text-md">{{ $t('profile.edit') }}</span>
       </button>
     </div>
     <div v-show="showForm">
       <div
-        class="text-white text-center font-bold p-4 mb-4"
+        class="text-xl text-white text-center font-bold p-4 mb-4"
         v-if="show_alert"
         :class="alert_variant"
       >
@@ -25,7 +26,7 @@
       </div>
       <vee-form :validation-schema="schema" :initial-values="song" @submit="edit">
         <div class="mb-3">
-          <label class="inline-block mb-2">Song Title</label>
+          <label class="inline-block">{{ $t('profile.song_title') }}</label>
           <vee-field
             name="modified_name"
             type="text"
@@ -35,8 +36,8 @@
           />
           <ErrorMessage class="text-red-600" name="modified_name" />
         </div>
-        <div class="mb-3">
-          <label class="inline-block mb-2">Genre</label>
+        <div class="mb-6">
+          <label class="inline-block">{{ $t('profile.genre') }}</label>
           <vee-field
             name="genre"
             type="text"
@@ -48,18 +49,18 @@
         </div>
         <button
           type="submit"
-          class="py-1.5 px-3 rounded text-white bg-green-600"
+          class="w-24 py-1 px-3 mb-3 mr-2 rounded text-white bg-cyan-500"
           :disabled="in_submission"
         >
-          Submit
+          {{ $t('profile.submit') }}
         </button>
         <button
           type="button"
-          class="py-1.5 px-3 rounded text-white bg-gray-600"
+          class="w-24 py-1 px-3 rounded text-white bg-gray-600"
           :disabled="in_submission"
           @click.prevent="showForm = false"
         >
-          Go Back
+          {{ $t('profile.go_back') }}
         </button>
       </vee-form>
     </div>
@@ -67,10 +68,11 @@
 </template>
 
 <script name="CompositionItem" setup>
-import { ref, reactive, toRefs } from 'vue'
+import { ref, reactive, toRefs, computed } from 'vue'
 import { songsCollection, storage, dbModular } from '@/utils/firebase'
 import { doc, deleteDoc } from 'firebase/firestore'
 import { ref as storageRef, deleteObject } from 'firebase/storage'
+import helper from '@/utils/helper'
 
 // Composition API 中的 props 與 reactive 無法使用 直接透過ES6解構語法 來自動解構，因為這樣會導致 資料失去原本的響應功能
 // 需要使用 toRef 與 toRefs 兩個函式來進行 解構後同時保有響應功能 的處理
@@ -103,13 +105,13 @@ const { song, updateSong, index, removeSong, updateUnsavedFlag } = toRefs(props)
 const showForm = ref(false)
 const in_submission = ref(false)
 const show_alert = ref(false)
-const alert_variant = ref('bg-blue-500')
+const alert_variant = ref('text-blue-500')
 const alert_message = ref('Please wait! Updating song info.')
 
 const edit = async (values) => {
   in_submission.value = true
   show_alert.value = true
-  alert_variant.value = 'bg-blue-500'
+  alert_variant.value = 'text-blue-500'
   alert_message.value = 'Please wait! Updating song info.'
 
   try {
@@ -117,7 +119,7 @@ const edit = async (values) => {
     await songsCollection.doc(song.value.docID).update(values)
   } catch (error) {
     in_submission.value = false
-    alert_variant.value = 'bg-red-500'
+    alert_variant.value = 'text-red-500'
     alert_message.value = 'Something went wrong! Try again later.'
     return
   }
@@ -128,7 +130,7 @@ const edit = async (values) => {
   updateSong.value(index.value, values)
 
   in_submission.value = false
-  alert_variant.value = 'bg-green-500'
+  alert_variant.value = 'text-green-500'
   alert_message.value = 'Success!'
 }
 
@@ -141,6 +143,12 @@ const deleteSong = async () => {
 
   removeSong.value(index.value)
 }
+
+const getUploadDate = computed(() => {
+  return song.value.dateUploaded
+    ? helper.formatUtcDate(song.value.dateUploaded)
+    : helper.formatUtcDate(new Date().toString())
+})
 </script>
 
 <style lang="scss" scoped></style>

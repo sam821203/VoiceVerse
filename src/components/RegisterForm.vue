@@ -36,6 +36,7 @@
         <vee-field
           name="age"
           type="number"
+          placeholder="15"
           class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         />
         <ErrorMessage class="text-red-600" name="age" />
@@ -80,6 +81,18 @@
         </vee-field>
         <ErrorMessage class="text-red-600" name="country" />
       </div>
+      <!-- Description -->
+      <!-- <div class="mb-3">
+        <label class="inline-block mb-2">{{ $t('authModal.description') }}</label>
+        <vee-field
+          name="description"
+          as="textarea"
+          rows="5"
+          class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+          placeholder="I am a..."
+        />
+        <ErrorMessage class="text-red-600" name="description" />
+      </div> -->
       <!-- TOS -->
       <div class="mb-8 pl-6">
         <vee-field

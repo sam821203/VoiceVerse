@@ -8,10 +8,16 @@
     "comment_count": "尚無評論 | 1 則評論 | {count} 則評論"
   },
   "profile": {
-    "my_songs": "我的曲目"
-  },
-  "components": {
-    "upload": "上傳"
+    "my_songs": "我的曲目",
+    "edit": "編輯",
+    "song_title": "名稱",
+    "genre": "風格",
+    "submit": "送出",
+    "go_back": "返回",
+    "description": "個人介紹",
+    "user_name": "名稱",
+    "songs": "曲目數量",
+    "comments": "評論"
   },
   "authModal": {
     "name": "你的名字",
@@ -20,10 +26,16 @@
     "password": "你的密碼",
     "confirmPassword": "確認你的密碼",
     "country": "你的國家",
+    "description": "個人介紹",
     "submit": "送出",
     "accept": "我接受 {0}",
     "tos": "各項條款",
     "yourAccount": "你的帳戶"
+  },
+  "uploadModal": {
+    "upload_song": "上傳曲目",
+    "upload": "上傳",
+    "drop_file": "拖放文件到此處"
   },
   "header": {
     "profile": "個人檔案",
