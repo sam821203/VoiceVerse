@@ -1,29 +1,37 @@
 <template>
   <div class="w-full mx-auto max-w-6xl">
-    <div class="search-wrap absolute top-64 w-1/3">
+    <div class="search-wrap absolute top-56 w-2/5">
       <input
         type="search"
-        class="z-20 block p-3 w-full h-14 text-sm text-gray-900 bg-gray-50 rounded border-l-2 border border-gray-300 focus:outline-none"
+        class="z-20 block p-3 w-full h-14 mb-4 text-sm text-gray-900 bg-gray-50 rounded border-l-2 border border-gray-300 focus:outline-none"
         autocomplete="off"
-        placeholder="Search Songs..."
+        :placeholder="$t('home.search_songs')"
         required
         v-model="search"
       />
       <Transition name="slide-fade">
         <i
-          class="absolute bottom-3 right-4 fas fa-search text-2xl"
+          class="absolute top-3 right-4 fas fa-search text-2xl"
           style="color: rgb(6, 182, 212)"
           v-if="!search"
         ></i>
       </Transition>
+      <BaseTag
+        v-for="tag in tagList"
+        :key="tag.name"
+        :name="tag.name"
+        :search="search"
+        @click.prevent="insertSearch(tag.name)"
+      />
     </div>
     <div class="list-wrap container">
       <div class="rounded relative flex flex-col">
-        <div
-          class="px-6 pt-6 pb-5 font-bold border-b border-gray-200"
+        <!-- <div
+          class="px-1 pt-6 pb-5 font-bold border-b border-gray-200"
           v-icon-secondary="{ icon: 'headphones-alt', right: true }"
-        >
-          <span class="card-title">Songs</span>
+        > -->
+        <div class="px-1 pt-6 pb-5 font-bold border-b border-gray-200">
+          <span class="text-2xl">{{ $t('home.songs') }}</span>
         </div>
         <ol id="playlist">
           <AppSongItem v-for="song in filteredList" :key="song.docID" :song="song" />
@@ -34,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeUnmount, computed, toRefs, defineExpose } from 'vue'
+import { ref, reactive, onBeforeUnmount, computed, watch, toRefs, defineExpose } from 'vue'
 import { songsCollection } from '@/utils/firebase'
 
 import AppSongItem from '@/components/SongItem.vue'
@@ -44,6 +52,17 @@ const songs = reactive([])
 const search = ref('')
 const perPageSongsMax = ref(8)
 const pendingRequest = ref(false)
+const tagList = reactive([
+  {
+    name: 'Harry Potter'
+  },
+  {
+    name: 'British'
+  },
+  {
+    name: '01'
+  }
+])
 
 const props = defineProps({
   songs: {
@@ -103,6 +122,10 @@ const getSongs = async () => {
 
 getSongs()
 
+const insertSearch = (tagName) => {
+  search.value = tagName
+}
+
 const handleScroll = () => {
   // 解構底下方法的步驟可以省略
   const { scrollTop, offsetHeight } = document.documentElement
@@ -120,6 +143,10 @@ const filteredList = computed(() => {
     return song.modified_name.toLowerCase().includes(search.value.toLowerCase())
   })
 })
+
+// watch(search, (newValue) => {
+//   console.log(`x is ${newValue}`)
+// })
 
 window.addEventListener('scroll', handleScroll)
 

@@ -2,7 +2,7 @@
   <li
     class="flex justify-between items-center px-3 py-8 mb-4 bg-white shadow-md rounded-lg cursor-pointer transition-all duration-500"
   >
-    <div class="flex gap-4">
+    <div class="flex items-center gap-4">
       <i class="play-icon invisible fas fa-play fa-xs leading-14"></i>
       <div style="width: 60px; height: 60px">
         <img :src="songAvatar" alt="" class="w-full h-full rounded-md object-cover" />
@@ -14,6 +14,7 @@
           >{{ song.modified_name }}
         </router-link>
         <span class="text-gray-500 text-sm">{{ song.display_name }}</span>
+        <span>{{ audioDuration }}</span>
       </div>
     </div>
 
@@ -30,7 +31,7 @@
       </router-link>
     </div>
     <audio controls>
-      <source :src="songUrl" ref="songUrl" type="audio/mp3" />
+      <source :src="songUrl" ref="songUrlDOM" type="audio/mp3" />
     </audio>
     <button @click.prevent="downloadSong()">
       <i class="fas fa-download"></i>
@@ -39,9 +40,10 @@
 </template>
 
 <script name="SongItem" setup>
-import { toRefs, computed } from 'vue'
+import { toRefs, computed, onMounted } from 'vue'
 import { ref, getBlob } from 'firebase/storage'
 import { storage } from '@/utils/firebase'
+import helper from '@/utils/helper'
 
 const props = defineProps({
   song: {
@@ -51,6 +53,14 @@ const props = defineProps({
 })
 
 const { song } = toRefs(props)
+const songUrlDOM = ref(null)
+const audioDuration = ref([])
+
+const songAvatar = computed(() =>
+  song.value.user_avatar
+    ? song.value.user_avatar
+    : 'https://discussions.apple.com/content/attachment/592590040'
+)
 
 const downloadSong = async () => {
   try {
@@ -73,13 +83,29 @@ const downloadSong = async () => {
   }
 }
 
-const songAvatar = computed(
-  () =>
-    song.value.user_avatar
-      ? song.value.user_avatar
-      : 'https://discussions.apple.com/content/attachment/592590040'
-  // : 'https://i.ibb.co/PDTprGt/default-cover-photo.png'
-)
+const getAudioDuration = (url) => {
+  // Create a non-dom allocated Audio element
+  var au = document.createElement('audio')
+
+  // Define the URL of the MP3 audio file
+  au.src = url
+
+  // Once the metadata has been loaded, display the duration in the console
+  au.addEventListener(
+    'loadedmetadata',
+    function () {
+      // Obtain the duration in seconds of the audio file (with milliseconds as well, a float value)
+      var duration = au.duration
+      console.log(audioDuration)
+      audioDuration.value = helper.formatTime(duration)
+    },
+    false
+  )
+}
+
+onMounted(() => {
+  getAudioDuration(song.value.url)
+})
 </script>
 
 <style lang="scss" scoped>

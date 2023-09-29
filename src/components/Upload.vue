@@ -53,10 +53,35 @@ const props = defineProps({
     required: true
   }
 })
+
 const { addSong } = toRefs(props)
 const is_dragover = ref(false)
 const uploads = reactive([])
 const currentUser = auth.currentUser
+
+const getAudioDuration = (url) => {
+  return new Promise((resolve, reject) => {
+    var au = document.createElement('audio')
+    au.src = url
+
+    au.addEventListener(
+      'loadedmetadata',
+      () => {
+        var duration = au.duration
+        resolve(helper.formatTime(duration))
+      },
+      false
+    )
+
+    au.addEventListener(
+      'error',
+      (error) => {
+        reject(error)
+      },
+      false
+    )
+  })
+}
 
 const upload = ($event) => {
   is_dragover.value = false
@@ -88,7 +113,7 @@ const upload = ($event) => {
     */
     const songsRef = storageRef(storage, `songs/${file.name}`)
     const uploadTask = uploadBytesResumable(songsRef, file)
-    console.log(currentUser)
+
     // -1 來矯正 length 出來的數值
     const uploadIndex =
       uploads.push({
@@ -114,6 +139,7 @@ const upload = ($event) => {
       },
       async () => {
         const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
+
         const song = {
           uid: currentUser.uid,
           display_name: currentUser.displayName || 'Anonymous',
@@ -124,6 +150,7 @@ const upload = ($event) => {
         }
 
         song.url = await getDownloadURL(uploadTask.snapshot.ref)
+        song.duration = await getAudioDuration(song.url)
 
         querySnapshot.forEach((avatar) => {
           song.user_avatar = avatar.data().url

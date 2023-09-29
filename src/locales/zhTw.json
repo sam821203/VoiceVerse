@@ -1,6 +1,8 @@
 {
   "home": {
-    "listen": "聽好音樂!"
+    "listen": "聽好音樂!",
+    "songs": "全部曲目",
+    "search_songs": "搜尋曲目..."
   },
   "song": {
     "comment_count": "尚無評論 | 1 則評論 | {count} 則評論"

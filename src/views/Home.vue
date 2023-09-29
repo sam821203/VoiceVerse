@@ -7,150 +7,23 @@
 
     <div class="">
       <BaseSearchBar ref="songItemDOM" :songs="songs" />
-      <!-- <BaseTag v-for="tag in tagList" :key="tag.name" /> -->
     </div>
 
     <!-- <AppRecommendation /> -->
-    <!-- <div>
-      <button @click.prevent="getValue">get Value</button>
-    </div> -->
-    <!-- Main Content -->
-    <!-- <section class="container mx-auto max-w-6xl">
-      <div class="rounded relative flex flex-col">
-        <div
-          class="px-6 pt-6 pb-5 font-bold border-b border-gray-200"
-          v-icon-secondary="{ icon: 'headphones-alt', right: true }"
-        >
-          <span class="card-title">Songs</span>
-        </div>
-        <ol id="playlist">
-          <AppSongItem v-for="song in songs" :key="song.docID" :song="song" />
-        </ol>
-      </div>
-    </section> -->
   </main>
 </template>
 
 <script name="Home" setup>
 import { ref, reactive, onBeforeUnmount, computed, watch } from 'vue'
 import { songsCollection } from '@/utils/firebase'
-import AppSongItem from '@/components/SongItem.vue'
 // import AppRecommendation from '@/components/Recommendation.vue'
-import vIconSecondary from '@/directives/icon-secondary'
-
-const songs = reactive([])
-const tagList = reactive([
-  {
-    name: 'Tag list1'
-  },
-  {
-    name: 'Tag list2'
-  },
-  {
-    name: 'Tag list3'
-  }
-])
-const perPageSongsMax = ref(8)
-const pendingRequest = ref(false)
-const songItemDOM = ref(null)
-const filteredSongs = ref(null)
-
-const getSongs = async () => {
-  if (pendingRequest.value) return
-
-  pendingRequest.value = true
-
-  let snapshots
-
-  if (songs.length) {
-    const lastDocument = await songsCollection.doc(songs[songs.length - 1].docID).get()
-    // const lastDocument = await doc(songsCollection, songs[songs.length - 1].docID)
-
-    // 建立查詢
-    // const querySongs = query(
-    //   songsCollection,
-    //   orderBy('modified_name'),
-    //   startAt(lastDocument),
-    //   limit(perPageSongsMax.value)
-    // )
-
-    // 執行查詢
-    // snapshots = await getDocs(querySongs)
-
-    snapshots = await songsCollection
-      .orderBy('modified_name')
-      .startAfter(lastDocument)
-      .limit(perPageSongsMax.value)
-      .get()
-  } else {
-    // const querySongs = query(
-    //   songsCollection,
-    //   orderBy('modified_name'),
-    //   limit(perPageSongsMax.value)
-    // )
-
-    // snapshots = await getDocs(querySongs)
-
-    snapshots = await songsCollection.orderBy('modified_name').limit(perPageSongsMax.value).get()
-  }
-
-  snapshots.forEach((document) => {
-    songs.push({
-      docID: document.id,
-      ...document.data()
-    })
-  })
-
-  pendingRequest.value = false
-}
-getSongs()
-
-const handleScroll = () => {
-  // 解構底下方法的步驟可以省略
-  const { scrollTop, offsetHeight } = document.documentElement
-  const { innerHeight } = window
-
-  const bottomOfWindow = Math.round(scrollTop) + innerHeight - 100 === offsetHeight - 100
-
-  if (bottomOfWindow) {
-    getSongs()
-  }
-}
-
-// const getValue = () => {
-//   console.log(songItemDOM.value.filteredList[0] === undefined)
-// }
-
-// FIXME: TypeError: Cannot read properties of null (reading 'filteredList')
-// const filteredSongs = computed(() => {
-//   if (!songItemDOM.value.filteredList || songItemDOM.value.filteredList.length === 0) {
-//     return songs
-//   } else {
-//     return songItemDOM.value.filteredList[0]
-//   }
-// })
-
-// const handleFilterChanged = (filtered) => {
-//   filteredSongs.value = filtered.length === 0 ? songs : filtered
-//   // console.log(songs)
-//   console.log('更新：', filteredSongs.value)
-// }
-
-window.addEventListener('scroll', handleScroll)
-
-// watch(songs.value, (newVal) => {
-//   console.log(`${newVal}`)
-// })
-
-onBeforeUnmount(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
 </script>
 
 <style scoped>
 .introduction {
   width: 100%;
   height: 396px;
+  margin-bottom: 40px;
   background-image: url('@/assets/images/bg-hero.png');
   background-size: cover;
   background-position: 67% center;

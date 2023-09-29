@@ -1,11 +1,20 @@
 <template>
   <a
     href="#"
-    class="bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-blue-400 border border-blue-400 inline-flex items-center justify-center"
-    >Badge link</a
+    class="hover:bg-gray-500 text-gray-500 hover:text-gray-100 text-sm font-medium mr-4 px-4 py-2.5 rounded border border-gray-500 inline-flex items-center justify-center"
+    >{{ name }}</a
   >
 </template>
 
-<script setup></script>
+<script setup>
+// import { toRefs, watch } from 'vue'
+
+const props = defineProps({
+  name: {
+    type: String,
+    required: true
+  }
+})
+</script>
 
 <style lang="scss" scoped></style>
