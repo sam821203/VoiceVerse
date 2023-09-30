@@ -1,6 +1,6 @@
 <template>
   <li
-    class="flex justify-between items-center pl-5 pr-6 py-8 mb-4 bg-white rounded-lg cursor-pointer select-none transition-all duration-300"
+    class="flex justify-between items-center pl-5 pr-6 py-10 mb-4 bg-white rounded-xl cursor-pointer select-none transition-all duration-300"
     :class="{ active: checkCurrentSong }"
     @dblclick="newSong(song, $event.target)"
   >
@@ -10,7 +10,7 @@
         style="color: rgb(107, 114, 128)"
       ></i>
       <div class="w-16 h-16">
-        <img :src="songAvatar" alt="" class="w-full h-full rounded-md object-cover" />
+        <img :src="songAvatar" alt="" class="w-full h-full rounded object-cover" />
       </div>
       <div>
         <router-link

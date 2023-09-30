@@ -7,7 +7,7 @@
           loading="lazy"
           decoding="async"
           alt=""
-          class="flex-none rounded-lg bg-slate-100"
+          class="flex-none rounded-xl bg-slate-100"
           width="88"
           height="88"
         />

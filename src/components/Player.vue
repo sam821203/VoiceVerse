@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center mx-auto max-w-screen-2xl h-full">
       <div class="flex w-1/4">
         <div class="mr-4 overflow-hidden" style="width: 60px; height: 60px">
-          <img :src="songAvatar" alt="" class="w-full h-full rounded-md object-cover" />
+          <img :src="songAvatar" alt="" class="w-full h-full rounded object-cover" />
         </div>
         <div v-if="current_song.modified_name">
           <h6 class="song-title font-bold">{{ current_song.modified_name }}</h6>

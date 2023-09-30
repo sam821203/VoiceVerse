@@ -23,24 +23,23 @@
         </li>
       </ul>
       <ul class="flex justify-between items-center gap-2">
-        <a class="text-black" href="#" v-if="!userLoggedIn" @click.prevent="toggleAuthModal">
-          <li class="w-36 py-2.5 text-center border border-gray-500 rounded-full">
-            {{ $t('header.login_register') }}
-          </li>
-        </a>
+        <BaseButton
+          class="border border-gray-500 rounded-full"
+          @click.prevent="toggleAuthModal"
+          v-if="!userLoggedIn"
+        >
+          {{ $t('header.login_register') }}
+        </BaseButton>
         <template v-else>
-          <a href="#" class="text-white" @click.prevent="toggleUploadModal">
-            <li
-              class="items-center py-2.5 w-36 text-center border bg-cyan-500 border-cyan-500 rounded-full"
-            >
-              {{ $t('header.upload') }}
-            </li>
-          </a>
-          <a class="text-black" href="#" @click.prevent="signingOut">
-            <li class="w-36 py-2.5 text-center border border-gray-500 rounded-full">
-              {{ $t('header.logout') }}
-            </li>
-          </a>
+          <BaseButton
+            class="text-white bg-cyan-500 border-cyan-500 rounded-full"
+            @click.prevent="toggleUploadModal"
+          >
+            {{ $t('header.upload') }}
+          </BaseButton>
+          <BaseButton class="border border-gray-500 rounded-full" @click.prevent="signingOut">
+            {{ $t('header.logout') }}
+          </BaseButton>
         </template>
       </ul>
     </nav>

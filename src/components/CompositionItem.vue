@@ -1,20 +1,25 @@
 <template>
-  <div class="px-5 py-3 mb-6 border border-gray-200 leading-10 rounded">
+  <div class="px-5 py-6 mb-6 border border-gray-200 leading-10 rounded">
     <div class="relative" v-show="!showForm">
-      <div class="inline-block text-md font-bold">{{ song.modified_name }}</div>
+      <router-link
+        :to="{ name: 'song', params: { id: song.docID } }"
+        class="leading-8 font-bold block text-gray-600 hover:underline"
+        >{{ song.modified_name }}
+      </router-link>
       <div class="text-sm text-gray-400">{{ getUploadDate }}</div>
       <button
-        class="absolute -top-6 -right-8 ml-1 w-5 h-5 text-sm rounded-full text-white bg-red-500 float-right"
+        class="absolute -top-8 -right-7 ml-1 w-5 h-5 text-sm rounded-full text-white bg-red-500 float-right"
         @click.prevent="deleteSong"
       >
         <i class="fa fa-times"></i>
       </button>
-      <button
-        class="absolute top-2.5 right-1.5 ml-1 w-20 h-10 text-sm rounded text-white bg-gray-400 float-right"
+      <BaseButton
+        class="absolute top-1.5 right-1.5 w-20 text-white border-gray-400 bg-gray-400"
+        mode="rounded-square"
         @click.prevent="showForm = !showForm"
       >
-        <span class="text-md">{{ $t('profile.edit') }}</span>
-      </button>
+        {{ $t('profile.edit') }}
+      </BaseButton>
     </div>
     <div v-show="showForm">
       <div
@@ -47,21 +52,24 @@
           />
           <ErrorMessage class="text-red-600" name="genre" />
         </div>
-        <button
+        <BaseButton
           type="submit"
-          class="w-24 py-1 px-3 mb-3 mr-2 rounded text-white bg-cyan-500"
+          class="px-3 mb-3 mr-2 text-white bg-cyan-500"
+          mode="rounded-square"
           :disabled="in_submission"
+          @click.prevent="showForm = !showForm"
         >
           {{ $t('profile.submit') }}
-        </button>
-        <button
+        </BaseButton>
+        <BaseButton
           type="button"
-          class="w-24 py-1 px-3 rounded text-white bg-gray-600"
+          class="px-3 text-white bg-gray-600"
+          mode="rounded-square"
           :disabled="in_submission"
           @click.prevent="showForm = false"
         >
           {{ $t('profile.go_back') }}
-        </button>
+        </BaseButton>
       </vee-form>
     </div>
   </div>

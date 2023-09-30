@@ -30,13 +30,14 @@
         />
         <ErrorMessage class="text-red-600" name="password" />
       </div>
-      <button
+      <BaseButton
         type="submit"
-        class="block w-full bg-cyan-500 text-white py-3 px-3 rounded transition hover:bg-cyan-600 focus:outline-gray-300"
+        class="bg-cyan-500 text-white transition hover:bg-cyan-600 focus:outline-gray-300"
+        mode="rounded-square-full"
         :disabled="login_in_submission"
       >
         {{ $t('authModal.submit') }}
-      </button>
+      </BaseButton>
     </vee-form>
   </div>
 </template>

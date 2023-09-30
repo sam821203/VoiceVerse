@@ -24,7 +24,7 @@
 
     <!-- Form -->
     <section class="container mx-auto max-w-6xl mt-6" id="comments">
-      <div class="bg-white rounded-t-md border border-gray-200 relative flex flex-col">
+      <div class="bg-white rounded-t-2xl border border-gray-200 relative flex flex-col">
         <div class="px-6 pt-6 pb-5 leading-8 font-bold border-b border-gray-200">
           <!-- Comment Count -->
           <span class="card-title">{{
@@ -44,25 +44,25 @@
             <vee-field
               as="textarea"
               name="comment"
-              class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded-md mb-4"
+              class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded mb-4"
               rows="5"
               placeholder="Your comment here..."
             ></vee-field>
-            <div class="flex justify-between mb-10">
+            <div class="flex justify-end items-center mb-10">
               <ErrorMessage class="text-red-600" name="comment" />
-              <button
+              <BaseButton
                 type="submit"
-                class="w-40 py-3 px-3 rounded-md text-white focus:outline-gray-400 bg-cyan-500 hover:bg-cyan-600 block"
+                class="text-white ml-auto bg-cyan-500 border-cyan-500 rounded-full focus:outline-gray-300 hover:bg-cyan-600"
                 :disabled="comment_in_submission"
               >
                 {{ $t('song.submit') }}
-              </button>
+              </BaseButton>
             </div>
           </vee-form>
           <!-- Sort Comments -->
           <select
             v-model="sortOrder"
-            class="block mt-4 py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded-md"
+            class="block mt-4 py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
           >
             <option value="1">{{ $t('song.latest') }}</option>
             <option value="2">{{ $t('song.oldest') }}</option>
@@ -246,7 +246,7 @@ watch([() => route.params.id, sortOrder], ([newId, newOrder], [oldId, oldOrder])
   li {
     border-top: none;
     &:last-child {
-      border-radius: 0 0 6px 6px;
+      border-radius: 0 0 16px 16px;
     }
   }
 }

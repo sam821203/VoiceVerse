@@ -3,7 +3,7 @@
     <div class="search-wrap absolute top-56 w-2/5">
       <input
         type="search"
-        class="z-20 block p-3 w-full h-14 mb-4 text-sm text-gray-900 bg-gray-50 rounded border border-l-2 border-gray-300 cursor-pointer focus:outline-none"
+        class="z-20 block p-3 w-full h-14 mb-4 text-sm text-gray-900 bg-gray-50 rounded-md border border-l-2 border-gray-300 cursor-pointer focus:outline-none"
         autocomplete="off"
         :placeholder="$t('home.search_songs')"
         required

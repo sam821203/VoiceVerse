@@ -2,10 +2,10 @@
   <!-- Main Content -->
   <section class="container max-w-6xl mx-auto mt-20 mb-40">
     <div class="md:grid md:grid-cols-7 md:gap-4">
-      <div class="col-span-5 pt-2 px-2 bg-white rounded">
+      <div class="col-span-5 pt-2 px-2 bg-white rounded-xl">
         <div class="px-6 pt-6 pb-5 font-bold">
           <span class="text-2xl">{{ $t('profile.my_songs') }}</span>
-          <i class="fa fa-compact-disc float-right text-cyan-500 text-2xl"></i>
+          <i class="fa fa-compact-disc float-right text-gray-400 text-2xl"></i>
         </div>
         <div class="p-6">
           <composition-item
@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="col-span-2">
-        <div class="mx-auto max-w-6xl bg-white pt-2 pb-10 px-5 rounded">
+        <div class="mx-auto max-w-6xl bg-white pt-2 pb-10 px-5 rounded-xl">
           <div class="cover-photo relative mb-10">
             <div class="w-44 h-44 mx-auto mb-2">
               <img
