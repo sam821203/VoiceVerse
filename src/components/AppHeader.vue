@@ -89,10 +89,6 @@ const getAvatar = async () => {
     avatarImageDOM.value.src = avatar.data().url
   })
 }
-
-// onMounted(() => {
-//   getAvatar()
-// })
 </script>
 
 <style lang="scss" scoped>

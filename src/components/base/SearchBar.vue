@@ -33,32 +33,40 @@
         <div class="px-1 pt-6 pb-5 font-bold">
           <span class="text-2xl">{{ $t('home.songs') }}</span>
         </div>
-        <!-- <div v-if="isLoading">
-          <BaseSpinner />
-        </div> -->
-        <!-- <ol id="playlist" v-else-if="hasArtists"> -->
         <ol id="playlist">
           <AppSongItem v-for="song in filteredList" :key="song.docID" :song="song" />
+          <!-- <div v-if="pendingRequest">No songs found!</div> -->
+          <div v-if="pendingRequest">
+            <BaseSpinner />
+          </div>
+          <div class="text-center text-xl mt-12" v-else>{{ $t('home.no_songs') }}</div>
         </ol>
-        <!-- <h3 v-else>No songs found!</h3> -->
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeUnmount, computed, watch, toRefs } from 'vue'
-// import { songsCollection } from '@/utils/firebase'
+import { ref, reactive, onBeforeUnmount, computed, watch, toRefs, onMounted } from 'vue'
+import { songsCollection } from '@/utils/firebase'
 import { dbModular, storage } from '@/utils/firebase'
-import { doc, getDocs, collection, query, orderBy, limit, startAt } from 'firebase/firestore'
+import {
+  doc,
+  getDoc,
+  getDocs,
+  collection,
+  query,
+  orderBy,
+  limit,
+  startAfter
+} from 'firebase/firestore'
 
 import AppSongItem from '@/components/SongItem.vue'
-import vIconSecondary from '@/directives/icon-secondary'
+// import vIconSecondary from '@/directives/icon-secondary'
 
 const songs = reactive([])
 const search = ref('')
-const isLoading = ref(false)
-const perPageSongsMax = ref(8)
+const perPageSongsMax = ref(5)
 const pendingRequest = ref(false)
 const tagList = reactive([
   {
@@ -72,13 +80,6 @@ const tagList = reactive([
   }
 ])
 
-const props = defineProps({
-  songs: {
-    type: Object,
-    required: true
-  }
-})
-
 const getSongs = async () => {
   if (pendingRequest.value) return
 
@@ -87,17 +88,16 @@ const getSongs = async () => {
   let snapshots
 
   if (songs.length) {
-    const lastDocument = doc(dbModular, 'songs', songs[songs.length - 1].docID)
+    const lastDocument = await getDoc(doc(songsCollection, songs[songs.length - 1].docID))
 
     // 建立查詢
     const querySongs = query(
       collection(dbModular, 'songs'),
       orderBy('modified_name'),
-      startAt(lastDocument),
+      startAfter(lastDocument),
       limit(perPageSongsMax.value)
     )
 
-    // 執行查詢
     snapshots = await getDocs(querySongs)
   } else {
     const querySongs = query(
@@ -116,6 +116,10 @@ const getSongs = async () => {
     })
   })
 
+  if (snapshots.size < perPageSongsMax.value) {
+    window.removeEventListener('scroll', handleScroll)
+  }
+
   pendingRequest.value = false
 }
 
@@ -126,15 +130,12 @@ const insertSearch = (tagName) => {
 }
 
 const handleScroll = () => {
-  // 解構底下方法的步驟可以省略
   const { scrollTop, offsetHeight } = document.documentElement
   const { innerHeight } = window
 
   const bottomOfWindow = Math.round(scrollTop) + innerHeight - 100 === offsetHeight - 100
 
-  if (bottomOfWindow) {
-    getSongs()
-  }
+  if (bottomOfWindow) getSongs()
 }
 
 const filteredList = computed(() => {
@@ -142,6 +143,8 @@ const filteredList = computed(() => {
     return song.modified_name.toLowerCase().includes(search.value.toLowerCase())
   })
 })
+
+const hasSongs = computed(() => !pendingRequest.value)
 
 window.addEventListener('scroll', handleScroll)
 

@@ -1,35 +1,36 @@
 <template>
   <main>
     <!-- Music Header -->
-    <section class="w-full mb-8 py-14 text-center text-white relative">
-      <div class="absolute inset-0 w-full h-full box-border bg-contain music-bg bg-slate-400"></div>
-      <div class="container mx-auto flex items-center">
+    <section class="w-full mb-8 py-20 text-center text-white relative">
+      <div
+        class="absolute inset-0 w-full h-full box-border bg-contain bg-gradient-to-r from-gray-600 from-5% via-gray-500 via-30% to-gray-600 to-90%"
+      ></div>
+      <div class="container mx-auto max-w-6xl flex">
         <!-- Play/Pause Button -->
         <button
           type="button"
-          class="z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
+          class="z-50 h-24 w-24 text-3xl bg-white text-gray-500 rounded-full focus:outline-none"
           @click.prevent="newSong(song)"
         >
-          <i class="fas fa-play"></i>
+          <i class="fas fa-play pl-1.5"></i>
         </button>
         <div class="z-50 text-left ml-8">
           <!-- Song Info -->
-          <div class="text-3xl font-bold">{{ song.modified_name }}</div>
-          <div>{{ song.genre }}</div>
-          <div class="song-price">{{ $n(1, 'currency') }}</div>
+          <div class="mt-2 mb-1 opacity-75">{{ song.genre }}</div>
+          <div class="text-2xl font-bold">{{ song.modified_name }}</div>
         </div>
       </div>
     </section>
 
     <!-- Form -->
-    <section class="container mx-auto mt-6" id="comments">
-      <div class="bg-white rounded border border-gray-200 relative flex flex-col">
-        <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
+    <section class="container mx-auto max-w-6xl mt-6" id="comments">
+      <div class="bg-white rounded-t-md border border-gray-200 relative flex flex-col">
+        <div class="px-6 pt-6 pb-5 leading-8 font-bold border-b border-gray-200">
           <!-- Comment Count -->
           <span class="card-title">{{
             $t('song.comment_count', song.comment_count, { count: song.comment_count })
           }}</span>
-          <i class="fa fa-comments float-right text-green-400 text-2xl"></i>
+          <i class="fa fa-comments float-right text-gray-400 text-2xl"></i>
         </div>
         <div class="p-6">
           <div
@@ -43,43 +44,46 @@
             <vee-field
               as="textarea"
               name="comment"
-              class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded mb-4"
+              class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded-md mb-4"
+              rows="5"
               placeholder="Your comment here..."
             ></vee-field>
-            <ErrorMessage class="text-red-600" name="comment" />
-            <button
-              type="submit"
-              class="py-1.5 px-3 rounded text-white bg-green-600 block"
-              :disabled="comment_in_submission"
-            >
-              Submit
-            </button>
+            <div class="flex justify-between mb-10">
+              <ErrorMessage class="text-red-600" name="comment" />
+              <button
+                type="submit"
+                class="w-40 py-3 px-3 rounded-md text-white focus:outline-gray-400 bg-cyan-500 hover:bg-cyan-600 block"
+                :disabled="comment_in_submission"
+              >
+                {{ $t('song.submit') }}
+              </button>
+            </div>
           </vee-form>
           <!-- Sort Comments -->
           <select
             v-model="sortOrder"
-            class="block mt-4 py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+            class="block mt-4 py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded-md"
           >
-            <option value="1">Latest</option>
-            <option value="2">Oldest</option>
+            <option value="1">{{ $t('song.latest') }}</option>
+            <option value="2">{{ $t('song.oldest') }}</option>
           </select>
         </div>
       </div>
     </section>
+
     <!-- Comments -->
-    <ul class="container mx-auto">
+    <ul class="comments container mx-auto max-w-6xl mb-40">
       <li
-        class="p-6 bg-gray-50 border border-gray-200"
+        class="pt-10 pb-12 px-6 bg-gray-50 border border-gray-200"
         v-for="comment in sortedComments"
         :key="comment.docID"
       >
-        <!-- Comment Author -->
-        <div class="mb-5">
+        <div class="flex justify-between items-center mb-5">
           <div class="font-bold">{{ comment.name }}</div>
-          <time>{{ comment.datePosted }}</time>
+          <time class="text-gray-400">{{ helper.formatUtcDate(comment.datePosted) }}</time>
         </div>
 
-        <p>{{ comment.content }}</p>
+        <p class="text-gray-500">{{ comment.content }}</p>
       </li>
     </ul>
   </main>
@@ -88,10 +92,11 @@
 <script name="Song" setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { auth, songsCollection, commentsCollection, dbModular } from '@/utils/firebase'
+import { auth, commentsCollection, dbModular } from '@/utils/firebase'
 import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
+import helper from '@/utils/helper'
 
 const { useUser, usePlayer } = useStore()
 const { userLoggedIn } = storeToRefs(useUser())
@@ -102,7 +107,7 @@ const router = useRouter()
 const song = ref({})
 const comment_in_submission = ref(false)
 const comment_show_alert = ref(false)
-const comment_alert_variant = ref('bg-blue-500')
+const comment_alert_variant = ref('text-blue-500')
 const comment_alert_message = ref('Please wait! Your comment is being submitted')
 const comments = ref([])
 const sortOrder = ref('1')
@@ -154,7 +159,7 @@ getSongsCollection()
 const addComment = async (commentVal, { resetForm }) => {
   comment_in_submission.value = true
   comment_show_alert.value = true
-  comment_alert_variant.value = 'bg-blue-500'
+  comment_alert_variant.value = 'text-blue-500'
   comment_alert_message.value = 'Please wait! Your comment is being submitted'
 
   const comment = reactive({
@@ -179,7 +184,7 @@ const addComment = async (commentVal, { resetForm }) => {
   getComments()
 
   comment_in_submission.value = false
-  comment_alert_variant.value = 'bg-green-500'
+  comment_alert_variant.value = 'text-green-500'
   comment_alert_message.value = 'Comment added!'
   resetForm()
 }
@@ -236,4 +241,13 @@ watch([() => route.params.id, sortOrder], ([newId, newOrder], [oldId, oldOrder])
 // }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.comments {
+  li {
+    border-top: none;
+    &:last-child {
+      border-radius: 0 0 6px 6px;
+    }
+  }
+}
+</style>

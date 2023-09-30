@@ -2,10 +2,14 @@
   "home": {
     "listen": "Listen to Great Music!",
     "songs": "Songs",
-    "search_songs": "Search Songs..."
+    "search_songs": "Search Songs...",
+    "no_songs": "No songs to display !"
   },
   "song": {
-    "comment_count": "No comments | 1 comment | {count} comments"
+    "comment_count": "No comments | 1 comment | {count} comments",
+    "submit": "Submit",
+    "latest": "Latest",
+    "oldest": "Oldest"
   },
   "profile": {
     "my_songs": "My Songs",

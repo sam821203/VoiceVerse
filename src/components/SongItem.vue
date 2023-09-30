@@ -9,7 +9,7 @@
         class="play-icon opacity-10 fas fa-play fa-xs leading-14"
         style="color: rgb(107, 114, 128)"
       ></i>
-      <div style="width: 60px; height: 60px">
+      <div class="w-16 h-16">
         <img :src="songAvatar" alt="" class="w-full h-full rounded-md object-cover" />
       </div>
       <div>
@@ -77,7 +77,7 @@ const songAvatar = computed(() =>
 )
 
 const songDuration = computed(() => {
-  song.value.duration ? song.value.duration : '0:00'
+  return song.value.duration ? song.value.duration : '0:00'
 })
 
 const checkCurrentSong = computed(() => {

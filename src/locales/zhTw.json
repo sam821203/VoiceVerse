@@ -2,10 +2,14 @@
   "home": {
     "listen": "聽好音樂!",
     "songs": "全部曲目",
-    "search_songs": "搜尋曲目..."
+    "search_songs": "搜尋曲目...",
+    "no_songs": "沒有可顯示的清單！"
   },
   "song": {
-    "comment_count": "尚無評論 | 1 則評論 | {count} 則評論"
+    "comment_count": "尚無評論 | 1 則評論 | {count} 則評論",
+    "submit": "送出",
+    "latest": "最新排序",
+    "oldest": "最舊排序"
   },
   "profile": {
     "my_songs": "我的曲目",

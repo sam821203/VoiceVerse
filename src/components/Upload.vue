@@ -90,7 +90,7 @@ const addTimeStamp = (string) => {
   if (string.includes('.mp3')) {
     return `${string.split('.')[0]}_${Date.now()}.mp3`
   } else {
-    console.log('這不是音樂檔案')
+    console.log('Not mp3 file!')
   }
 }
 
