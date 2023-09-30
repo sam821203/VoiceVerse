@@ -20,17 +20,17 @@
     "comments": "評論"
   },
   "authModal": {
-    "name": "你的名字",
-    "email": "你的信箱",
-    "age": "你的年齡",
-    "password": "你的密碼",
-    "confirmPassword": "確認你的密碼",
-    "country": "你的國家",
+    "name": "名字",
+    "email": "信箱",
+    "age": "年齡",
+    "password": "密碼",
+    "confirmPassword": "確認密碼",
+    "country": "國家",
     "description": "個人介紹",
     "submit": "送出",
     "accept": "我接受 {0}",
     "tos": "各項條款",
-    "yourAccount": "你的帳戶"
+    "yourAccount": "帳戶"
   },
   "uploadModal": {
     "upload_song": "上傳曲目",

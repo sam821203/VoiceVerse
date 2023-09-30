@@ -10,7 +10,7 @@
     <vee-form :validation-schema="loginSchema" @submit="login">
       <!-- Email -->
       <div class="mb-3">
-        <label class="inline-block mb-2">Email</label>
+        <label class="inline-block mb-2">{{ $t('authModal.email') }}</label>
         <vee-field
           name="email"
           type="email"
@@ -21,7 +21,7 @@
       </div>
       <!-- Password -->
       <div class="mb-8">
-        <label class="inline-block mb-2">Password</label>
+        <label class="inline-block mb-2">{{ $t('authModal.password') }}</label>
         <vee-field
           name="password"
           type="password"
@@ -32,10 +32,10 @@
       </div>
       <button
         type="submit"
-        class="block w-full bg-cyan-500 text-white py-3 px-3 rounded transition hover:bg-cyan-600"
+        class="block w-full bg-cyan-500 text-white py-3 px-3 rounded transition hover:bg-cyan-600 focus:outline-gray-300"
         :disabled="login_in_submission"
       >
-        Submit
+        {{ $t('authModal.submit') }}
       </button>
     </vee-form>
   </div>

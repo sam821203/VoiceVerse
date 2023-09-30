@@ -42,8 +42,10 @@
 
 <script name="upload" setup>
 import { ref, reactive, onBeforeUnmount, toRefs } from 'vue'
-import { storage, songsCollection } from '@/utils/firebase'
-import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { storage, songsCollection, dbModular } from '@/utils/firebase'
+import { ref as storageRef, uploadBytesResumable, getDownloadURL, listAll } from 'firebase/storage'
+import { collection, query } from 'firebase/firestore'
+
 import { auth } from '@/utils/firebase'
 import helper from '@/utils/helper'
 
@@ -83,12 +85,21 @@ const getAudioDuration = (url) => {
   })
 }
 
+const addTimeStamp = (string) => {
+  console.log(string)
+  if (string.includes('.mp3')) {
+    return `${string.split('.')[0]}_${Date.now()}.mp3`
+  } else {
+    console.log('這不是音樂檔案')
+  }
+}
+
 const upload = ($event) => {
   is_dragover.value = false
   // dataTransfer 只有 drag & drop event 有
   const files = $event.dataTransfer ? [...$event.dataTransfer.files] : [...$event.target.files]
 
-  files.forEach((file) => {
+  files.forEach(async (file) => {
     // 確認檔案類型
     if (file.type !== 'audio/mpeg') return
 
@@ -109,17 +120,37 @@ const upload = ($event) => {
     /*
     會顯示出 storageBucket 裡的 "voice-verse.appspot.com"
     這能告訴 firebase 要在哪裡上傳檔案
-    如果是 .ref('songs')，就會是 "voice-verse.appspot.com/songs" 資料夾
     */
     const songsRef = storageRef(storage, `songs/${file.name}`)
-    const uploadTask = uploadBytesResumable(songsRef, file)
+    const songsCollectionRef = storageRef(storage, `songs`)
+    const listAllSongs = await listAll(songsCollectionRef)
+    let modifiedFileName = file.name
+
+    for (const song of listAllSongs.items) {
+      if (file.name === song.name) {
+        modifiedFileName = addTimeStamp(file.name)
+        break
+      }
+    }
+
+    const modifiedSongsRef = storageRef(storage, `songs/${modifiedFileName}`)
+    const uploadTask = uploadBytesResumable(modifiedSongsRef, file)
+
+    // listAllSongs.items.forEach((song) => {
+    //   // 第一開始就會有 upload 的a名稱了
+    //   if (file.name === song.name) {
+    //     uploadTask.snapshot.ref.name = addTimeStamp(song.name)
+    //     console.log(uploadTask.snapshot.ref.name)
+    //   }
+    //   console.log(2)
+    // })
 
     // -1 來矯正 length 出來的數值
     const uploadIndex =
       uploads.push({
         uploadTask,
         current_progress: 0,
-        name: file.name,
+        name: modifiedFileName,
         variant: 'bg-blue-400',
         icon: 'fas fa-spinner fa-spin',
         text_class: ''
@@ -143,8 +174,8 @@ const upload = ($event) => {
         const song = {
           uid: currentUser.uid,
           display_name: currentUser.displayName || 'Anonymous',
-          original_name: uploadTask.snapshot.ref.name,
-          modified_name: uploadTask.snapshot.ref.name,
+          original_name: modifiedFileName,
+          modified_name: modifiedFileName,
           genre: '',
           comment_count: 0,
           dateUploaded: new Date().toString()

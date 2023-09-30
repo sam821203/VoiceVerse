@@ -3,7 +3,7 @@
     <div class="search-wrap absolute top-56 w-2/5">
       <input
         type="search"
-        class="z-20 block p-3 w-full h-14 mb-4 text-sm text-gray-900 bg-gray-50 rounded border-l-2 border border-gray-300 focus:outline-none"
+        class="z-20 block p-3 w-full h-14 mb-4 text-sm text-gray-900 bg-gray-50 rounded border border-l-2 border-gray-300 cursor-pointer focus:outline-none"
         autocomplete="off"
         :placeholder="$t('home.search_songs')"
         required
@@ -11,7 +11,7 @@
       />
       <Transition name="slide-fade">
         <i
-          class="absolute top-3 right-4 fas fa-search text-2xl"
+          class="absolute top-3 right-4 fas fa-search text-2xl pointer-events-none"
           style="color: rgb(6, 182, 212)"
           v-if="!search"
         ></i>
@@ -33,9 +33,14 @@
         <div class="px-1 pt-6 pb-5 font-bold">
           <span class="text-2xl">{{ $t('home.songs') }}</span>
         </div>
+        <!-- <div v-if="isLoading">
+          <BaseSpinner />
+        </div> -->
+        <!-- <ol id="playlist" v-else-if="hasArtists"> -->
         <ol id="playlist">
           <AppSongItem v-for="song in filteredList" :key="song.docID" :song="song" />
         </ol>
+        <!-- <h3 v-else>No songs found!</h3> -->
       </div>
     </div>
   </div>
@@ -43,13 +48,16 @@
 
 <script setup>
 import { ref, reactive, onBeforeUnmount, computed, watch, toRefs } from 'vue'
-import { songsCollection } from '@/utils/firebase'
+// import { songsCollection } from '@/utils/firebase'
+import { dbModular, storage } from '@/utils/firebase'
+import { doc, getDocs, collection, query, orderBy, limit, startAt } from 'firebase/firestore'
 
 import AppSongItem from '@/components/SongItem.vue'
 import vIconSecondary from '@/directives/icon-secondary'
 
 const songs = reactive([])
 const search = ref('')
+const isLoading = ref(false)
 const perPageSongsMax = ref(8)
 const pendingRequest = ref(false)
 const tagList = reactive([
@@ -79,35 +87,26 @@ const getSongs = async () => {
   let snapshots
 
   if (songs.length) {
-    const lastDocument = await songsCollection.doc(songs[songs.length - 1].docID).get()
-    // const lastDocument = await doc(songsCollection, songs[songs.length - 1].docID)
+    const lastDocument = doc(dbModular, 'songs', songs[songs.length - 1].docID)
 
     // 建立查詢
-    // const querySongs = query(
-    //   songsCollection,
-    //   orderBy('modified_name'),
-    //   startAt(lastDocument),
-    //   limit(perPageSongsMax.value)
-    // )
+    const querySongs = query(
+      collection(dbModular, 'songs'),
+      orderBy('modified_name'),
+      startAt(lastDocument),
+      limit(perPageSongsMax.value)
+    )
 
     // 執行查詢
-    // snapshots = await getDocs(querySongs)
-
-    snapshots = await songsCollection
-      .orderBy('modified_name')
-      .startAfter(lastDocument)
-      .limit(perPageSongsMax.value)
-      .get()
+    snapshots = await getDocs(querySongs)
   } else {
-    // const querySongs = query(
-    //   songsCollection,
-    //   orderBy('modified_name'),
-    //   limit(perPageSongsMax.value)
-    // )
+    const querySongs = query(
+      collection(dbModular, 'songs'),
+      orderBy('modified_name'),
+      limit(perPageSongsMax.value)
+    )
 
-    // snapshots = await getDocs(querySongs)
-
-    snapshots = await songsCollection.orderBy('modified_name').limit(perPageSongsMax.value).get()
+    snapshots = await getDocs(querySongs)
   }
 
   snapshots.forEach((document) => {

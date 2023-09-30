@@ -99,16 +99,16 @@
           name="tos"
           type="checkbox"
           value="1"
-          class="w-4 h-4 float-left -ml-6 mt-1 rounded"
+          class="w-4 h-4 float-left -ml-6 mt-1 rounded focus:outline-gray-300"
         />
         <i18n-t class="inline-block" keypath="authModal.accept" tag="label"
-          ><a href="#">{{ $t('authModal.tos') }}</a></i18n-t
+          ><a href="#" class="focus:outline-gray-300">{{ $t('authModal.tos') }}</a></i18n-t
         >
         <ErrorMessage class="text-red-600" name="tos" />
       </div>
       <button
         type="submit"
-        class="block w-full bg-cyan-500 text-white py-3 px-3 rounded transition hover:bg-cyan-600"
+        class="block w-full bg-cyan-500 text-white py-3 px-3 rounded transition hover:bg-cyan-600 focus:outline-gray-300"
         :disabled="reg_in_submission"
       >
         {{ $t('authModal.submit') }}
