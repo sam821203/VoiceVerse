@@ -1,10 +1,14 @@
 <template>
   <li
-    class="flex justify-between items-center pl-5 pr-6 py-8 mb-4 bg-white rounded-lg cursor-pointer transition-all duration-300"
+    class="flex justify-between items-center pl-5 pr-6 py-8 mb-4 bg-white rounded-lg cursor-pointer select-none transition-all duration-300"
+    :class="{ active: checkCurrentSong }"
     @dblclick="newSong(song, $event.target)"
   >
     <div class="flex items-center gap-4">
-      <i class="play-icon opacity-5 fas fa-play fa-xs leading-14"></i>
+      <i
+        class="play-icon opacity-10 fas fa-play fa-xs leading-14"
+        style="color: rgb(107, 114, 128)"
+      ></i>
       <div style="width: 60px; height: 60px">
         <img :src="songAvatar" alt="" class="w-full h-full rounded-md object-cover" />
       </div>
@@ -51,6 +55,7 @@ import { toRefs, computed } from 'vue'
 import { ref, getBlob } from 'firebase/storage'
 import { storage } from '@/utils/firebase'
 import { useStore } from '@/stores/index.js'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps({
   song: {
@@ -61,6 +66,7 @@ const props = defineProps({
 
 const { usePlayer } = useStore()
 const { newSong } = usePlayer()
+const { activeSong } = storeToRefs(usePlayer())
 const { song } = toRefs(props)
 const songUrlDOM = ref(null)
 
@@ -70,7 +76,15 @@ const songAvatar = computed(() =>
     : 'https://discussions.apple.com/content/attachment/592590040'
 )
 
-const songDuration = computed(() => (song.value.duration ? song.value.duration : '0:00'))
+const songDuration = computed(() => {
+  song.value.duration ? song.value.duration : '0:00'
+})
+
+const checkCurrentSong = computed(() => {
+  if (activeSong.value !== null) {
+    return activeSong.value.docID === song.value.docID ? true : false
+  }
+})
 
 const downloadSong = async () => {
   try {

@@ -10,7 +10,8 @@ export const usePlayer = defineStore('player', {
     seek: '-:--',
     duration: '-:--',
     playerProgress: '0%',
-    volumeValue: '100%'
+    volumeValue: '100%',
+    activeSong: null
   }),
   actions: {
     async newSong(song, target) {
@@ -25,24 +26,22 @@ export const usePlayer = defineStore('player', {
       this.sound = new Howl({
         src: [song.url],
         html5: true,
-        // loop: true,
         volume: 1
       })
       // 播放歌曲
       this.sound.play()
-
-      target.classList.add('active')
+      this.activeSong = song
+      // target.classList.add('active')
 
       // 監聽 play 方法
       this.sound.on('play', () => {
         requestAnimationFrame(this.progress)
       })
-      this.sound.on('end', () => {
-        target.classList.remove('active')
-      })
+      // this.sound.on('end', () => {
+      //   target.classList.remove('active')
+      // })
     },
     async toggleAudio() {
-      // 檢查是否為 Howl 物件
       if (!this.sound.playing) return
 
       if (this.sound.playing()) {

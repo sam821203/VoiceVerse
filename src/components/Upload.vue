@@ -121,7 +121,6 @@ const upload = ($event) => {
     會顯示出 storageBucket 裡的 "voice-verse.appspot.com"
     這能告訴 firebase 要在哪裡上傳檔案
     */
-    const songsRef = storageRef(storage, `songs/${file.name}`)
     const songsCollectionRef = storageRef(storage, `songs`)
     const listAllSongs = await listAll(songsCollectionRef)
     let modifiedFileName = file.name
@@ -135,15 +134,6 @@ const upload = ($event) => {
 
     const modifiedSongsRef = storageRef(storage, `songs/${modifiedFileName}`)
     const uploadTask = uploadBytesResumable(modifiedSongsRef, file)
-
-    // listAllSongs.items.forEach((song) => {
-    //   // 第一開始就會有 upload 的a名稱了
-    //   if (file.name === song.name) {
-    //     uploadTask.snapshot.ref.name = addTimeStamp(song.name)
-    //     console.log(uploadTask.snapshot.ref.name)
-    //   }
-    //   console.log(2)
-    // })
 
     // -1 來矯正 length 出來的數值
     const uploadIndex =
