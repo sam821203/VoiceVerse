@@ -26,16 +26,12 @@
     </div>
     <div class="list-wrap">
       <div class="rounded relative flex flex-col mb-40">
-        <!-- <div
-          class="px-1 pt-6 pb-5 font-bold border-b border-gray-200"
-          v-icon-secondary="{ icon: 'headphones-alt', right: true }"
-        > -->
         <div class="px-1 pt-6 pb-5 font-bold">
           <span class="text-2xl">{{ $t('home.songs') }}</span>
+          <i class="fa fa-compact-disc float-right text-gray-400 text-2xl"></i>
         </div>
         <ol id="playlist">
           <AppSongItem v-for="song in filteredList" :key="song.docID" :song="song" />
-          <!-- <div v-if="pendingRequest">No songs found!</div> -->
           <div v-if="pendingRequest">
             <BaseSpinner />
           </div>
@@ -49,7 +45,7 @@
 <script setup>
 import { ref, reactive, onBeforeUnmount, computed, watch, toRefs, onMounted } from 'vue'
 import { songsCollection } from '@/utils/firebase'
-import { dbModular, storage } from '@/utils/firebase'
+import { db, storage } from '@/utils/firebase'
 import {
   doc,
   getDoc,
@@ -62,7 +58,6 @@ import {
 } from 'firebase/firestore'
 
 import AppSongItem from '@/components/SongItem.vue'
-// import vIconSecondary from '@/directives/icon-secondary'
 
 const songs = reactive([])
 const search = ref('')
@@ -92,7 +87,7 @@ const getSongs = async () => {
 
     // 建立查詢
     const querySongs = query(
-      collection(dbModular, 'songs'),
+      songsCollection,
       orderBy('modified_name'),
       startAfter(lastDocument),
       limit(perPageSongsMax.value)
@@ -101,7 +96,7 @@ const getSongs = async () => {
     snapshots = await getDocs(querySongs)
   } else {
     const querySongs = query(
-      collection(dbModular, 'songs'),
+      songsCollection,
       orderBy('modified_name'),
       limit(perPageSongsMax.value)
     )

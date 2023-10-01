@@ -32,7 +32,7 @@
       </div>
       <BaseButton
         type="submit"
-        class="bg-cyan-500 text-white transition hover:bg-cyan-600 focus:outline-gray-300"
+        class="bg-cyan-500 text-white hover:bg-cyan-600 focus:outline-gray-300"
         mode="rounded-square-full"
         :disabled="login_in_submission"
       >

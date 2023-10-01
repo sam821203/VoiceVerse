@@ -30,8 +30,11 @@
                 class="shadow-xl"
               />
             </div>
-            <label for="coverPhoto" class="absolute -bottom-4 right-20 w-10 h-10 bg-gray-700">
-              <i class="fas fa-pencil-alt" style="color: #fff"></i>
+            <label
+              for="coverPhoto"
+              class="absolute -bottom-4 right-20 w-10 h-10 bg-gray-600 hover:bg-gray-700"
+            >
+              <i class="fas fa-pencil-alt text-white"></i>
             </label>
             <input
               id="coverPhoto"
@@ -64,8 +67,9 @@
 <script name="profile" setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import CompositionItem from '@/components/CompositionItem.vue'
-import { auth, dbModular } from '@/utils/firebase'
+import { auth, db } from '@/utils/firebase'
 import { uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
+import { avatarsCollection } from '@/utils/firebase'
 import { doc, deleteDoc, addDoc, getDoc, collection } from 'firebase/firestore'
 import helper from '@/utils/helper'
 
@@ -123,7 +127,7 @@ const deleteAvatar = async (querySnapshot) => {
     const avatarRef = helper.getStorage(`avatars/${avatar.data().image_name}`)
 
     await deleteObject(avatarRef)
-    await deleteDoc(doc(dbModular, 'avatars', avatar.id))
+    await deleteDoc(doc(db, 'avatars', avatar.id))
   })
 }
 
@@ -137,7 +141,7 @@ const addAvatar = async (uploadTask) => {
 
   image.url = await getDownloadURL(uploadTask.snapshot.ref)
 
-  const imageRef = await addDoc(collection(dbModular, 'avatars'), image)
+  const imageRef = await addDoc(avatarsCollection, image)
   const imageSnapshot = await getDoc(imageRef)
 
   avatarImageDOM.value.src = imageSnapshot.data().url

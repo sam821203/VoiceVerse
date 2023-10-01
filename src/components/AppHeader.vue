@@ -24,7 +24,7 @@
       </ul>
       <ul class="flex justify-between items-center gap-2">
         <BaseButton
-          class="border border-gray-500 rounded-full"
+          class="border border-gray-500 rounded-full hover:bg-gray-600 hover:text-white"
           @click.prevent="toggleAuthModal"
           v-if="!userLoggedIn"
         >
@@ -32,12 +32,15 @@
         </BaseButton>
         <template v-else>
           <BaseButton
-            class="text-white bg-cyan-500 border-cyan-500 rounded-full"
+            class="text-white bg-cyan-500 border-cyan-500 rounded-full hover:bg-cyan-600 hover:border-cyan-600"
             @click.prevent="toggleUploadModal"
           >
             {{ $t('header.upload') }}
           </BaseButton>
-          <BaseButton class="border border-gray-500 rounded-full" @click.prevent="signingOut">
+          <BaseButton
+            class="border border-gray-500 rounded-full hover:bg-gray-600 hover:text-white"
+            @click.prevent="signingOut"
+          >
             {{ $t('header.logout') }}
           </BaseButton>
         </template>

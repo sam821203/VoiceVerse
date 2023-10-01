@@ -9,15 +9,15 @@
         <!-- Play/Pause Button -->
         <button
           type="button"
-          class="z-50 h-24 w-24 text-3xl bg-white text-gray-500 rounded-full focus:outline-none"
+          class="z-10 h-24 w-24 text-3xl bg-white text-gray-500 rounded-full focus:outline-none"
           @click.prevent="newSong(song)"
         >
           <i class="fas fa-play pl-1.5"></i>
         </button>
-        <div class="z-50 text-left ml-8">
+        <div class="z-10 text-left ml-8">
           <!-- Song Info -->
-          <div class="mt-2 mb-1 opacity-75">{{ song.genre }}</div>
-          <div class="text-2xl font-bold">{{ song.modified_name }}</div>
+          <div class="mt-2 mb-1 text-white opacity-75">{{ song.genre }}</div>
+          <div class="text-white text-2xl font-bold">{{ song.modified_name }}</div>
         </div>
       </div>
     </section>
@@ -52,7 +52,7 @@
               <ErrorMessage class="text-red-600" name="comment" />
               <BaseButton
                 type="submit"
-                class="text-white ml-auto bg-cyan-500 border-cyan-500 rounded-full focus:outline-gray-300 hover:bg-cyan-600"
+                class="text-white ml-auto bg-cyan-500 border-cyan-500 rounded-full focus:outline-gray-300 hover:bg-cyan-600 hover:border-cyan-600"
                 :disabled="comment_in_submission"
               >
                 {{ $t('song.submit') }}
@@ -92,7 +92,7 @@
 <script name="Song" setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { auth, commentsCollection, dbModular } from '@/utils/firebase'
+import { auth, commentsCollection, db } from '@/utils/firebase'
 import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
@@ -127,7 +127,7 @@ const sortedComments = computed(() =>
 )
 
 const getComments = async () => {
-  const q = query(collection(dbModular, 'comments'), where('sid', '==', route.params.id))
+  const q = query(commentsCollection, where('sid', '==', route.params.id))
   const querySnapshot = await getDocs(q)
 
   // initiate
@@ -142,7 +142,7 @@ const getComments = async () => {
 }
 
 const getSongsCollection = async () => {
-  const songsDocRef = doc(dbModular, 'songs', route.params.id)
+  const songsDocRef = doc(db, 'songs', route.params.id)
   const docSnapshot = await getDoc(songsDocRef)
 
   if (!docSnapshot.exists()) {
@@ -175,7 +175,7 @@ const addComment = async (commentVal, { resetForm }) => {
   // 更新留言數量
   song.value.comment_count += 1
 
-  const songRef = doc(dbModular, 'songs', route.params.id)
+  const songRef = doc(db, 'songs', route.params.id)
 
   await updateDoc(songRef, {
     comment_count: song.value.comment_count

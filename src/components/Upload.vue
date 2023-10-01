@@ -42,7 +42,7 @@
 
 <script name="upload" setup>
 import { ref, reactive, onBeforeUnmount, toRefs } from 'vue'
-import { storage, songsCollection, dbModular } from '@/utils/firebase'
+import { storage, songsCollection } from '@/utils/firebase'
 import { ref as storageRef, uploadBytesResumable, getDownloadURL, listAll } from 'firebase/storage'
 import { collection, query } from 'firebase/firestore'
 

@@ -1,4 +1,4 @@
-import { dbModular, storage } from '@/utils/firebase'
+import { db, storage } from '@/utils/firebase'
 import { getDocs, query, where, collection } from 'firebase/firestore'
 import { ref } from 'firebase/storage'
 
@@ -33,7 +33,7 @@ export default {
     return `${day} ${month} ${year}`
   },
   async getDocuments(docs, id, target) {
-    const q = query(collection(dbModular, docs), where(id, '==', target))
+    const q = query(collection(db, docs), where(id, '==', target))
     const querySnapshot = await getDocs(q)
 
     return querySnapshot

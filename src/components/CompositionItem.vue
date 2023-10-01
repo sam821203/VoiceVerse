@@ -3,18 +3,18 @@
     <div class="relative" v-show="!showForm">
       <router-link
         :to="{ name: 'song', params: { id: song.docID } }"
-        class="leading-8 font-bold block text-gray-600 hover:underline"
+        class="leading-8 font-bold block hover:underline"
         >{{ song.modified_name }}
       </router-link>
       <div class="text-sm text-gray-400">{{ getUploadDate }}</div>
       <button
-        class="absolute -top-8 -right-7 ml-1 w-5 h-5 text-sm rounded-full text-white bg-red-500 float-right"
+        class="absolute -top-8 -right-7 ml-1 w-5 h-5 text-sm rounded-full bg-red-500 float-right"
         @click.prevent="deleteSong"
       >
-        <i class="fa fa-times"></i>
+        <i class="fa fa-times text-white"></i>
       </button>
       <BaseButton
-        class="absolute top-1.5 right-1.5 w-20 text-white border-gray-400 bg-gray-400"
+        class="absolute top-1.5 right-1.5 w-20 text-white bg-gray-400 hover:bg-gray-500"
         mode="rounded-square"
         @click.prevent="showForm = !showForm"
       >
@@ -54,7 +54,7 @@
         </div>
         <BaseButton
           type="submit"
-          class="px-3 mb-3 mr-2 text-white bg-cyan-500"
+          class="px-3 mb-3 mr-2 text-white bg-cyan-500 hover:bg-cyan-600"
           mode="rounded-square"
           :disabled="in_submission"
           @click.prevent="showForm = !showForm"
@@ -63,7 +63,7 @@
         </BaseButton>
         <BaseButton
           type="button"
-          class="px-3 text-white bg-gray-600"
+          class="px-3 text-white bg-gray-600 hover:bg-gray-700"
           mode="rounded-square"
           :disabled="in_submission"
           @click.prevent="showForm = false"
@@ -77,7 +77,7 @@
 
 <script name="CompositionItem" setup>
 import { ref, reactive, toRefs, computed } from 'vue'
-import { songsCollection, storage, dbModular } from '@/utils/firebase'
+import { songsCollection, storage, db } from '@/utils/firebase'
 import { doc, deleteDoc } from 'firebase/firestore'
 import { ref as storageRef, deleteObject } from 'firebase/storage'
 import helper from '@/utils/helper'
@@ -147,7 +147,7 @@ const deleteSong = async () => {
 
   // Delete from storage & firestore
   await deleteObject(songRef)
-  await deleteDoc(doc(dbModular, 'songs', song.value.docID))
+  await deleteDoc(doc(db, 'songs', song.value.docID))
 
   removeSong.value(index.value)
 }

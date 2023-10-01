@@ -15,7 +15,7 @@
       <div>
         <router-link
           :to="{ name: 'song', params: { id: song.docID } }"
-          class="font-bold block text-gray-600 hover:underline"
+          class="font-bold block hover:underline"
           >{{ song.modified_name }}
         </router-link>
         <span class="text-gray-400 text-sm">{{ song.display_name }}</span>
@@ -24,14 +24,14 @@
 
     <div class="flex items-center gap-16">
       <div class="flex gap-4">
-        <div class="text-gray-600 text-lg hover:underline">
+        <div class="text-lg hover:underline">
           <router-link
             custom
             :to="{ name: 'song', params: { id: song.docID }, hash: '#comments' }"
             v-slot="{ navigate }"
           >
             <span class="comments" @click="navigate">
-              <i class="fa fa-comments text-gray-600"></i>
+              <i class="fa fa-comments"></i>
               {{ song.comment_count }}
             </span>
           </router-link>
@@ -40,8 +40,6 @@
           <source :src="songUrl" ref="songUrlDOM" type="audio/mp3" />
         </audio>
         <button @click.prevent="downloadSong()">
-          <!-- <i class="fas fa-download"></i> -->
-          <!-- <i class="far fa-arrow-alt-circle-down fa-lg"></i> -->
           <i class="fas fa-arrow-alt-circle-down fa-lg" style="color: rgb(75, 85, 99)"></i>
         </button>
       </div>

@@ -24,7 +24,7 @@
             @click.prevent="toggleAudio"
           >
             <i
-              class="fa text-white pl-0.5 text-lg"
+              class="fa text-white pl-px text-lg"
               :class="{ 'fa-play': !playing, 'fa-pause': playing }"
             ></i>
           </button>

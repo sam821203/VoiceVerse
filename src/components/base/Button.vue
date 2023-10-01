@@ -1,5 +1,5 @@
 <template>
-  <button class="base" :class="mode" v-if="!link">
+  <button class="base transition" :class="mode" v-if="!link">
     <slot />
   </button>
   <router-link class="base" :to="to" :class="mode" v-else>

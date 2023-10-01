@@ -1,15 +1,8 @@
-// compat packages are API compatible with namespaced code
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import 'firebase/compat/firestore'
 import 'firebase/compat/storage'
 
-// import {
-//   getAuth,
-//   setPersistence,
-//   browserSessionPersistence,
-//   signInWithEmailAndPassword
-// } from 'firebase/auth'
 import { getAuth } from 'firebase/auth'
 import { getFirestore, collection } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
@@ -22,44 +15,21 @@ const firebaseConfig = {
   appId: '1:291241387631:web:18a31c4f6f6e4378040f9a'
 }
 
+// modular API 中，getFirestore 函數來初始化 Firestore 實例
+// 並自動緩存 database 的資料到使用者端的瀏覽器上
 const firebaseApp = firebase.initializeApp(firebaseConfig)
-
-// namespaced API
-const db = firebase.firestore()
-
-// modular API
 const auth = getAuth(firebaseApp)
-const dbModular = getFirestore(firebaseApp)
+const db = getFirestore(firebaseApp)
 const storage = getStorage()
 
-// 使 firebase 能夠存放 database 的資料到使用者端的瀏覽器上
-db.enablePersistence().catch((error) => {
-  console.log(`Firebase persistence error: ${error.code}`)
-})
-// setPersistence(auth, browserSessionPersistence)
-//   .then(() => {
-//     // Existing and future Auth states are now persisted in the current session only. Closing the window would clear any existing state even if a user forgets to sign out.
-
-//     // New sign-in will be persisted with session persistence.
-//     return signInWithEmailAndPassword(auth, email, password)
-//   })
-//   .catch((error) => {
-//     console.log(`Firebase persistence error: ${error.code}`)
-//   })
-
-const usersCollection = db.collection('users')
-const songsCollection = db.collection('songs')
-const commentsCollection = db.collection('comments')
-const avatarsCollection = db.collection('avatars')
-
-// const usersCollection = collection(dbModular, 'users')
-// const songsCollection = collection(dbModular, 'songs')
-// const commentsCollection = collection(dbModular, 'comments')
+const usersCollection = collection(db, 'users')
+const songsCollection = collection(db, 'songs')
+const commentsCollection = collection(db, 'comments')
+const avatarsCollection = collection(db, 'avatars')
 
 export {
   auth,
   db,
-  dbModular,
   usersCollection,
   songsCollection,
   commentsCollection,
