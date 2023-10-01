@@ -1,5 +1,5 @@
 <template>
-  <section class="flex container mx-auto mb-8 max-w-6xl">
+  <section class="layout--main flex mb-8">
     <BaseCard>
       <div class="flex items-center space-x-4">
         <img

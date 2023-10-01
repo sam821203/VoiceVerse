@@ -17,7 +17,7 @@
         <!-- Add margin if you want to see some of the overlay behind the modal-->
         <div class="pt-8 pb-10 text-left px-6">
           <!--Title-->
-          <div class="flex justify-between items-center pb-4">
+          <div class="flex--center pb-4">
             <p class="text-2xl font-bold">{{ $t('authModal.yourAccount') }}</p>
             <!-- Modal Close Button -->
             <div class="modal-close cursor-pointer z-50" @click="isOpen = false">
@@ -64,8 +64,6 @@
 <script setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
-// import { useForm, useField } from 'vee-validate'
-
 import { useStore } from '@/stores/index.js'
 
 import AppLoginForm from '@/components/LoginForm.vue'

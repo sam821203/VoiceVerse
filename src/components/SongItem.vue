@@ -1,6 +1,6 @@
 <template>
   <li
-    class="flex justify-between items-center pl-5 pr-6 py-10 mb-4 bg-white rounded-xl cursor-pointer select-none transition-all duration-300"
+    class="flex--center pl-5 pr-6 py-10 mb-4 bg-white rounded-xl cursor-pointer select-none transition-all duration-300"
     :class="{ active: checkCurrentSong }"
     @dblclick="newSong(song, $event.target)"
   >

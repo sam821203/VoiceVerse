@@ -1,6 +1,6 @@
 <template>
   <div class="fixed bottom-0 left-0 bg-white px-8 pt-2 w-full h-24 shadow-2xl">
-    <div class="flex justify-between items-center mx-auto max-w-screen-2xl h-full">
+    <div class="flex--center mx-auto max-w-screen-2xl h-full">
       <div class="flex w-1/4">
         <div class="mr-4 overflow-hidden" style="width: 60px; height: 60px">
           <img :src="songAvatar" alt="" class="w-full h-full rounded object-cover" />
@@ -10,9 +10,9 @@
           <p class="song-artist">{{ current_song.display_name }}</p>
         </div>
       </div>
-      <div class="flex flex-wrap justify-between items-center w-2/4 gap-2">
+      <div class="flex--center flex-wrap w-2/4 gap-2">
         <!-- Player -->
-        <div class="flex justify-center items-center w-full">
+        <div class="flex--center w-full">
           <!-- backward -->
           <button @click.prevent="fastSeek('backward')">
             <i class="fas fa-fast-backward"></i>
@@ -34,7 +34,7 @@
           </button>
         </div>
 
-        <div class="flex justify-between items-center w-full align-middle">
+        <div class="flex--center w-full align-middle">
           <!-- Current Position -->
           <div class="text-center w-1/12">{{ seek }}</div>
           <!-- Scrub Container  -->
@@ -61,7 +61,7 @@
       </div>
       <div class="flex justify-end items-center w-1/4">
         <div class="w-3/6"></div>
-        <div class="flex justify-center items-center w-3/6">
+        <div class="flex--center w-3/6">
           <i
             class="fas cursor-pointer mr-2"
             :class="{

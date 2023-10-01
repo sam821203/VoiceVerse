@@ -21,13 +21,11 @@ const routes = [
   },
   {
     name: 'profile',
-    // alias: '/profile',
     path: '/profile',
     component: Profile,
     meta: { requiresAuth: true }
   },
   {
-    // redirect from old path to new path
     path: '/manage',
     redirect: { name: 'profile' }
   },

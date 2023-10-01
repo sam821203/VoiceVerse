@@ -7,7 +7,6 @@ export default {
       eager: true
     })
 
-    // 將物件轉成陣列
     Object.entries(baseComponents).forEach(([path, module]) => {
       const componentName = upperFirst(
         camelCase(

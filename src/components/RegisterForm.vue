@@ -66,34 +66,6 @@
         />
         <ErrorMessage class="text-red-600" name="confirm_password" />
       </div>
-      <!-- Country -->
-      <div class="mb-3">
-        <label class="inline-block mb-2">{{ $t('authModal.country') }}</label>
-        <vee-field
-          as="select"
-          name="country"
-          class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-        >
-          <option value="USA">USA</option>
-          <option value="Mexico">Mexico</option>
-          <option value="Germany">Germany</option>
-          <option value="Antarctica">Antarctica</option>
-        </vee-field>
-        <ErrorMessage class="text-red-600" name="country" />
-      </div>
-      <!-- Description -->
-      <!-- <div class="mb-3">
-        <label class="inline-block mb-2">{{ $t('authModal.description') }}</label>
-        <vee-field
-          name="description"
-          as="textarea"
-          rows="5"
-          class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-          placeholder="I am a..."
-        />
-        <ErrorMessage class="text-red-600" name="description" />
-      </div> -->
-      <!-- TOS -->
       <div class="mb-8 pl-6">
         <vee-field
           name="tos"
@@ -135,15 +107,9 @@ const schema = reactive({
   age: 'required|min_value:18|max_value:120',
   password: 'required|min:6|max:100|excluded:password',
   confirm_password: 'passwords_mismatch:@password',
-  country: 'required|country_excluded:Antarctica',
   tos: 'tos'
 })
-const userData = reactive({
-  country: 'USA'
-})
 
-// options API 的 mapActions 會返回一個對象
-// Composition API 可以直接解構出來並使用 action
 const register = async (values) => {
   // reset 變數
   reg_in_submission.value = true

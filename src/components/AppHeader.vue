@@ -1,7 +1,7 @@
 <template>
   <!-- Header -->
   <header id="header" class="bg-zinc-100 border-b border-zinc-300 mx-auto">
-    <nav class="container mx-auto max-w-9.6/10 flex justify-between items-center py-4">
+    <nav class="flex--center mx-auto max-w-9.6/10 py-4">
       <ul class="flex items-center gap-6">
         <li class="mr-6">
           <router-link
@@ -22,7 +22,7 @@
           }}</router-link>
         </li>
       </ul>
-      <ul class="flex justify-between items-center gap-2">
+      <ul class="flex--center gap-2">
         <BaseButton
           class="border border-gray-500 rounded-full hover:bg-gray-600 hover:text-white"
           @click.prevent="toggleAuthModal"

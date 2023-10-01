@@ -1,9 +1,9 @@
 <template>
-  <div class="w-full mx-auto max-w-6xl">
+  <div class="layout--main w-full">
     <div class="search-wrap absolute top-56 w-2/5">
       <input
         type="search"
-        class="z-20 block p-3 w-full h-14 mb-4 text-sm text-gray-900 bg-gray-50 rounded-md border border-l-2 border-gray-300 cursor-pointer focus:outline-none"
+        class="z-20 block p-3 w-full h-14 mb-4 text-sm text-gray-900 bg-gray-50 rounded border border-l-2 border-gray-300 cursor-pointer focus:outline-none"
         autocomplete="off"
         :placeholder="$t('home.search_songs')"
         required
@@ -43,19 +43,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeUnmount, computed, watch, toRefs, onMounted } from 'vue'
+import { ref, reactive, onBeforeUnmount, computed } from 'vue'
 import { songsCollection } from '@/utils/firebase'
-import { db, storage } from '@/utils/firebase'
-import {
-  doc,
-  getDoc,
-  getDocs,
-  collection,
-  query,
-  orderBy,
-  limit,
-  startAfter
-} from 'firebase/firestore'
+import { doc, getDoc, getDocs, query, orderBy, limit, startAfter } from 'firebase/firestore'
 
 import AppSongItem from '@/components/SongItem.vue'
 
@@ -139,8 +129,6 @@ const filteredList = computed(() => {
   })
 })
 
-const hasSongs = computed(() => !pendingRequest.value)
-
 window.addEventListener('scroll', handleScroll)
 
 onBeforeUnmount(() => {
@@ -149,7 +137,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-/* clears the X from Internet Explorer */
+/* clears the 'x' from Internet Explorer */
 input[type='search']::-ms-clear {
   display: none;
   width: 0;
@@ -160,7 +148,7 @@ input[type='search']::-ms-reveal {
   width: 0;
   height: 0;
 }
-/* clears the X from Chrome */
+/* clears the 'x' from Chrome */
 input[type='search']::-webkit-search-decoration,
 input[type='search']::-webkit-search-cancel-button,
 input[type='search']::-webkit-search-results-button,

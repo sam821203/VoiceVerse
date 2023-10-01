@@ -1,6 +1,6 @@
 <template>
   <!-- Main Content -->
-  <section class="container max-w-6xl mx-auto mt-20 mb-40">
+  <section class="layout--main mt-20 mb-40">
     <div class="md:grid md:grid-cols-7 md:gap-4">
       <div class="col-span-5 pt-2 px-2 bg-white rounded-xl">
         <div class="px-6 pt-6 pb-5 font-bold">
@@ -12,15 +12,15 @@
             v-for="(song, i) in songs"
             :key="song.docID"
             :song="song"
-            :updateSong="updateSong"
             :index="i"
+            :updateSong="updateSong"
             :removeSong="removeSong"
             :updateUnsavedFlag="updateUnsavedFlag"
           />
         </div>
       </div>
       <div class="col-span-2">
-        <div class="mx-auto max-w-6xl bg-white pt-2 pb-10 px-5 rounded-xl">
+        <div class="layout--main bg-white pt-2 pb-10 px-5 rounded-xl">
           <div class="cover-photo relative mb-10">
             <div class="w-44 h-44 mx-auto mb-2">
               <img
@@ -65,12 +65,12 @@
 </template>
 
 <script name="profile" setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import CompositionItem from '@/components/CompositionItem.vue'
 import { auth, db } from '@/utils/firebase'
 import { uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
 import { avatarsCollection } from '@/utils/firebase'
-import { doc, deleteDoc, addDoc, getDoc, collection } from 'firebase/firestore'
+import { doc, deleteDoc, addDoc, getDoc } from 'firebase/firestore'
 import helper from '@/utils/helper'
 
 const songs = reactive([])
@@ -153,7 +153,6 @@ const uploadAvatar = async (event) => {
   if (!imageFile.type.includes('image')) return
 
   const imageRef = helper.getStorage(`avatars/${imageFile.name}`)
-
   const uploadTask = uploadBytesResumable(imageRef, imageFile)
   const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
 
@@ -176,7 +175,7 @@ const uploadAvatar = async (event) => {
         await deleteAvatar(querySnapshot)
         await addAvatar(uploadTask)
       } catch (error) {
-        console.error('上傳和刪除操作錯誤：', error)
+        console.error('上傳或刪除操作錯誤：', error)
       }
     }
   )

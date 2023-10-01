@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { Howl } from 'howler'
-// import { info } from 'autoprefixer'
 import helper from '@/utils/helper'
 
 export const usePlayer = defineStore('player', {
@@ -20,7 +19,6 @@ export const usePlayer = defineStore('player', {
         this.sound.unload()
       }
 
-      // FIXME:上面 play 按鈕也能按
       this.current_song = song
 
       this.sound = new Howl({
@@ -28,18 +26,14 @@ export const usePlayer = defineStore('player', {
         html5: true,
         volume: 1
       })
+
       // 播放歌曲
       this.sound.play()
       this.activeSong = song
-      // target.classList.add('active')
 
-      // 監聽 play 方法
       this.sound.on('play', () => {
         requestAnimationFrame(this.progress)
       })
-      // this.sound.on('end', () => {
-      //   target.classList.remove('active')
-      // })
     },
     async toggleAudio() {
       if (!this.sound.playing) return
@@ -96,7 +90,7 @@ export const usePlayer = defineStore('player', {
         return
       }
 
-      // 這裡的 x 代表者 document 到 player 的距離
+      // x 為 document 到 player 的距離
       const { x, width } = event.currentTarget.getBoundingClientRect()
       const clickX = event.clientX - x
       const percentage = clickX / width

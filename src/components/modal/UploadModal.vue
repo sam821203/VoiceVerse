@@ -14,7 +14,7 @@
       >
         <div class="modal pt-8 pb-10 text-left px-6 overflow-y-auto">
           <!--Title-->
-          <div class="flex justify-between items-center pb-4">
+          <div class="flex--center pb-4">
             <p class="text-2xl font-bold">{{ $t('uploadModal.upload_song') }}</p>
             <!-- Modal Close Button -->
             <div class="modal-close cursor-pointer z-50" @click="uploadModalOpen = false">

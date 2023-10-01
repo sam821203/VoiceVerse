@@ -7,8 +7,6 @@
 </template>
 
 <script setup>
-// import { toRefs, watch } from 'vue'
-
 const props = defineProps({
   name: {
     type: String,

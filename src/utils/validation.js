@@ -1,23 +1,27 @@
-// import { string, ref as yupRef } from 'yup'
-
-// // 帳號
-// export const accountValidate = string()
-//   .matches(/^[a-zA-Z0-9]{6,12}$/, 'Error, only 6-12 digits of alphabets and numbers.')
-//   .required('Field not filled')
-
-// // 密碼
-// export const passwordValidate = string()
-//   .matches(/^[a-zA-Z0-9]{6,12}$/, 'Only 6-12 digits of alphabets and numbers.')
-//   .required('Field not filled')
-
-import { Form as VeeForm, Field as VeeField, defineRule, ErrorMessage, configure } from 'vee-validate'
-import { required, min, max, alpha_spaces as alphaSpaces, email, min_value as minVal, max_value as maxVal, confirmed, not_one_of as excluded } from '@vee-validate/rules'
+import {
+  Form as VeeForm,
+  Field as VeeField,
+  defineRule,
+  ErrorMessage,
+  configure
+} from 'vee-validate'
+import {
+  required,
+  min,
+  max,
+  alpha_spaces as alphaSpaces,
+  email,
+  min_value as minVal,
+  max_value as maxVal,
+  confirmed,
+  not_one_of as excluded
+} from '@vee-validate/rules'
 
 export default {
   install(app, options) {
     app.component('VeeForm', VeeForm)
     app.component('VeeField', VeeField)
-    app.component("ErrorMessage", ErrorMessage)
+    app.component('ErrorMessage', ErrorMessage)
 
     defineRule('required', required)
     defineRule('tos', required)
@@ -44,7 +48,7 @@ export default {
           excluded: `You are not allowed to use this value for the field ${ctx.field}`,
           country_excluded: `Due to restriction, we do not accept users from this location.`,
           passwords_mismatch: "The passwords don't match.",
-          tos: 'You must accept the Terms of Service.',
+          tos: 'You must accept the Terms of Service.'
         }
 
         const message = messages[ctx.rule.name]
@@ -56,7 +60,7 @@ export default {
       validateOnBlur: true,
       validateOnChange: true,
       validateOnInput: false,
-      validateOnModalUpdate: true,
+      validateOnModalUpdate: true
     })
   }
 }

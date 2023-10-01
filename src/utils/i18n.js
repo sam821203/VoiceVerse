@@ -23,22 +23,5 @@ export default createI18n({
         currency: 'TWD'
       }
     }
-  },
-  datetimeFormats: {
-    en: {
-      short: {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      },
-      long: {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        weekday: 'short',
-        hour: 'numeric',
-        minute: 'numeric'
-      }
-    }
   }
 })

@@ -1,11 +1,10 @@
 <template>
   <main>
-    <!-- Music Header -->
-    <section class="w-full mb-8 py-20 text-center text-white relative">
+    <section class="relative w-full mb-8 py-20 text-center text-white">
       <div
         class="absolute inset-0 w-full h-full box-border bg-contain bg-gradient-to-r from-gray-600 from-5% via-gray-500 via-30% to-gray-600 to-90%"
       ></div>
-      <div class="container mx-auto max-w-6xl flex">
+      <div class="layout--main flex">
         <!-- Play/Pause Button -->
         <button
           type="button"
@@ -15,7 +14,6 @@
           <i class="fas fa-play pl-1.5"></i>
         </button>
         <div class="z-10 text-left ml-8">
-          <!-- Song Info -->
           <div class="mt-2 mb-1 text-white opacity-75">{{ song.genre }}</div>
           <div class="text-white text-2xl font-bold">{{ song.modified_name }}</div>
         </div>
@@ -23,10 +21,9 @@
     </section>
 
     <!-- Form -->
-    <section class="container mx-auto max-w-6xl mt-6" id="comments">
-      <div class="bg-white rounded-t-2xl border border-gray-200 relative flex flex-col">
+    <section class="layout--main mt-6" id="comments">
+      <div class="relative flex flex-col bg-white rounded-t-2xl border border-gray-200">
         <div class="px-6 pt-6 pb-5 leading-8 font-bold border-b border-gray-200">
-          <!-- Comment Count -->
           <span class="card-title">{{
             $t('song.comment_count', song.comment_count, { count: song.comment_count })
           }}</span>
@@ -40,6 +37,8 @@
           >
             {{ comment_alert_message }}
           </div>
+
+          <!-- comment textArea -->
           <vee-form :validation-schema="schema" @submit="addComment" v-if="userLoggedIn">
             <vee-field
               as="textarea"
@@ -59,6 +58,7 @@
               </BaseButton>
             </div>
           </vee-form>
+
           <!-- Sort Comments -->
           <select
             v-model="sortOrder"
@@ -72,13 +72,13 @@
     </section>
 
     <!-- Comments -->
-    <ul class="comments container mx-auto max-w-6xl mb-40">
+    <ul class="comments layout--main mb-40">
       <li
         class="pt-10 pb-12 px-6 bg-gray-50 border border-gray-200"
         v-for="comment in sortedComments"
         :key="comment.docID"
       >
-        <div class="flex justify-between items-center mb-5">
+        <div class="flex--center mb-5">
           <div class="font-bold">{{ comment.name }}</div>
           <time class="text-gray-400">{{ helper.formatUtcDate(comment.datePosted) }}</time>
         </div>
@@ -93,7 +93,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { auth, commentsCollection, db } from '@/utils/firebase'
-import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore'
+import { query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 import helper from '@/utils/helper'
@@ -115,7 +115,6 @@ const schema = reactive({
   comment: 'required|min:3'
 })
 
-// 用 slice 來複製出新的陣列，以避免直接修改原陣列
 const sortedComments = computed(() =>
   comments.value.slice().sort((a, b) => {
     if (sortOrder.value === '1') {
@@ -130,7 +129,6 @@ const getComments = async () => {
   const q = query(commentsCollection, where('sid', '==', route.params.id))
   const querySnapshot = await getDocs(q)
 
-  // initiate
   comments.value = []
 
   querySnapshot.forEach((doc) => {
@@ -189,17 +187,12 @@ const addComment = async (commentVal, { resetForm }) => {
   resetForm()
 }
 
-// 用於更新頁面上的狀態
 onMounted(() => {
-  // 每當觸發了 filter 後，route.query 裡才會有值
   const { sortOrder: sort } = route.query
   sortOrder.value = sort === '1' || sort === '2' ? sort : '1'
 })
 
 watch([() => route.params.id, sortOrder], ([newId, newOrder], [oldId, oldOrder]) => {
-  // beforeRouteEnter 的替代方案
-  // getSongsCollection()
-
   if (newOrder !== oldOrder) {
     if (newOrder === route.query.sortOrder) return
 
@@ -213,7 +206,7 @@ watch([() => route.params.id, sortOrder], ([newId, newOrder], [oldId, oldOrder])
 </script>
 
 <script>
-// FIXME: 需要更動的地方太多，暫且用其他方式
+// FIXME: 需要更動的地方太多，暫時用其他方式
 // composition API 已經刪除了 beforeRouterEnter，需要用 options API 的方式來寫
 /*
 參考文章1: https://blog.csdn.net/qq_17335549/article/details/127942181
