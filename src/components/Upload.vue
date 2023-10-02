@@ -7,8 +7,8 @@
     <div class="p-6">
       <!-- Upload Dropbox -->
       <div
-        class="w-full px-10 py-20 rounded text-center cursor-pointer border border-dashed border-gray-400 text-gray-400 transition duration-500 hover:text-white hover:bg-green-400 hover:border-green-400 hover:border-solid"
-        :class="{ 'bg-green-400 border-green-400 border-solid': is_dragover }"
+        class="w-full px-10 py-20 rounded text-center cursor-pointer border border-dashed border-gray-400 text-gray-400 transition duration-500 hover:bg-green-400 hover:border-green-400 hover:border-solid"
+        :class="{ ' bg-green-400 border-green-400 border-solid': is_dragover }"
         @drag.prevent.stop=""
         @dragstart.prevent.stop=""
         @dragend.prevent.stop="is_dragover = false"
@@ -17,7 +17,7 @@
         @dragleave.prevent.stop="is_dragover = false"
         @drop.prevent.stop="upload($event)"
       >
-        <h5>{{ $t('uploadModal.drop_file') }}</h5>
+        <h5 class="text-gray-600">{{ $t('uploadModal.drop_file') }}</h5>
       </div>
       <input type="file" multiple @change="upload($event)" />
       <hr class="my-6" />
@@ -44,7 +44,7 @@
 import { ref, reactive, onBeforeUnmount, toRefs } from 'vue'
 import { storage, songsCollection } from '@/utils/firebase'
 import { ref as storageRef, uploadBytesResumable, getDownloadURL, listAll } from 'firebase/storage'
-import { collection, query } from 'firebase/firestore'
+import { addDoc, getDoc } from 'firebase/firestore'
 
 import { auth } from '@/utils/firebase'
 import helper from '@/utils/helper'
@@ -86,11 +86,19 @@ const getAudioDuration = (url) => {
 }
 
 const addTimeStamp = (string) => {
-  console.log(string)
   if (string.includes('.mp3')) {
     return `${string.split('.')[0]}_${Date.now()}.mp3`
   } else {
     console.log('Not mp3 file!')
+  }
+}
+
+const removeFileExtension = (filename) => {
+  const partString = filename.split('.')
+  if (partString.length > 1) {
+    return partString[0]
+  } else {
+    return filename
   }
 }
 
@@ -123,11 +131,11 @@ const upload = ($event) => {
     */
     const songsCollectionRef = storageRef(storage, `songs`)
     const listAllSongs = await listAll(songsCollectionRef)
-    let modifiedFileName = file.name
+    let modifiedFileName = removeFileExtension(file.name)
 
     for (const song of listAllSongs.items) {
       if (file.name === song.name) {
-        modifiedFileName = addTimeStamp(file.name)
+        modifiedFileName = addTimeStamp(removeFileExtension(file.name))
         break
       }
     }
@@ -167,6 +175,7 @@ const upload = ($event) => {
           original_name: modifiedFileName,
           modified_name: modifiedFileName,
           genre: '',
+          user_avatar: '',
           comment_count: 0,
           dateUploaded: new Date().toString()
         }
@@ -178,14 +187,14 @@ const upload = ($event) => {
           song.user_avatar = avatar.data().url
         })
 
-        const songRef = await songsCollection.add(song)
-        const songSnapshot = await songRef.get()
+        const songDocRef = await addDoc(songsCollection, song)
+        const songSnapshot = await getDoc(songDocRef)
 
-        // 一上傳檔案時，立即更新在頁面上的檔案
+        // 上傳檔案時，立即更新在頁面上的檔案
         addSong.value(songSnapshot)
 
         uploads[uploadIndex].variant = 'bg-green-400'
-        uploads[uploadIndex].icon = 'fas fa-check'
+        uploads[uploadIndex].icon = 'fas fa-check text-green-400'
         uploads[uploadIndex].text_class = 'text-green-400'
       }
     )

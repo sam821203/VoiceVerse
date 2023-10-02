@@ -12,7 +12,7 @@
       </div>
       <div class="flex--center flex-wrap w-2/4 gap-2">
         <!-- Player -->
-        <div class="flex--center w-full">
+        <div class="flex justify-center items-center w-full">
           <!-- backward -->
           <button @click.prevent="fastSeek('backward')">
             <i class="fas fa-fast-backward"></i>
@@ -112,6 +112,13 @@ const songAvatar = computed(
 </script>
 
 <style lang="scss" scoped>
+.song-title {
+  display: inline-block;
+  width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .fa-circle {
   background-color: white;
   border-radius: 50%;

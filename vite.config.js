@@ -3,8 +3,9 @@ import vueSetupExtend from 'vite-plugin-vue-setup-extend'
 
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
-// import { visualizer } from 'rollup-plugin-visualizer'
 import vue from '@vitejs/plugin-vue'
+// import { visualizer } from 'rollup-plugin-visualizer'
+// import { GenerateSW } from 'workbox-webpack-plugin'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -31,6 +32,11 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,png,jpg,}']
       }
     })
+    // new GenerateSW({
+    //   clientsClaim: true,
+    //   skipWaiting: true,
+    //   exclude: [/swagger-ui/] // 这里添加你要排除的路径
+    // })
     // visualizer({ open: true })
   ],
   resolve: {

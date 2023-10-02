@@ -43,7 +43,7 @@
           <i class="fas fa-arrow-alt-circle-down fa-lg" style="color: rgb(75, 85, 99)"></i>
         </button>
       </div>
-      <div class="text-gray-400">{{ songDuration }}</div>
+      <div class="w-12 text-right text-gray-400">{{ songDuration }}</div>
     </div>
   </li>
 </template>
@@ -51,9 +51,10 @@
 <script name="SongItem" setup>
 import { toRefs, computed } from 'vue'
 import { ref, getBlob } from 'firebase/storage'
-import { storage } from '@/utils/firebase'
+import { storage, auth } from '@/utils/firebase'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
+import helper from '@/utils/helper'
 
 const props = defineProps({
   song: {
@@ -66,13 +67,16 @@ const { usePlayer } = useStore()
 const { newSong } = usePlayer()
 const { activeSong } = storeToRefs(usePlayer())
 const { song } = toRefs(props)
-const songUrlDOM = ref(null)
+const currentUser = auth.currentUser
 
-const songAvatar = computed(() =>
-  song.value.user_avatar
+const songUrlDOM = ref(null)
+const avatarImageDOM = ref(null)
+
+const songAvatar = computed(() => {
+  return song.value.user_avatar
     ? song.value.user_avatar
     : 'https://discussions.apple.com/content/attachment/592590040'
-)
+})
 
 const songDuration = computed(() => {
   return song.value.duration ? song.value.duration : '0:00'
@@ -117,7 +121,6 @@ li {
     }
   }
   &:hover {
-    // background-color: rgb(243, 243, 243);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
     .play-icon {
       // visibility: visible;

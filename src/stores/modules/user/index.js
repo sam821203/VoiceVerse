@@ -5,6 +5,7 @@ import {
   signOut,
   updateProfile
 } from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore'
 import { auth, usersCollection } from '@/utils/firebase'
 
 export const useUser = defineStore('user', {
@@ -14,13 +15,15 @@ export const useUser = defineStore('user', {
   actions: {
     async createUser(values) {
       const userCred = await createUserWithEmailAndPassword(auth, values.email, values.password)
+      const userDocRef = doc(usersCollection, userCred.user.uid)
 
-      await usersCollection.doc(userCred.user.uid).set({
+      const userData = {
         name: values.name,
         email: values.email,
-        age: values.age,
-        country: values.country
-      })
+        age: values.age
+      }
+
+      await setDoc(userDocRef, userData)
 
       await updateProfile(userCred.user, {
         displayName: values.name

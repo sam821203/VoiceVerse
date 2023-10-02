@@ -33,7 +33,6 @@ export default {
     defineRule('max_value', maxVal)
     defineRule('passwords_mismatch', confirmed)
     defineRule('excluded', excluded)
-    defineRule('country_excluded', excluded)
 
     configure({
       generateMessage: (ctx) => {
@@ -46,7 +45,6 @@ export default {
           min_value: `The field ${ctx.field} is too low.`,
           max_value: `The field ${ctx.field} is too high.`,
           excluded: `You are not allowed to use this value for the field ${ctx.field}`,
-          country_excluded: `Due to restriction, we do not accept users from this location.`,
           passwords_mismatch: "The passwords don't match.",
           tos: 'You must accept the Terms of Service.'
         }

@@ -108,5 +108,8 @@ export const usePlayer = defineStore('player', {
 
       return false
     }
+    // songAvatar: (state) => {
+    //   console.log();
+    // }
   }
 })

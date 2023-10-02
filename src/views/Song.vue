@@ -31,7 +31,7 @@
         </div>
         <div class="p-6">
           <div
-            class="text-white text-center font-bold p-4 mb-4"
+            class="text-center font-bold p-4 mb-4"
             :class="comment_alert_variant"
             v-if="comment_show_alert"
           >
@@ -93,7 +93,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { auth, commentsCollection, db } from '@/utils/firebase'
-import { query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore'
+import { query, where, getDocs, doc, getDoc, updateDoc, addDoc } from 'firebase/firestore'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 import helper from '@/utils/helper'
@@ -168,7 +168,7 @@ const addComment = async (commentVal, { resetForm }) => {
     uid: auth.currentUser.uid
   })
 
-  await commentsCollection.add(comment)
+  await addDoc(commentsCollection, comment)
 
   // 更新留言數量
   song.value.comment_count += 1

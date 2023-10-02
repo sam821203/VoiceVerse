@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeUnmount, computed } from 'vue'
+import { ref, reactive, onBeforeUnmount, computed, onMounted } from 'vue'
 import { songsCollection } from '@/utils/firebase'
 import { doc, getDoc, getDocs, query, orderBy, limit, startAfter } from 'firebase/firestore'
 
@@ -55,13 +55,13 @@ const perPageSongsMax = ref(5)
 const pendingRequest = ref(false)
 const tagList = reactive([
   {
-    name: 'Harry Potter'
-  },
-  {
     name: 'British'
   },
   {
-    name: '01'
+    name: 'Wizard'
+  },
+  {
+    name: '6mins'
   }
 ])
 
@@ -78,7 +78,7 @@ const getSongs = async () => {
     // 建立查詢
     const querySongs = query(
       songsCollection,
-      orderBy('modified_name'),
+      orderBy('dateUploaded', 'desc'),
       startAfter(lastDocument),
       limit(perPageSongsMax.value)
     )
@@ -87,14 +87,16 @@ const getSongs = async () => {
   } else {
     const querySongs = query(
       songsCollection,
-      orderBy('modified_name'),
+      orderBy('dateUploaded', 'desc'),
       limit(perPageSongsMax.value)
     )
 
     snapshots = await getDocs(querySongs)
   }
 
+  // 重新指派 avatar 來源
   snapshots.forEach((document) => {
+    // console.log(document.data().user_avatar)
     songs.push({
       docID: document.id,
       ...document.data()
@@ -107,8 +109,6 @@ const getSongs = async () => {
 
   pendingRequest.value = false
 }
-
-getSongs()
 
 const insertSearch = (tagName) => {
   search.value = tagName
@@ -130,6 +130,10 @@ const filteredList = computed(() => {
 })
 
 window.addEventListener('scroll', handleScroll)
+
+onMounted(() => {
+  getSongs()
+})
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll)

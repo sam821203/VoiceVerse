@@ -57,7 +57,7 @@
           class="px-3 mb-3 mr-2 text-white bg-cyan-500 hover:bg-cyan-600"
           mode="rounded-square"
           :disabled="in_submission"
-          @click.prevent="showForm = !showForm"
+          @click="showForm = !showForm"
         >
           {{ $t('profile.submit') }}
         </BaseButton>
@@ -77,8 +77,8 @@
 
 <script name="CompositionItem" setup>
 import { ref, reactive, toRefs, computed } from 'vue'
-import { songsCollection, storage, db } from '@/utils/firebase'
-import { doc, deleteDoc } from 'firebase/firestore'
+import { storage, db } from '@/utils/firebase'
+import { doc, deleteDoc, updateDoc } from 'firebase/firestore'
 import { ref as storageRef, deleteObject } from 'firebase/storage'
 import helper from '@/utils/helper'
 
@@ -123,8 +123,8 @@ const edit = async (values) => {
   alert_message.value = 'Please wait! Updating song info.'
 
   try {
-    // .doc 會回傳一個物件
-    await songsCollection.doc(song.value.docID).update(values)
+    const songDocRef = doc(db, 'songs', song.value.docID)
+    await updateDoc(songDocRef, values)
   } catch (error) {
     in_submission.value = false
     alert_variant.value = 'text-red-500'

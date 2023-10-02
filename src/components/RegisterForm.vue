@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="text-white text-center font-bold p-4 rounded mb-4"
+      class="text-center font-bold p-4 rounded mb-4"
       v-if="reg_show_alert"
       :class="reg_alert_variant"
     >
@@ -74,7 +74,9 @@
           class="w-4 h-4 float-left -ml-6 mt-1 rounded focus:outline-gray-300"
         />
         <i18n-t class="inline-block" keypath="authModal.accept" tag="label"
-          ><a href="#" class="focus:outline-gray-300">{{ $t('authModal.tos') }}</a></i18n-t
+          ><a href="#" class="focus:outline-gray-300 underline underline-offset-4">{{
+            $t('authModal.tos')
+          }}</a></i18n-t
         >
         <ErrorMessage class="text-red-600" name="tos" />
       </div>
@@ -104,7 +106,7 @@ const reg_alert_msg = ref('Please wait! Your account is being created.')
 const schema = reactive({
   name: 'required|min:2|max:100',
   email: 'required|min:3|max:100|email',
-  age: 'required|min_value:18|max_value:120',
+  age: 'required|min_value:12|max_value:120',
   password: 'required|min:6|max:100|excluded:password',
   confirm_password: 'passwords_mismatch:@password',
   tos: 'tos'
@@ -114,25 +116,25 @@ const register = async (values) => {
   // reset 變數
   reg_in_submission.value = true
   reg_show_alert.value = true
-  reg_alert_variant.value = 'bg-blue-500'
+  reg_alert_variant.value = 'text-blue-500'
   reg_alert_msg.value = 'Please wait! Your account is being created.'
 
   try {
     await createUser(values)
+
+    // 註冊成功，成功狀態
+    reg_alert_variant.value = 'text-green-500'
+    reg_alert_msg.value = 'Success! Your account is being created.'
+
+    // 註冊成功，重新整理頁面
+    window.location.reload()
   } catch (error) {
     reg_in_submission.value = false
-    reg_alert_variant.value = 'bg-red-500'
-    reg_alert_msg.value = 'This account already exist.'
+    reg_alert_variant.value = 'text-red-500'
+    reg_alert_msg.value = 'This account already exists.'
     console.error(error)
     return
   }
-
-  // 註冊成功，成功狀態
-  reg_alert_variant.value = 'bg-green-500'
-  reg_alert_msg.value = 'Success! Your account is being created.'
-
-  // 註冊成功，重新整理頁面
-  window.location.reload()
 }
 </script>
 

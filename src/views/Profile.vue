@@ -8,7 +8,7 @@
           <i class="fa fa-compact-disc float-right text-gray-400 text-2xl"></i>
         </div>
         <div class="p-6">
-          <composition-item
+          <CompositionItem
             v-for="(song, i) in songs"
             :key="song.docID"
             :song="song"
@@ -21,6 +21,14 @@
       </div>
       <div class="col-span-2">
         <div class="layout--main bg-white pt-2 pb-10 px-5 rounded-xl">
+          <!-- FIXME: collection 設計問題 -->
+          <!-- <CompositionAvatar
+            v-for="(song, i) in sortedSongs"
+            :key="song.docID"
+            :song="song"
+            :index="i"
+            :updateAvatar="updateAvatar"
+          /> -->
           <div class="cover-photo relative mb-10">
             <div class="w-44 h-44 mx-auto mb-2">
               <img
@@ -65,7 +73,7 @@
 </template>
 
 <script name="profile" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import CompositionItem from '@/components/CompositionItem.vue'
 import { auth, db } from '@/utils/firebase'
 import { uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
@@ -80,6 +88,11 @@ const songsUploaded = ref('')
 const currentUser = auth.currentUser
 const avatarImageDOM = ref(null)
 
+// FIXME: 須重新整理後才會取得更新資訊
+const sortedSongs = computed(() => {
+  return songs.slice().sort((a, b) => new Date(b.dateUploaded) - new Date(a.dateUploaded))
+})
+
 const removeSong = (i) => songs.splice(i, 1)
 
 const getSongs = async () => {
@@ -91,6 +104,10 @@ const getSongs = async () => {
 const updateSong = (i, values) => {
   songs[i].modified_name = values.modified_name
   songs[i].genre = values.genre
+}
+
+const updateAvatar = (i, values) => {
+  songs[i].user_avatar = values.user_avatar
 }
 
 const addSong = (document) => {
@@ -227,13 +244,12 @@ input[type='checkbox'] + label {
   margin: 0 0 0 0.5rem;
 }
 
-input,
-textarea {
+input {
   display: block;
   margin-bottom: 2%;
   width: 100%;
   border: 1px solid #ccc;
-  font: inherit;
+  height: 40px;
 }
 
 input[type='checkbox'] {

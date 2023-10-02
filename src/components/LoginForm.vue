@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="text-white text-center font-bold p-4 mb-4"
+      class="text-center font-bold p-4 mb-4"
       v-if="login_show_alert"
       :class="login_alert_variant"
     >

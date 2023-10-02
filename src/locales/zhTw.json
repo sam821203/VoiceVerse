@@ -29,7 +29,6 @@
     "age": "年齡",
     "password": "密碼",
     "confirmPassword": "確認密碼",
-    "country": "國家",
     "description": "個人介紹",
     "submit": "送出",
     "accept": "我接受 {0}",
