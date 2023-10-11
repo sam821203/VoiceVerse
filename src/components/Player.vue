@@ -61,7 +61,7 @@
       </div>
       <div class="flex justify-end items-center w-1/4">
         <div class="w-3/6"></div>
-        <div class="flex--center w-3/6">
+        <div class="flex justify-end items-center w-3/6">
           <i
             class="fas cursor-pointer mr-2"
             :class="{
