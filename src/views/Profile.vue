@@ -1,6 +1,6 @@
 <template>
-  <!-- Main Content -->
   <section class="layout--main mt-20 mb-40">
+    <!-- Main Content -->
     <div class="md:grid md:grid-cols-7 md:gap-4">
       <div class="col-span-5 pt-2 px-2 bg-white rounded-xl">
         <div class="px-6 pt-6 pb-5 font-bold">
