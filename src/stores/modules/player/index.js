@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { Howl } from 'howler'
 import helper from '@/utils/helper'
+import { resolveMediaUrl } from '@/utils/media'
 
 export const usePlayer = defineStore('player', {
   state: () => ({
@@ -22,7 +23,7 @@ export const usePlayer = defineStore('player', {
       this.current_song = song
 
       this.sound = new Howl({
-        src: [song.url],
+        src: [resolveMediaUrl(song.url)],
         html5: true,
         volume: 1
       })

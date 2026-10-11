@@ -54,9 +54,9 @@
 </template>
 
 <script name="SongItem" setup>
-import { toRefs, computed } from 'vue'
-import { ref, getBlob } from 'firebase/storage'
-import { storage, auth } from '@/utils/firebase'
+import { ref, toRefs, computed } from 'vue'
+import { auth } from '@/utils/firebase'
+import { resolveMediaUrl } from '@/utils/media'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 import helper from '@/utils/helper'
@@ -79,7 +79,7 @@ const songUrlDOM = ref(null)
 const avatarImageDOM = ref(null)
 
 const songAvatar = computed(() => {
-  return song.value.user_avatar ? song.value.user_avatar : defaultCover
+  return song.value.user_avatar ? resolveMediaUrl(song.value.user_avatar) : defaultCover
 })
 
 const useDefaultCover = (event) => {
@@ -98,9 +98,9 @@ const checkCurrentSong = computed(() => {
 
 const downloadSong = async () => {
   try {
-    const targetSong = song.value.original_name
-    const songRef = ref(storage, `songs/${targetSong}`)
-    const blob = await getBlob(songRef)
+    const response = await fetch(resolveMediaUrl(song.value.url))
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const blob = await response.blob()
     const objectURL = URL.createObjectURL(blob)
 
     // 創建一個 URL 對象，以便在 <a> 標籤中使用

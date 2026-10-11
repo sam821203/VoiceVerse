@@ -42,9 +42,9 @@
 
 <script name="upload" setup>
 import { ref, reactive, onBeforeUnmount, toRefs } from 'vue'
-import { storage, songsCollection } from '@/utils/firebase'
-import { ref as storageRef, uploadBytesResumable, getDownloadURL, listAll } from 'firebase/storage'
+import { songsCollection } from '@/utils/firebase'
 import { addDoc, getDoc } from 'firebase/firestore'
+import { uploadMedia } from '@/utils/media'
 
 import { auth } from '@/utils/firebase'
 import helper from '@/utils/helper'
@@ -85,14 +85,6 @@ const getAudioDuration = (url) => {
   })
 }
 
-const addTimeStamp = (string) => {
-  if (string.includes('.mp3')) {
-    return `${string.split('.')[0]}_${Date.now()}.mp3`
-  } else {
-    console.log('Not mp3 file!')
-  }
-}
-
 const removeFileExtension = (filename) => {
   const partString = filename.split('.')
   if (partString.length > 1) {
@@ -125,28 +117,13 @@ const upload = ($event) => {
       return
     }
 
-    /*
-    會顯示出 storageBucket 裡的 "voice-verse.appspot.com"
-    這能告訴 firebase 要在哪裡上傳檔案
-    */
-    const songsCollectionRef = storageRef(storage, `songs`)
-    const listAllSongs = await listAll(songsCollectionRef)
-    let modifiedFileName = removeFileExtension(file.name)
-
-    for (const song of listAllSongs.items) {
-      if (file.name === song.name) {
-        modifiedFileName = addTimeStamp(removeFileExtension(file.name))
-        break
-      }
-    }
-
-    const modifiedSongsRef = storageRef(storage, `songs/${modifiedFileName}`)
-    const uploadTask = uploadBytesResumable(modifiedSongsRef, file)
+    const modifiedFileName = removeFileExtension(file.name)
+    const controller = new AbortController()
 
     // -1 來矯正 length 出來的數值
     const uploadIndex =
       uploads.push({
-        uploadTask,
+        controller,
         current_progress: 0,
         name: modifiedFileName,
         variant: 'bg-blue-400',
@@ -154,54 +131,56 @@ const upload = ($event) => {
         text_class: ''
       }) - 1
 
-    uploadTask.on(
-      'stage_change',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        uploads[uploadIndex].current_progress = progress
-      },
-      (error) => {
-        uploads[uploadIndex].variant = 'bg-red-400'
-        uploads[uploadIndex].icon = 'fas fa-times'
-        uploads[uploadIndex].text_class = 'text-red-400'
-        console.log(error.message)
-      },
-      async () => {
-        const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
-
-        const song = {
-          uid: currentUser.uid,
-          display_name: currentUser.displayName || 'Anonymous',
-          original_name: modifiedFileName,
-          modified_name: modifiedFileName,
-          genre: '',
-          user_avatar: '',
-          comment_count: 0,
-          dateUploaded: new Date().toString()
+    let blob
+    try {
+      blob = await uploadMedia('songs', file, {
+        abortSignal: controller.signal,
+        onUploadProgress: (progress) => {
+          uploads[uploadIndex].current_progress = progress.percentage
         }
+      })
+    } catch (error) {
+      uploads[uploadIndex].variant = 'bg-red-400'
+      uploads[uploadIndex].icon = 'fas fa-times'
+      uploads[uploadIndex].text_class = 'text-red-400'
+      console.log(error.message)
+      return
+    }
 
-        song.url = await getDownloadURL(uploadTask.snapshot.ref)
-        song.duration = await getAudioDuration(song.url)
+    const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
 
-        querySnapshot.forEach((avatar) => {
-          song.user_avatar = avatar.data().url
-        })
+    const song = {
+      uid: currentUser.uid,
+      display_name: currentUser.displayName || 'Anonymous',
+      original_name: modifiedFileName,
+      modified_name: modifiedFileName,
+      genre: '',
+      user_avatar: '',
+      comment_count: 0,
+      dateUploaded: new Date().toString()
+    }
 
-        const songDocRef = await addDoc(songsCollection, song)
-        const songSnapshot = await getDoc(songDocRef)
+    song.url = blob.url
+    song.duration = await getAudioDuration(song.url)
 
-        // 上傳檔案時，立即更新在頁面上的檔案
-        addSong.value(songSnapshot)
+    querySnapshot.forEach((avatar) => {
+      song.user_avatar = avatar.data().url
+    })
 
-        uploads[uploadIndex].variant = 'bg-green-400'
-        uploads[uploadIndex].icon = 'fas fa-check text-green-400'
-        uploads[uploadIndex].text_class = 'text-green-400'
-      }
-    )
+    const songDocRef = await addDoc(songsCollection, song)
+    const songSnapshot = await getDoc(songDocRef)
+
+    // 上傳檔案時，立即更新在頁面上的檔案
+    addSong.value(songSnapshot)
+
+    uploads[uploadIndex].current_progress = 100
+    uploads[uploadIndex].variant = 'bg-green-400'
+    uploads[uploadIndex].icon = 'fas fa-check text-green-400'
+    uploads[uploadIndex].text_class = 'text-green-400'
   })
 }
 
 onBeforeUnmount(() => {
-  uploads.forEach((upload) => upload.task.cancel())
+  uploads.forEach((upload) => upload.controller && upload.controller.abort())
 })
 </script>

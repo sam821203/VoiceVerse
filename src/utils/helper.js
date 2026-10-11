@@ -1,6 +1,5 @@
-import { db, storage } from '@/utils/firebase'
+import { db } from '@/utils/firebase'
 import { getDocs, query, where, collection } from 'firebase/firestore'
-import { ref } from 'firebase/storage'
 
 export default {
   formatTime(time) {
@@ -37,8 +36,5 @@ export default {
     const querySnapshot = await getDocs(q)
 
     return querySnapshot
-  },
-  getStorage(target) {
-    return ref(storage, target)
   }
 }
