@@ -56,6 +56,7 @@ import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
 import { auth } from '@/utils/firebase'
 import helper from '@/utils/helper'
+import { resolveMediaUrl } from '@/utils/media'
 
 /*
 - 此步驟創建了名為 useModal 的存儲實例，使用了之前引入的 useStore 函數
@@ -88,7 +89,7 @@ const getAvatar = async () => {
   const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
 
   querySnapshot.forEach((avatar) => {
-    avatarImageDOM.value.src = avatar.data().url
+    avatarImageDOM.value.src = resolveMediaUrl(avatar.data().url)
   })
 }
 </script>

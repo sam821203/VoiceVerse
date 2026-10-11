@@ -77,9 +77,9 @@
 
 <script name="CompositionItem" setup>
 import { ref, reactive, toRefs, computed } from 'vue'
-import { storage, db } from '@/utils/firebase'
+import { db } from '@/utils/firebase'
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore'
-import { ref as storageRef, deleteObject } from 'firebase/storage'
+import { deleteMedia } from '@/utils/media'
 import helper from '@/utils/helper'
 
 // Composition API 中的 props 與 reactive 無法使用 直接透過ES6解構語法 來自動解構，因為這樣會導致 資料失去原本的響應功能
@@ -143,10 +143,12 @@ const edit = async (values) => {
 }
 
 const deleteSong = async () => {
-  const songRef = storageRef(storage, `songs/${song.value.original_name}`)
-
   // Delete from storage & firestore
-  await deleteObject(songRef)
+  try {
+    await deleteMedia(song.value.url)
+  } catch (error) {
+    console.error('刪除音檔失敗：', error)
+  }
   await deleteDoc(doc(db, 'songs', song.value.docID))
 
   removeSong.value(index.value)

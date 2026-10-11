@@ -1,11 +1,9 @@
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import 'firebase/compat/firestore'
-import 'firebase/compat/storage'
 
 import { getAuth } from 'firebase/auth'
 import { getFirestore, collection } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAQRo4Fr8Ip7LSk2lep8bpurQsBIJ3mIzY',
@@ -20,7 +18,6 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 const auth = getAuth(firebaseApp)
 const db = getFirestore(firebaseApp)
-const storage = getStorage()
 
 const usersCollection = collection(db, 'users')
 const songsCollection = collection(db, 'songs')
@@ -33,6 +30,5 @@ export {
   usersCollection,
   songsCollection,
   commentsCollection,
-  avatarsCollection,
-  storage
+  avatarsCollection
 }

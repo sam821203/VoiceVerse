@@ -76,7 +76,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import CompositionItem from '@/components/CompositionItem.vue'
 import { auth, db } from '@/utils/firebase'
-import { uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
+import { uploadMedia, deleteMedia, resolveMediaUrl } from '@/utils/media'
 import { avatarsCollection } from '@/utils/firebase'
 import { doc, deleteDoc, addDoc, getDoc } from 'firebase/firestore'
 import helper from '@/utils/helper'
@@ -135,28 +135,29 @@ const getAvatar = async () => {
   const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
 
   querySnapshot.forEach((avatar) => {
-    avatarImageDOM.value.src = avatar.data().url
+    avatarImageDOM.value.src = resolveMediaUrl(avatar.data().url)
   })
 }
 
 const deleteAvatar = async (querySnapshot) => {
-  querySnapshot.forEach(async (avatar) => {
-    const avatarRef = helper.getStorage(`avatars/${avatar.data().image_name}`)
-
-    await deleteObject(avatarRef)
+  for (const avatar of querySnapshot.docs) {
+    try {
+      await deleteMedia(avatar.data().url)
+    } catch (error) {
+      console.error('刪除舊頭像失敗：', error)
+    }
     await deleteDoc(doc(db, 'avatars', avatar.id))
-  })
+  }
 }
 
-const addAvatar = async (uploadTask) => {
+const addAvatar = async (blob) => {
   const image = {
     uid: currentUser.uid,
     user_name: currentUser.displayName || 'Anonymous',
-    image_name: uploadTask.snapshot.ref.name,
+    image_name: blob.pathname,
+    url: blob.url,
     dateUpload: new Date().toString()
   }
-
-  image.url = await getDownloadURL(uploadTask.snapshot.ref)
 
   const imageRef = await addDoc(avatarsCollection, image)
   const imageSnapshot = await getDoc(imageRef)
@@ -167,35 +168,17 @@ const addAvatar = async (uploadTask) => {
 const uploadAvatar = async (event) => {
   const imageFile = event.target.files[0]
 
-  if (!imageFile.type.includes('image')) return
+  if (!imageFile || !imageFile.type.includes('image')) return
 
-  const imageRef = helper.getStorage(`avatars/${imageFile.name}`)
-  const uploadTask = uploadBytesResumable(imageRef, imageFile)
-  const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
+  try {
+    const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
+    const blob = await uploadMedia('avatars', imageFile)
 
-  uploadTask.on(
-    'stage_change',
-    (snapshot) => {
-      switch (snapshot.state) {
-        case 'paused':
-          console.log('Upload is paused')
-          break
-        case 'running':
-          break
-      }
-    },
-    (error) => {
-      console.log(error.message)
-    },
-    async () => {
-      try {
-        await deleteAvatar(querySnapshot)
-        await addAvatar(uploadTask)
-      } catch (error) {
-        console.error('上傳或刪除操作錯誤：', error)
-      }
-    }
-  )
+    await deleteAvatar(querySnapshot)
+    await addAvatar(blob)
+  } catch (error) {
+    console.error('上傳或刪除操作錯誤：', error)
+  }
 }
 
 onMounted(() => {

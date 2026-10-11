@@ -2,7 +2,7 @@
   <div class="cover-photo relative mb-10" v-if="index === 0">
     <div class="w-44 h-44 mx-auto mb-2">
       <!-- <img src="@/assets/images/default-cover-photo.png" alt="" class="shadow-xl" /> -->
-      <img ref="avatarImageDOM" :src="song.user_avatar" alt="" class="shadow-xl" />
+      <img ref="avatarImageDOM" :src="resolveMediaUrl(song.user_avatar)" alt="" class="shadow-xl" />
       <!-- <div>{{ song }}</div> -->
     </div>
     <label
@@ -30,19 +30,17 @@
         ref="coverPhoto"
         type="file"
         accept="image/jpeg, image/png, image/jpg"
-        @change="uploadAvatar"
+        @change="handleFileChange"
       /> -->
     </vee-form>
   </div>
 </template>
 
 <script setup>
-import { ref, toRefs, onMounted, reactive } from 'vue'
-import { db, auth } from '@/utils/firebase'
-import { getDownloadURL, deleteObject, uploadBytesResumable } from 'firebase/storage'
-import { doc, updateDoc, deleteDoc, addDoc, getDoc, setDoc } from 'firebase/firestore'
-import { avatarsCollection } from '@/utils/firebase'
-import helper from '@/utils/helper'
+import { ref, toRefs } from 'vue'
+import { db } from '@/utils/firebase'
+import { doc, updateDoc } from 'firebase/firestore'
+import { uploadMedia, resolveMediaUrl } from '@/utils/media'
 
 const props = defineProps({
   song: {
@@ -59,178 +57,44 @@ const props = defineProps({
   }
 })
 
-const selectedFile = ref(null)
 const { song, index, updateAvatar } = toRefs(props)
 const showAvatarForm = ref(false)
-const uploadTaskRef = ref(null)
-const currentUser = auth.currentUser
+const uploadedBlob = ref(null)
 const avatarImageDOM = ref(null)
-
-const uploadAvatar = async (event) => {
-  const imageFile = event.target.files[0]
-
-  if (!imageFile.type.includes('image')) return
-
-  const imageRef = helper.getStorage(`avatars/${imageFile.name}`)
-  const uploadTask = uploadBytesResumable(imageRef, imageFile)
-  const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
-
-  uploadTask.on(
-    'stage_change',
-    (snapshot) => {
-      switch (snapshot.state) {
-        case 'paused':
-          console.log('Upload is paused')
-          break
-        case 'running':
-          break
-      }
-    },
-    (error) => {
-      console.log(error.message)
-    },
-    async () => {
-      try {
-        // await deleteAvatar(querySnapshot)
-        // await addAvatar(uploadTask)
-        console.log('success')
-        // 成功時 update 按鈕才會可以點擊
-      } catch (error) {
-        console.error('上傳或刪除操作錯誤：', error)
-      }
-    }
-  )
-}
-
-const addAvatar = async () => {
-  const image = {
-    uid: currentUser.uid,
-    user_name: currentUser.displayName || 'Anonymous',
-    image_name: uploadTaskRef.value.snapshot.ref.name,
-    dateUpload: new Date().toString()
-  }
-
-  image.url = await getDownloadURL(uploadTaskRef.value.snapshot.ref)
-
-  const imageRef = await addDoc(avatarsCollection, image)
-  const imageSnapshot = await getDoc(imageRef)
-
-  avatarImageDOM.value.src = imageSnapshot.data().url
-  updateAvatar.value(imageSnapshot.data().url)
-}
 
 const handleFileChange = async (event) => {
   const imageFile = event.target.files[0]
 
-  if (!imageFile.type.includes('image')) return
+  if (!imageFile || !imageFile.type.includes('image')) return
 
-  const imageRef = helper.getStorage(`avatars/${imageFile.name}`)
-  const uploadTask = uploadBytesResumable(imageRef, imageFile)
-  // const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
-
-  uploadTask.on(
-    'stage_change',
-    (snapshot) => {
-      switch (snapshot.state) {
-        case 'paused':
-          console.log('Upload is paused')
-          break
-        case 'running':
-          break
-      }
-    },
-    (error) => {
-      console.log(error.message)
-    },
-    async () => {
-      try {
-        console.log('success')
-        uploadTaskRef.value = uploadTask
-      } catch (error) {
-        console.error('上傳或刪除操作錯誤：', error)
-      }
-    }
-  )
-  selectedFile.value = imageFile
+  try {
+    uploadedBlob.value = await uploadMedia('avatars', imageFile)
+  } catch (error) {
+    console.error('上傳錯誤：', error)
+  }
 }
 
-// const getAvatar = async () => {
-//   const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
-
-//   querySnapshot.forEach((avatar) => {
-//     avatarImageDOM.value.src = avatar.data().url
-//   })
-// }
-
 const editAvatar = async (values) => {
-  // console.log(values)
-  const querySnapshot = await helper.getDocuments('avatars', 'uid', currentUser.uid)
-  const avatarDocRef = doc(db, 'avatars', currentUser.uid)
-  // const imageSnapshot = await getDoc(imageRef)
-  const avatarDocSnapshot = await getDoc(avatarDocRef)
-
-  // const image = {
-  //   uid: currentUser.uid,
-  //   user_name: currentUser.displayName || 'Anonymous',
-  //   image_name: uploadTaskRef.value.snapshot.ref.name,
-  //   dateUpload: new Date().toString()
-  // }
+  if (!uploadedBlob.value) return
 
   const image = {
-    user_name: currentUser.displayName || 'Anonymous',
-    image_name: uploadTaskRef.value.snapshot.ref.name,
-    ...values
+    ...values,
+    image_name: uploadedBlob.value.pathname,
+    user_avatar: uploadedBlob.value.url
   }
-
-  image.user_avatar = await getDownloadURL(uploadTaskRef.value.snapshot.ref)
-  console.log(image)
 
   try {
     // 更新音樂的 avatar
     const songDocRef = doc(db, 'songs', song.value.docID)
     await updateDoc(songDocRef, image)
-
-    // 更新 user 的 avatar
   } catch (error) {
     console.log(error)
     return
   }
 
-  // const imageRef = await addDoc(avatarsCollection, image)
-  // await addDoc(avatarsCollection, image)
-
-  // avatarImageDOM.value.src = imageSnapshot.data().url
-
   // 更新修改後的資料
   updateAvatar.value(index.value, image)
-  // }
-
-  // else {
-  //   console.log('Has avatar')
-  //   const image = {
-  //     uid: currentUser.uid,
-  //     user_name: currentUser.displayName || 'Anonymous',
-  //     image_name: uploadTaskRef.value.snapshot.ref.name,
-  //     dateUpload: new Date().toString()
-  //   }
-
-  //   image.url = await getDownloadURL(uploadTaskRef.value.snapshot.ref)
-
-  //   await updateDoc(avatarDocRef, image)
-
-  //   const imageRef = await addDoc(avatarsCollection, image)
-  //   const imageSnapshot = await getDoc(imageRef)
-
-  //   avatarImageDOM.value.src = imageSnapshot.data().url
-  //   updateAvatar.value(imageSnapshot.data().url)
-  // }
-
-  // updateAvatar.value(false)
 }
-
-// onMounted(() => {
-//   getAvatar()
-// })
 </script>
 
 <style lang="scss" scoped>

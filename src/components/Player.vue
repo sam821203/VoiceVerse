@@ -95,6 +95,7 @@
 import { computed } from 'vue'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
+import { resolveMediaUrl } from '@/utils/media'
 import defaultCover from '@/assets/images/default-cover-photo.png'
 
 const { usePlayer } = useStore()
@@ -109,7 +110,7 @@ const volumeBackground = computed(
 )
 
 const songAvatar = computed(() =>
-  current_song.value.user_avatar ? current_song.value.user_avatar : defaultCover
+  current_song.value.user_avatar ? resolveMediaUrl(current_song.value.user_avatar) : defaultCover
 )
 
 const useDefaultCover = (event) => {
