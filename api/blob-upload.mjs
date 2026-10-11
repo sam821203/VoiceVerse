@@ -1,5 +1,5 @@
 import { handleUpload } from '@vercel/blob/client'
-import { verifyIdToken, getBearerToken, ownsPath } from './_auth.js'
+import { verifyIdToken, getBearerToken, ownsPath } from './_auth.mjs'
 
 const MB = 1024 * 1024
 

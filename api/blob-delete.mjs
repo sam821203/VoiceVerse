@@ -1,5 +1,5 @@
 import { del } from '@vercel/blob'
-import { verifyIdToken, getBearerToken, ownsPath } from './_auth.js'
+import { verifyIdToken, getBearerToken, ownsPath } from './_auth.mjs'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
