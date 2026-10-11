@@ -3,7 +3,12 @@
     <div class="flex--center mx-auto max-w-screen-2xl h-full">
       <div class="flex w-1/4">
         <div class="mr-4 overflow-hidden" style="width: 60px; height: 60px">
-          <img :src="songAvatar" alt="" class="w-full h-full rounded object-cover" />
+          <img
+            :src="songAvatar"
+            alt=""
+            class="w-full h-full rounded object-cover"
+            @error="useDefaultCover"
+          />
         </div>
         <div v-if="current_song.modified_name">
           <h6 class="song-title font-bold">{{ current_song.modified_name }}</h6>
@@ -90,6 +95,7 @@
 import { computed } from 'vue'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
+import defaultCover from '@/assets/images/default-cover-photo.png'
 
 const { usePlayer } = useStore()
 const { toggleAudio, updateSeek, setSoundVolume, volumeOff, fastSeek } = usePlayer()
@@ -102,13 +108,13 @@ const volumeBackground = computed(
     `linear-gradient(to right, rgb(6, 182, 212) ${volumeValue.value}, rgb(204, 204, 204) ${volumeValue.value})`
 )
 
-const songAvatar = computed(
-  () =>
-    current_song.value.user_avatar
-      ? current_song.value.user_avatar
-      : 'https://discussions.apple.com/content/attachment/592590040'
-  // : 'https://i.ibb.co/PDTprGt/default-cover-photo.png'
+const songAvatar = computed(() =>
+  current_song.value.user_avatar ? current_song.value.user_avatar : defaultCover
 )
+
+const useDefaultCover = (event) => {
+  if (event.target.src !== defaultCover) event.target.src = defaultCover
+}
 </script>
 
 <style lang="scss" scoped>

@@ -10,7 +10,12 @@
         style="color: rgb(107, 114, 128)"
       ></i>
       <div class="w-16 h-16">
-        <img :src="songAvatar" alt="" class="w-full h-full rounded object-cover" />
+        <img
+          :src="songAvatar"
+          alt=""
+          class="w-full h-full rounded object-cover"
+          @error="useDefaultCover"
+        />
       </div>
       <div>
         <router-link
@@ -55,6 +60,7 @@ import { storage, auth } from '@/utils/firebase'
 import { useStore } from '@/stores/index.js'
 import { storeToRefs } from 'pinia'
 import helper from '@/utils/helper'
+import defaultCover from '@/assets/images/default-cover-photo.png'
 
 const props = defineProps({
   song: {
@@ -73,10 +79,12 @@ const songUrlDOM = ref(null)
 const avatarImageDOM = ref(null)
 
 const songAvatar = computed(() => {
-  return song.value.user_avatar
-    ? song.value.user_avatar
-    : 'https://discussions.apple.com/content/attachment/592590040'
+  return song.value.user_avatar ? song.value.user_avatar : defaultCover
 })
+
+const useDefaultCover = (event) => {
+  if (event.target.src !== defaultCover) event.target.src = defaultCover
+}
 
 const songDuration = computed(() => {
   return song.value.duration ? song.value.duration : '0:00'
